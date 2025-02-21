@@ -1,0 +1,169 @@
+
+body {
+    padding-top: 120px; /* ✅ 헤더 높이만큼 본문을 아래로 밀기 (필요시 값 조정) */
+}
+
+/* ✅ 페이지 전체 3분할 레이아웃 */
+.container-fluid {
+    height: 100vh;
+    display: flex;
+}
+
+.left-panel, .right-panel {
+    flex: 1;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.middle-panel {
+    flex: 2.5; /* ✅ 가운데가 가장 넓음 */
+    padding: 20px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ✅ 시간표 스타일 */
+.timetable {
+    width: 100%;
+    max-width: 900px;
+    border-collapse: separate;
+    border-spacing: 5px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    table-layout: fixed; /* ✅ 테이블 크기 고정 */
+}
+
+
+/* ✅ 각 칸(셀) 스타일 */
+.timetable th, .timetable td {
+    border: none;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    height: 80px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+}
+
+.timetable td {
+    display: table-cell; /* ✅ Flexbox 제거하여 원래 테이블 레이아웃 유지 */
+    vertical-align: middle; /* ✅ 병합된 블록이 중앙 정렬되도록 설정 */
+    padding: 0;
+}
+
+/* ✅ 병합된 블록을 자연스럽게 표시 */
+.timetable td .lecture {
+    background-color: #ffcccb;
+    color: black;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ✅ 시간 열 너비 조정 */
+.timetable th:first-child,
+.timetable td:first-child {
+    width: 80px; /* ✅ 시간 열 너비 */
+    min-width: 70px;
+    text-align: center;
+}
+
+/* ✅ 헤더(요일) 스타일 */
+.timetable th {
+    background: #f9f9f9;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    border-radius: 10px;
+    height: 50px; /* ✅ 맨 윗줄만 높이 조정 */
+    padding: 10px; /* ✅ 내부 여백 조정 */
+    position: relative;
+}
+
+/* ✅ 마우스 오버 효과 */
+.timetable td:hover {
+    background: #e3f2fd;
+    transform: scale(1.05);
+}
+
+/* ✅ 삭제 버튼 스타일 */
+.lecture .remove-btn {
+    background: rgb(255, 255, 255); 
+    color: rgb(0, 0, 0) !important; 
+    border: none;
+    font-size: 14px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-align: center;
+    line-height: 20px;
+}
+
+.lecture .remove-btn:hover {
+    background: rgb(131, 130, 130); 
+    color: rgb(0, 0, 0) !important; 
+}
+
+
+
+/* ✅ 반응형 조정 */
+@media (max-width: 768px) {
+    .timetable th:first-child,
+    .timetable td:first-child {
+        width: 60px;
+        min-width: 50px;
+    }
+
+    .timetable th, .timetable td {
+        height: 100px;
+        padding: 15px;
+        font-size: 14px;
+    }
+
+    .timetable td:hover {
+        transform: scale(1.02);
+    }
+
+    header {
+        padding: 0 20px;
+    }
+
+    .nav-links {
+        gap: 10px;
+    }
+
+    .logo img {
+        height: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .timetable th {
+        height: 40px; /* ✅ 작은 화면에서는 더 줄임 */
+        font-size: 14px; /* ✅ 글씨 크기 조정 */
+        padding: 8px;
+    }
+}
+

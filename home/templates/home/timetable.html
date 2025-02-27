@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>시간표 생성</title>
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/timetable_style.css' %}">
+
+    <!-- ✅ 부트스트랩 CSS 추가 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <!-- ✅ header -->
+    <header>
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}">Home<span></span></a>
+                <a href="#">MyPage<span></span></a>
+                <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+                <a href="#">Logout<span></span></a>
+            </div>
+        </nav>
+    </header> 
+    <!-- ✅ end header -->
+
+    <div class="container-fluid">
+
+        <!-- 왼쪽-->
+        <div class="left-panel">
+            <!-- ✅ 검색창 -->
+            <div class="course-search-container">
+                <input type="text" id="course-search" placeholder="강의 검색..." class="course-search">
+            </div>
+        
+            <!-- ✅ 필터 버튼 -->
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-type="all">전체</button>
+                <button class="filter-btn" data-type="major_required">전공필수</button>
+                <button class="filter-btn" data-type="major_elective">전공선택</button>
+                <button class="filter-btn" data-type="general_elective">교양선택</button>
+                <button class="filter-btn" data-type="free_elective">일반선택</button>
+                <button class="filter-btn" data-type="teaching_required">교직필수</button>
+            </div>
+        
+            <!-- ✅ 강의 리스트 -->
+            <div class="course-list-container">
+                <div class="course-category" id="major-required">
+                    {% for course in major_required %}
+                    <div class="course-item" data-type="major_required">
+                        <div class="course-name">{{ course.course_name }}</div>
+                        <div class="course-info">
+                            <span class="instructor">{{ course.instructor }}</span>
+                            <span class="credit">{{ course.credit }}학점</span>
+                            <span class="year">{{ course.year }}</span>
+                        </div>
+                        <div class="course-meta">
+                           
+                        </div>
+                        <button class="add-course-btn">추가</button>
+                    </div>
+                    {% empty %}
+                    <p class="no-courses">전공 필수 강의가 없습니다.</p>
+                    {% endfor %}
+                </div>
+                <div class="course-category" id="major-elective">
+                    {% for course in major_elective %}
+                    <div class="course-item" data-type="major_elective">
+                        <div class="course-name">{{ course.course_name }}</div>
+                        <div class="course-info">
+                            <span class="instructor">{{ course.instructor }}</span>
+                            <span class="credit">{{ course.credit }}학점</span>
+                            <span class="year">{{ course.year }}</span>
+                        </div>
+                        <div class="course-meta">
+                            
+                        </div>
+                        <button class="add-course-btn">추가</button>
+                    </div>
+                    {% empty %}
+                    <p class="no-courses">전공 선택 강의가 없습니다.</p>
+                    {% endfor %}
+                </div>
+                <div class="course-category" id="general-elective">
+                    {% for course in general_elective %}
+                    <div class="course-item" data-type="general_elective">
+                        <div class="course-name">{{ course.course_name }}</div>
+                        <div class="course-info">
+                            <span class="instructor">{{ course.instructor }}</span>
+                            <span class="credit">{{ course.credit }}학점</span>
+                            <span class="year">{{ course.year }}</span>
+                        </div>
+                        <div class="course-meta">
+                           
+                        </div>
+                        <button class="add-course-btn">추가</button>
+                    </div>
+                    {% empty %}
+                    <p class="no-courses">교양 선택 강의가 없습니다.</p>
+                    {% endfor %}
+                </div>
+                <div class="course-category" id="free-elective">
+                    {% for course in free_elective %}
+                    <div class="course-item" data-type="free_elective">
+                        <div class="course-name">{{ course.course_name }}</div>
+                        <div class="course-info">
+                            <span class="instructor">{{ course.instructor }}</span>
+                            <span class="credit">{{ course.credit }}학점</span>
+                            <span class="year">{{ course.year }}</span>
+                        </div>
+                        <div class="course-meta">
+                            
+                        </div>
+                        <button class="add-course-btn">추가</button>
+                    </div>
+                    {% empty %}
+                    <p class="no-courses">일반 선택 강의가 없습니다.</p>
+                    {% endfor %}
+                </div>
+                <div class="course-category" id="teaching-required">
+                    {% for course in teaching_required %}
+                    <div class="course-item" data-type="teaching_required">
+                        <div class="course-name">{{ course.course_name }}</div>
+                        <div class="course-info">
+                            <span class="instructor">{{ course.instructor }}</span>
+                            <span class="credit">{{ course.credit }}학점</span>
+                            <span class="year">{{ course.year }}</span>
+                        </div>
+                        <div class="course-meta">
+                            
+                        </div>
+                        <button class="add-course-btn">추가</button>
+                    </div>
+                    {% empty %}
+                    <p class="no-courses">교직 필수 강의가 없습니다.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+    
+        <!-- 가운데 시간표 -->
+        <div class="middle-panel">
+            <table class="timetable">
+                <thead>
+                    <tr>
+                        <th>시간</th>
+                        <th>월</th>
+                        <th>화</th>
+                        <th>수</th>
+                        <th>목</th>
+                        <th>금</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 오전 8시 ~ 오후 8시 (1시간 단위) -->
+                    <script>
+                        const timetableBody = document.querySelector(".timetable tbody");
+                        for (let hour = 8; hour <= 20; hour++) {
+                            const row = document.createElement("tr");
+                            const timeCell = document.createElement("td");
+                            timeCell.textContent = `${hour}:00`;
+                            row.appendChild(timeCell);
+                
+                            // 요일별 칸 생성
+                            for (let i = 0; i < 5; i++) {
+                                const cell = document.createElement("td");
+                                cell.classList.add("timetable-cell");
+                                cell.setAttribute("data-hour", hour);
+                                cell.setAttribute("data-day", i);
+                                row.appendChild(cell);
+                            }
+                
+                            timetableBody.appendChild(row);
+                        }
+                    </script>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 오른쪽-->
+        <div class="right-panel">
+            <div class="goal-settings">
+                <h3>목표 학점 설정 🎯</h3>
+                <div class="goal-inputs">
+                    <label for="total-credits">총 목표 학점 (최대 24):</label>
+                    <input type="number" id="total-credits" min="1" max="24" value="18">
+                    
+                    <label for="major-credits">전공 학점:</label>
+                    <input type="number" id="major-credits" min="0" max="24" value="9">
+                    
+                    <label for="elective-credits">교양 학점:</label>
+                    <input type="number" id="elective-credits" min="0" max="24" value="9">
+                </div>
+            </div>
+        
+            <div class="day-off-settings">
+                <h3>공강 요일 선택 📅</h3>
+                <div class="day-options">
+                    <label><input type="checkbox" value="월"> 월</label>
+                    <label><input type="checkbox" value="화"> 화</label>
+                    <label><input type="checkbox" value="수"> 수</label>
+                    <label><input type="checkbox" value="목"> 목</label>
+                    <label><input type="checkbox" value="금"> 금</label>
+                </div>
+            </div>
+        
+            <button id="generate-btn">📅 시간표 생성</button>
+
+            <!-- ✅ 시간표 탐색 영역 (좌우 화살표 + 현재 위치 표시) -->
+            <div class="timetable-navigation">
+                <button id="prev-timetable" class="nav-arrow">◀</button>
+                <span id="timetable-index">1 / 1</span>
+                <button id="next-timetable" class="nav-arrow">▶</button>
+            </div>
+
+            <button id="save-timetable-btn">💾 현재 시간표 저장</button> <!-- ✅ 저장 버튼 추가 -->
+
+        </div>
+        
+
+
+
+
+
+
+    </div>
+
+<!-- ✅ 부트스트랩 JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ script.js 파일 연결 -->
+<script src="{% static 'home/js/timetable_script.js' %}"></script>
+
+</body>
+</html>

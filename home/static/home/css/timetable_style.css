@@ -1,0 +1,382 @@
+body {
+    padding-top: 80px; /* ✅ 헤더 높이만큼 본문을 아래로 밀기 (필요시 값 조정) */
+}
+
+/* ✅ 페이지 전체 3분할 레이아웃 */
+.container-fluid {
+    height: 100vh;
+    display: flex;
+}
+
+.left-panel, .right-panel {
+    flex: 1;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.middle-panel {
+    flex: 2.5; /* ✅ 가운데가 가장 넓음 */
+    padding: 20px;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* ✅ 가운데 영역 스타일 */
+/* 시간표 스타일 */
+.timetable {
+    width: 100%;
+    max-width: 900px;
+    border-collapse: separate;
+    border-spacing: 5px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    table-layout: fixed; /* ✅ 테이블 크기 고정 */
+}
+
+
+/* 각 칸(셀) 스타일 */
+.timetable th, .timetable td {
+    border: none;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    height: 80px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+}
+
+.timetable td {
+    display: table-cell; /* Flexbox 제거하여 원래 테이블 레이아웃 유지 */
+    vertical-align: middle; /* 병합된 블록이 중앙 정렬되도록 설정 */
+    padding: 0;
+}
+
+/* 병합된 블록을 자연스럽게 표시 */
+.timetable td .lecture {
+    background-color: #ffcccb;
+    color: black;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* 시간 열 너비 조정 */
+.timetable th:first-child,
+.timetable td:first-child {
+    width: 80px; /* ✅ 시간 열 너비 */
+    min-width: 70px;
+    text-align: center;
+}
+
+/* 헤더(요일) 스타일 */
+.timetable th {
+    background: #f9f9f9;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    border-radius: 10px;
+    height: 50px; /* 맨 윗줄만 높이 조정 */
+    padding: 10px; /* 내부 여백 조정 */
+    position: relative;
+}
+
+/* 마우스 오버 효과 */
+.timetable td:hover {
+    background: #e3f2fd;
+    transform: scale(1.05);
+}
+
+/* 삭제 버튼 스타일 */
+.lecture .remove-btn {
+    background: rgb(255, 255, 255); 
+    color: rgb(0, 0, 0) !important; 
+    border: none;
+    font-size: 14px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-align: center;
+    line-height: 20px;
+}
+
+.lecture .remove-btn:hover {
+    background: rgb(131, 130, 130); 
+    color: rgb(0, 0, 0) !important; 
+}
+
+
+.lecture {
+    background-color: #ffcccb;
+    color: black;
+    border-radius: 8px;
+    padding: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+
+
+/* ✅ 왼쪽 영역 스타일 */
+.left-panel {
+    flex: 1;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 20px;
+    border-radius: 15px;
+    height: 100%; /* ✅ 패널 높이 고정 */
+}
+
+/* ✅ 검색창 스타일 */
+.course-search-container{
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px; /* ✅ 기존보다 줄여서 위로 이동 */
+    margin-top: -60px; /* ✅ 살짝 더 위로 올림 */
+}
+
+.course-search {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* ✅ 필터 버튼 */
+.filter-buttons {
+    width: 90%;
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.filter-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ddd;
+}
+
+.filter-btn.active {
+    background-color: #ffcd4a;
+    color: rgb(0, 0, 0);
+}
+
+/* ✅ 강의 블록 컨테이너 (전체 리스트) */
+.course-list-container {
+    width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap; /* ✅ 여러 개가 있으면 자동 줄바꿈 */
+    justify-content: center;
+    gap: 10px;
+}
+
+/* ✅ 강의 블록 스타일 */
+.course-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    width: 350px; /* ✅ 가로 길이 조정 */
+    height: 120px; /* ✅ 세로 길이 조정 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease-in-out;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* ✅ 블록 내 텍스트 스타일 */
+.course-name {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.course-info {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* ✅ 강의 추가 버튼 */
+.add-course-btn {
+    padding: 5px 10px;
+    border: none;
+    background-color: #ffcd4a;
+    color: rgb(0, 0, 0);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+/* ✅ 블록 마우스 오버 효과 */
+.course-item:hover {
+    transform: scale(1.05);
+}
+
+
+/* ✅ 오른쪽 패널 스타일 */
+.right-panel {
+    flex: 1;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+/* ✅ 목표 학점 입력 스타일 */
+.goal-settings {
+    width: 100%;
+    margin-bottom: 20px;
+    margin-top: -200px; /* ✅ 살짝 더 위로 올림 */
+}
+
+.goal-settings h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.goal-inputs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.goal-inputs label {
+    font-size: 14px;
+}
+
+.goal-inputs input {
+    width: 80px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+/* ✅ 공강 요일 선택 스타일 */
+.day-off-settings {
+    margin-top: 20px; 
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.day-off-settings h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.day-options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.day-options label {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* ✅ 시간표 생성 & 저장 버튼 스타일 */
+#generate-btn, #save-timetable-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 60%;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+/* ✅ 시간표 생성 버튼 스타일 */
+#generate-btn {
+    background-color: #1b1b1b;
+    color: white;
+    margin-bottom: 20px;
+}
+
+#generate-btn:hover {
+    background-color: #000000;
+}
+
+/* ✅ 시간표 저장 버튼 스타일 */
+#save-timetable-btn {
+    background-color: #ffcd4a;
+    color: rgb(0, 0, 0);
+}
+
+#save-timetable-btn:hover {
+    background-color: #ffc32b;
+}
+
+
+/* ✅ 시간표 탐색 버튼 스타일 */
+.timetable-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.nav-arrow {
+    background-color: #ffcd4a;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 5px 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.nav-arrow:hover {
+    background-color: #ffc32b;
+}
+
+
+

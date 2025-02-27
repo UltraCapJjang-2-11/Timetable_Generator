@@ -127,7 +127,6 @@ body {
     color: rgb(0, 0, 0) !important; 
 }
 
-
 .lecture {
     background-color: #ffcccb;
     color: black;
@@ -138,7 +137,6 @@ body {
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
-
 
 
 /* ✅ 왼쪽 영역 스타일 */
@@ -153,13 +151,17 @@ body {
     height: 100%; /* ✅ 패널 높이 고정 */
 }
 
-/* ✅ 검색창 스타일 */
+/* ✅ 검색창 및 필터 컨테이너 스타일 */
 .course-search-container{
-    width: 80%;
+    width: 100%;
+    position: flex;
+    background-color: #f8f9fa; /* ✅ 배경색 유지 */
+    z-index: 10; /* ✅ 다른 요소 위에 유지 */
+    padding: 10px;
     display: flex;
-    justify-content: center;
-    margin-bottom: 5px; /* ✅ 기존보다 줄여서 위로 이동 */
-    margin-top: -60px; /* ✅ 살짝 더 위로 올림 */
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-20px);
 }
 
 .course-search {
@@ -194,17 +196,14 @@ body {
 
 /* ✅ 강의 블록 컨테이너 (전체 리스트) */
 .course-list-container {
+    flex: 1;
     width: 100%;
-    max-height: 70vh;
-    overflow-y: auto;
-    padding: 10px;
-    display: flex;
-    flex-wrap: wrap; /* ✅ 여러 개가 있으면 자동 줄바꿈 */
-    justify-content: center;
-    gap: 10px;
+    overflow-y: auto; /* ✅ 리스트만 스크롤 */
+    padding-top: 10px;
+    height: calc(100vh - 150px); /* ✅ 화면 높이에서 검색창 & 필터 버튼 높이 제외 */
 }
 
-/* ✅ 강의 블록 스타일 */
+/* ✅ 리스트안의 강의 블록 스타일 */
 .course-item {
     display: flex;
     flex-direction: column;
@@ -227,7 +226,6 @@ body {
     font-weight: bold;
     margin-bottom: 5px;
 }
-
 .course-info {
     font-size: 12px;
     color: #555;

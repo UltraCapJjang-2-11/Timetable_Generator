@@ -161,7 +161,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateX(-20px);
+    transform: translateX(0px);
 }
 
 .course-search {
@@ -189,6 +189,10 @@ body {
     background-color: #ddd;
 }
 
+.filter-btn:hover {
+    transform: scale(1.1);
+}
+
 .filter-btn.active {
     background-color: #ffcd4a;
     color: rgb(0, 0, 0);
@@ -212,12 +216,13 @@ body {
     background: white;
     padding: 12px;
     border-radius: 12px;
-    width: 350px; /* ✅ 가로 길이 조정 */
+    width: 300px; /* ✅ 가로 길이 조정 */
     height: 120px; /* ✅ 세로 길이 조정 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: 0.3s ease-in-out;
     text-align: center;
     margin-bottom: 15px;
+    transform: translateX(40px);
 }
 
 /* ✅ 블록 내 텍스트 스타일 */
@@ -245,7 +250,7 @@ body {
 
 /* ✅ 블록 마우스 오버 효과 */
 .course-item:hover {
-    transform: scale(1.05);
+    transform: scale(1.0);
 }
 
 

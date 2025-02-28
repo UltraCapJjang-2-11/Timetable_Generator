@@ -81,18 +81,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'college_course_db',  # ✅ 위에서 확인한 DB 이름
-        'USER': 'dbadmin',       # ✅ 위에서 확인한 MySQL 사용자 이름
-        'PASSWORD': '0000',  # ✅ 비밀번호 (기억 안 나면 위에서 변경 가능)
-        'HOST': 'localhost',    # ✅ 로컬 MySQL 서버 사용
-        'PORT': '3306',         # ✅ MySQL 기본 포트
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'NAME': 'college_course_db',            # 이미 구축된 MySQL DB 이름
+        'USER': 'dbadmin',                      # MySQL 사용자명
+        'PASSWORD': '1q2w3e4r!',                # MySQL 비밀번호
+        'HOST': 'localhost',                    # 또는 IP 주소
+        'PORT': '3306',
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

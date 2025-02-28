@@ -36,6 +36,8 @@ LOGOUT_REDIRECT_URL = '/'
 
 INSTALLED_APPS = [
     'home',  # 홈페이지 메인 앱
+    'rest_framework',
+    'data_manager.apps.DataManagerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -4,6 +4,8 @@ from django.urls import reverse_lazy
 from .models import Course
 import json, random
 
+def course_serach_test_view(request):
+    return render(request, 'home/search_test.html')
 
 def timetable_view(request):
     # ✅ 강의 유형별 필터링

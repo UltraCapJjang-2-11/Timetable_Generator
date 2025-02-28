@@ -19,56 +19,52 @@ FLUSH PRIVILEGES;
 
 -- 3.1 DEPARTMENT 테이블
 CREATE TABLE DEPARTMENT (
-  dept_id INT AUTO_INCREMENT PRIMARY KEY,
-  dept_name VARCHAR(255) NOT NULL
-) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+    dept_id INT AUTO_INCREMENT PRIMARY KEY,
+    dept_name VARCHAR(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3.2 CATEGORY 테이블
 CREATE TABLE CATEGORY (
-  category_id INT AUTO_INCREMENT PRIMARY KEY,
-  parent_category_id INT DEFAULT NULL,
-  category_name VARCHAR(255) NOT NULL,
-  category_type VARCHAR(255) NOT NULL,
-  description TEXT,
-  FOREIGN KEY (parent_category_id) REFERENCES CATEGORY(category_id) ON DELETE SET NULL
-) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    parent_category_id INT DEFAULT NULL,
+    category_name VARCHAR(255) NOT NULL,
+    category_type VARCHAR(255) NOT NULL,
+    description TEXT,
+    FOREIGN KEY (parent_category_id) REFERENCES CATEGORY(category_id)
+        ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3.3 SEMESTER 테이블
 CREATE TABLE SEMESTER (
-  semester_id INT AUTO_INCREMENT PRIMARY KEY,
-  year INT NOT NULL,
-  term VARCHAR(20) NOT NULL,
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
-  registration_start DATE NOT NULL,
-  registration_end DATE NOT NULL
-) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+    semester_id INT AUTO_INCREMENT PRIMARY KEY,
+    year INT NOT NULL,
+    term VARCHAR(20) NOT NULL,          -- 예: "1학기", "2학기", "여름", "겨울"
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    registration_start DATE NOT NULL,
+    registration_end DATE NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3.4 STUDENT 테이블
 CREATE TABLE STUDENT (
-  student_id INT AUTO_INCREMENT PRIMARY KEY,
-  dept_id INT NOT NULL,
-  admission_year INT NOT NULL,
-  student_name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  FOREIGN KEY (dept_id) REFERENCES DEPARTMENT(dept_id)
-) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    dept_id INT NOT NULL,
+    admission_year INT NOT NULL,
+    student_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    FOREIGN KEY (dept_id) REFERENCES DEPARTMENT(dept_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 3.5 COURSE (과목 정보)
 CREATE TABLE COURSE (
+    course_id INT AUTO_INCREMENT PRIMARY KEY,
     course_code VARCHAR(20) NOT NULL,
     section VARCHAR(5) NOT NULL,
     dept_id INT NOT NULL,
     category_id INT NOT NULL,
     year VARCHAR(20) NOT NULL,
-    course_type VARCHAR(50) NOT NULL,     -- 이수구분 (예: 전공필수, 전공선택, 기타)
+    course_type VARCHAR(50) NOT NULL,     -- 예: 전공필수, 전공선택, 교양, 교직, 일반선택 등
     course_name VARCHAR(255) NOT NULL,
     credit INT NOT NULL,
     class_type VARCHAR(50) NOT NULL,        -- 강의구분 (예: 일반)
@@ -79,65 +75,69 @@ CREATE TABLE COURSE (
     lecture_units DECIMAL(4,1) NOT NULL,
     lab_hours DECIMAL(4,1) NOT NULL,
     lab_units DECIMAL(4,1) NOT NULL,
-    PRIMARY KEY (course_code, section),
+    semester_id INT,                        -- 개설 학기를 나타내며, SEMESTER 테이블과 외래키 관계
+    pre_enrollment_count INT NOT NULL DEFAULT 0,
+    capacity INT NOT NULL DEFAULT 0,
+    enrolled_count INT NOT NULL DEFAULT 0,
     FOREIGN KEY (dept_id) REFERENCES DEPARTMENT(dept_id)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES CATEGORY(category_id)
-        ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 3.6 COURSE_SCHEDULE 테이블 생성
-CREATE TABLE COURSE_SCHEDULE (
-    course_code VARCHAR(20) NOT NULL,
-    section VARCHAR(5) NOT NULL,
-    day VARCHAR(10) NOT NULL,
-    times VARCHAR(50) NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    PRIMARY KEY (course_code, section, day, location),
-    FOREIGN KEY (course_code, section) REFERENCES COURSE(course_code, section)
-        ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- 3.7 COURSE_OFFERING 테이블 생성
-CREATE TABLE COURSE_OFFERING (
-    offering_id INT AUTO_INCREMENT PRIMARY KEY,
-    course_code VARCHAR(20) NOT NULL,
-    section VARCHAR(5) NOT NULL,
-    semester_id INT NOT NULL,
-    pre_enrollment_count INT NOT NULL,
-    capacity INT NOT NULL,
-    enrolled_count INT NOT NULL,
-    FOREIGN KEY (course_code, section) REFERENCES COURSE(course_code, section)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (semester_id) REFERENCES SEMESTER(semester_id)
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- 3.6 COURSE_SCHEDULE 테이블 생성
+CREATE TABLE COURSE_SCHEDULE (
+    schedule_id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT NOT NULL,
+    day VARCHAR(10) NOT NULL,                   -- 예: '월', '화', ...
+    times VARCHAR(50) NOT NULL,                 -- 예: '02,03'
+    location VARCHAR(255) NOT NULL,             -- 강의실 위치
+    FOREIGN KEY (course_id) REFERENCES COURSE(course_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 3.7 COURSE_OFFERING 테이블 생성  (사용하지 않음)
+# CREATE TABLE COURSE_OFFERING (
+#     offering_id INT AUTO_INCREMENT PRIMARY KEY,
+#     course_id INT NOT NULL,
+#     semester_id INT NOT NULL,
+#     pre_enrollment_count INT NOT NULL,
+#     capacity INT NOT NULL,
+#     enrolled_count INT NOT NULL,
+#     FOREIGN KEY (course_id) REFERENCES COURSE(course_id)
+#         ON UPDATE CASCADE ON DELETE CASCADE,
+#     FOREIGN KEY (semester_id) REFERENCES SEMESTER(semester_id)
+#         ON UPDATE CASCADE ON DELETE CASCADE
+# ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 3.8 TIME_TABLE 테이블
 CREATE TABLE TIME_TABLE (
-  timetable_id INT AUTO_INCREMENT PRIMARY KEY,
-  student_id INT NOT NULL,
-  semester_id INT NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (student_id) REFERENCES STUDENT(student_id),
-  FOREIGN KEY (semester_id) REFERENCES SEMESTER(semester_id)
-) ENGINE=InnoDB
-  DEFAULT CHARSET=utf8mb4
-  COLLATE=utf8mb4_unicode_ci;
+    timetable_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT NOT NULL,
+    semester_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES STUDENT(student_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (semester_id) REFERENCES SEMESTER(semester_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3.9 TIME_TABLE_DETAIL 테이블 (약한 엔터티 및 M:N 관계 매핑)
 CREATE TABLE TIME_TABLE_DETAIL (
+    detail_id INT AUTO_INCREMENT PRIMARY KEY,
     timetable_id INT NOT NULL,
-    course_code VARCHAR(20) NOT NULL,
-    section VARCHAR(5) NOT NULL,
+    course_id INT NOT NULL,
     schedule_info VARCHAR(255) NOT NULL,
-    user_note TEXT DEFAULT '',
+    user_note TEXT,
     custom_color VARCHAR(50) DEFAULT '#FFFFFF',
-    PRIMARY KEY (timetable_id, course_code, section),
+    UNIQUE KEY uq_timetable_course (timetable_id, course_id),
     FOREIGN KEY (timetable_id) REFERENCES TIME_TABLE(timetable_id)
         ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (course_code, section) REFERENCES COURSE(course_code, section)
+    FOREIGN KEY (course_id) REFERENCES COURSE(course_id)
         ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -145,15 +145,14 @@ CREATE TABLE TIME_TABLE_DETAIL (
 CREATE TABLE TRANSCRIPT (
     transcript_id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
-    course_code VARCHAR(20) NOT NULL,
-    section VARCHAR(5) NOT NULL,
+    course_id INT NOT NULL,
     semester_id INT NOT NULL,
     grade CHAR(2) NOT NULL DEFAULT 'NA',
     credit_taken INT NOT NULL DEFAULT 0,
     retake_available BOOLEAN NOT NULL DEFAULT TRUE,
     FOREIGN KEY (student_id) REFERENCES STUDENT(student_id)
         ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (course_code, section) REFERENCES COURSE(course_code, section)
+    FOREIGN KEY (course_id) REFERENCES COURSE(course_id)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (semester_id) REFERENCES SEMESTER(semester_id)
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -166,5 +165,5 @@ CREATE TABLE GRADUATION_REQUIREMENT (
     admission_year INT NOT NULL,
     requirements_meta TEXT NOT NULL,
     FOREIGN KEY (dept_id) REFERENCES DEPARTMENT(dept_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-

@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ✅ 0.3초 후 애니메이션 시작 */
+.delay-0_4s {
+  animation-delay: 0.4s !important;
+}
+
+/* ✅ 1.75초 후 애니메이션 시작 */
+.delay-0_8s {
+  animation-delay: 0.8s !important;
+}
+
+/* ✅ 애니메이션 유지 */
+.animate__animated {
+  animation-fill-mode: both; /* 애니메이션이 끝난 후에도 상태 유지 */
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(90deg, #ffffff, #ffffff);
+    /* background: url('background.jpg') no-repeat;;
+    background-size: cover;
+    background-position: center; */
+}
+
+.text h1 {
+    font-size: 6em;
+    font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+    text-align:left;
+    color: #000000;
+}
+
+.highlight {
+    color: #ffcd4a; /* 원하는 색상으로 변경 */
+    -webkit-text-stroke: 4px black; /* ✅ 텍스트 테두리 설정 */
+}
+
+.wrapper {
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; /* ✅ 양쪽 끝으로 정렬 */
+  width: 90%; 
+  max-width: 1200px; 
+  margin: 0 auto; 
+}
+
+.text {
+  flex: 1; /* ✅ 남는 공간을 차지하면서 왼쪽 정렬 */
+  text-align: left; /* ✅ 왼쪽 정렬 */
+}
+
+.container {
+  flex: 1; /* ✅ 남는 공간을 차지하면서 오른쪽 정렬 */
+  display: flex;
+  justify-content: center; /* ✅ 큐브를 중앙에 정렬 */
+}
+
+.cube {
+  transform-style: preserve-3d;
+  transform: rotateX(-35deg) rotateY(45deg) translateZ(0px) rotate(0deg);
+  width: 200px;
+  height: 200px;
+  animation: cubespin 4.5s ease infinite;
+}
+
+.cube div {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  display: block;
+  overflow: hidden;
+}
+
+.cube div:before {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  margin: auto;
+  content: "";
+  top: 200px;
+  left: 0;
+  transform-origin: 0% 0%;
+  transform: rotate(0deg);
+  animation: spinintro 4.5s ease-out infinite;
+}
+
+.cube div:after {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  margin: auto;
+  content: "";
+  top: 200px;
+  left: -100px;
+  transform-origin: 100% 0%;
+  transform: rotate(0deg);
+  animation: spinoutro 4.5s ease-out infinite;
+}
+
+.front {
+  background: #ffcd4a;
+  transform: rotateX(180deg) translateZ(-100px);
+}
+
+.front:before {
+  background: #000000;
+}
+
+.front:after {
+  background: #ffffff;
+}
+
+.back {
+  background: #ffffff;
+  transform: rotateX(180deg) translateZ(100px) rotate(180deg) rotateY(180deg);
+}
+
+.back:before {
+  background: #ffcd4a;
+}
+
+.back:after {
+  background: #000000;
+}
+
+.right {
+  background: #ffcd4a;
+  transform: rotateY(90deg) translateZ(100px) rotate(-90deg) rotateX(180deg);
+}
+
+.right:before {
+  background: #ffcd4a;
+}
+
+.right:after {
+  background: #000000;
+}
+
+.left {
+  background: #ffffff;
+  transform: rotateY(-90deg) translateZ(100px) rotateX(180deg) rotate(270deg);
+}
+
+.left:before {
+  background: #ffcd4a;
+}
+
+.left:after {
+  background: #000000;
+}
+
+.top {
+  background: #000000;
+  transform: rotateX(90deg) translateZ(100px) rotate(-90deg) rotateY(180deg);
+}
+
+.top:before {
+  background: #ffffff;
+  top: -300px;
+  left: -100px;
+  transform-origin: 100% 100%;
+}
+
+.top:after {
+  background: #ffcd4a;
+  top: 200px;
+  left: -100px;
+  transform-origin: 100% 0%;
+}
+
+.bottom {
+  background: #ffcd4a;
+  transform: rotateX(90deg) translateZ(-100px);
+}
+
+/* Keyframe Animations */
+@keyframes spinintro {
+  0% {
+      transform: rotate(0deg);
+  }
+  10% {
+      filter: blur(0.5px);
+  }
+  20% {
+      transform: rotate(-90deg);
+  }
+  99% {
+      transform: rotate(-90deg);
+  }
+  99.0001% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(0deg);
+  }
+}
+
+@keyframes cubespin {
+  0%, 20% {
+      transform: rotateX(-35deg) rotateY(45deg) translateZ(0px) rotate(0deg);
+  }
+  40%, 60% {
+      transform: rotateX(-35deg) rotateY(-45deg) translateZ(0px) rotate(0deg);
+  }
+  80% {
+      transform: rotateX(-35deg) rotateY(-45deg) translateZ(0px) rotate(-90deg);
+  }
+  99% {
+      transform: rotateX(-35deg) rotateY(-45deg) translateZ(0px) rotate(-90deg);
+  }
+  99.001%, 100% {
+      transform: rotateX(-35deg) rotateY(45deg) translateZ(0px) rotate(0deg);
+  }
+}
+
+@keyframes spinoutro {
+  0%, 20%, 40% {
+      transform: rotate(0deg);
+  }
+  50% {
+      filter: blur(1px);
+  }
+  60% {
+      transform: rotate(90deg);
+  }
+  99% {
+      transform: rotate(90deg);
+  }
+  99.001%, 100% {
+      transform: rotate(0deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+      flex-direction: column; /* ✅ 세로 정렬 */
+      align-items: center; /* ✅ 가운데 정렬 */
+      text-align: center;
+  }
+
+  .text {
+      text-align: center;
+  }
+}
+

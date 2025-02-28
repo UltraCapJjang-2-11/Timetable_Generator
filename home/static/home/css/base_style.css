@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
+}
+
+header {
+    padding: 30px 50px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px; /* ✅ 헤더 높이 지정 */
+    background: white;
+    z-index: 1000; /* ✅ 다른 요소 위에 오도록 설정 */
+}
+
+.navigation {
+  width: 100%;
+  display: flex; 
+  justify-content: space-between; /* ✅ 로고 왼쪽 / 메뉴 오른쪽 정렬 */
+  align-items: center; 
+}
+
+.logo img {
+  width: 120px !important; 
+  height: auto !important; 
+  max-height: 80px !important; 
+  display: block; 
+  object-fit: contain; 
+}
+
+.nav-links a { 
+   position: relative;
+   color: #000000;
+   font-size: 1.1em;
+   margin: 0 7px;
+   text-decoration: none;
+   padding: 6px 20px;
+}
+
+.nav-links a span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #000000;
+    border-radius: 7px;
+    transform: scale(0);
+    transition: 0.5s;
+}
+
+.nav-links a:hover span {
+    transform: scale(1);
+    opacity: 1;
+}

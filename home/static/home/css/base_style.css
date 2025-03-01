@@ -14,7 +14,7 @@ header {
     left: 0;
     width: 100%;
     height: 80px; /* ✅ 헤더 높이 지정 */
-    background: white;
+    background: rgb(255, 255, 255);
     z-index: 1000; /* ✅ 다른 요소 위에 오도록 설정 */
 }
 
@@ -23,6 +23,8 @@ header {
   display: flex; 
   justify-content: space-between; /* ✅ 로고 왼쪽 / 메뉴 오른쪽 정렬 */
   align-items: center; 
+  position: relative; /* ✅ 상대 위치 설정 */
+  top: -28px; /* ✅ 전체적으로 위로 이동 */
 }
 
 .logo img {

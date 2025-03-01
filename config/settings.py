@@ -30,9 +30,9 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-AUTH_USER_MODEL = 'home.Student' # ✅ 커스텀 유저로 설정정
+AUTH_USER_MODEL = 'auth.User' 
 
-LOGOUT_REDIRECT_URL = '/'  # ✅ 로그아웃 후 로그인 페이지로 이동
+LOGOUT_REDIRECT_URL = '/'  
 
 INSTALLED_APPS = [
     'home',  # 홈페이지 메인 앱
@@ -80,10 +80,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'college_course_db',
+        'USER': 'root',
+        'PASSWORD': '1q2w3e4r!',
+        'HOST': 'localhost',  # 또는 MySQL 서버 주소
+        'PORT': '3306',       # 포트 번호
     }
 }
+
 
 
 # Password validation

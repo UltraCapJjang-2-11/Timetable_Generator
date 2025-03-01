@@ -90,8 +90,7 @@ class Category(models.Model):
 
 
 class Course(models.Model):
-    course_id = models.AutoField(primary_key=True)
-    course_code = models.CharField(max_length=20)
+    course_code = models.CharField(primary_key=True, max_length=20)  # The composite primary key (course_code, section) found, that is not supported. The first column is selected.
     section = models.CharField(max_length=5)
     dept = models.ForeignKey('Department', models.DO_NOTHING)
     category = models.ForeignKey(Category, models.DO_NOTHING)
@@ -107,19 +106,30 @@ class Course(models.Model):
     lecture_units = models.DecimalField(max_digits=4, decimal_places=1)
     lab_hours = models.DecimalField(max_digits=4, decimal_places=1)
     lab_units = models.DecimalField(max_digits=4, decimal_places=1)
-    semester = models.ForeignKey('Semester', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'course'
+        unique_together = (('course_code', 'section'),)
+
+
+class CourseOffering(models.Model):
+    offering_id = models.AutoField(primary_key=True)
+    course_code = models.ForeignKey(Course, models.DO_NOTHING, db_column='course_code')
+    section = models.ForeignKey(Course, models.DO_NOTHING, db_column='section', to_field='section', related_name='courseoffering_section_set')
+    semester = models.ForeignKey('Semester', models.DO_NOTHING)
     pre_enrollment_count = models.IntegerField()
     capacity = models.IntegerField()
     enrolled_count = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'course'
+        db_table = 'course_offering'
 
 
 class CourseSchedule(models.Model):
-    schedule_id = models.AutoField(primary_key=True)
-    course = models.ForeignKey(Course, models.DO_NOTHING)
+    course_code = models.ForeignKey(Course, models.DO_NOTHING, db_column='course_code')
+    section = models.ForeignKey(Course, models.DO_NOTHING, db_column='section', to_field='section', related_name='courseschedule_section_set')
     day = models.CharField(max_length=10)
     times = models.CharField(max_length=50)
     location = models.CharField(max_length=255)
@@ -127,6 +137,7 @@ class CourseSchedule(models.Model):
     class Meta:
         managed = False
         db_table = 'course_schedule'
+        unique_together = (('course_code', 'section', 'day', 'location'),)
 
 
 class Department(models.Model):
@@ -233,9 +244,9 @@ class TimeTable(models.Model):
 
 
 class TimeTableDetail(models.Model):
-    detail_id = models.AutoField(primary_key=True)
-    timetable = models.ForeignKey(TimeTable, models.DO_NOTHING)
-    course = models.ForeignKey(Course, models.DO_NOTHING)
+    timetable = models.OneToOneField(TimeTable, models.DO_NOTHING, primary_key=True)  # The composite primary key (timetable_id, course_code, section) found, that is not supported. The first column is selected.
+    course_code = models.ForeignKey(Course, models.DO_NOTHING, db_column='course_code')
+    section = models.ForeignKey(Course, models.DO_NOTHING, db_column='section', to_field='section', related_name='timetabledetail_section_set')
     schedule_info = models.CharField(max_length=255)
     user_note = models.TextField(blank=True, null=True)
     custom_color = models.CharField(max_length=50, blank=True, null=True)
@@ -243,13 +254,14 @@ class TimeTableDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'time_table_detail'
-        unique_together = (('timetable', 'course'),)
+        unique_together = (('timetable', 'course_code', 'section'),)
 
 
 class Transcript(models.Model):
     transcript_id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, models.DO_NOTHING)
-    course = models.ForeignKey(Course, models.DO_NOTHING)
+    course_code = models.ForeignKey(Course, models.DO_NOTHING, db_column='course_code')
+    section = models.ForeignKey(Course, models.DO_NOTHING, db_column='section', to_field='section', related_name='transcript_section_set')
     semester = models.ForeignKey(Semester, models.DO_NOTHING)
     grade = models.CharField(max_length=2)
     credit_taken = models.IntegerField()

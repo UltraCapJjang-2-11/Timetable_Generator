@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>마이페이지</title>
+  {% load static %}
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">MyProject</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarToggler">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'timetable' %}">시간표</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'mypage' %}">마이페이지</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">로그아웃</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  <div class="page-header">
+    <h2>마이페이지</h2>
+    <p class="text-muted">업로드된 파일을 바탕으로, 졸업 요건 정보를 확인할 수 있습니다.</p>
+  </div>
+
+  <!-- 사용자 정보 -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">개인 정보</div>
+        <div class="card-body">
+          <p><strong>학번:</strong> {{ user_student_id }}</p>
+          <p><strong>이름:</strong> {{ user_name }}</p>
+          <p><strong>전공:</strong> {{ user_major }}</p>
+          <p><strong>학년:</strong> {{ user_year }}</p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">알림</div>
+        <div class="card-body">
+          {% if alerts %}
+            {% for msg in alerts %}
+              <p>• {{ msg }}</p>
+            {% endfor %}
+          {% else %}
+            <p>알림이 없습니다.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 졸업요건 파일 업로드 섹션 -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="p-3 bg-light rounded">
+        <h4>졸업요건 파일 업로드</h4>
+        <p class="text-muted">PDF 파일을 업로드하여, 자동으로 학점 이수 정보를 분석합니다.</p>
+        <form method="POST" action="{% url 'upload_graduation' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="graduation_pdf" class="form-label">파일 선택 (PDF)</label>
+            <input class="form-control" type="file" name="graduation_pdf" id="graduation_pdf">
+          </div>
+          <button type="submit" class="btn btn-primary">업로드</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 졸업 요건 이수 현황 섹션 -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h4>졸업 요건 이수 현황</h4>
+      <div class="row">
+        <div class="col-md-6">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>이수 학점</th>
+                <th>졸업 기준</th>
+                <th>미이수</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 총 학점 -->
+              <tr>
+                <td>총 학점</td>
+                <td>{{ total_credits }}</td>
+                <td>{{ total_requirement }}</td>
+                <td>{{ missing_total }}</td>
+              </tr>
+              <tr>
+                <td>전공</td>
+                <td>{{ major_credits }}</td>
+                <td>{{ major_requirement }}</td>
+                <td>{{ missing_major }}</td>
+              </tr>
+              <tr>
+                <td>교양</td>
+                <td>{{ general_credits }}</td>
+                <td>{{ general_requirement }}</td>
+                <td>{{ missing_general }}</td>
+              </tr>
+              <tr>
+                <td>일반선택</td>
+                <td>{{ free_credits }}</td>
+                <td>{{ free_requirement }}</td>
+                <td>{{ missing_free }}</td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <!-- 차트 렌더링용 컨테이너 -->
+          <div class="chart-container"
+               data-major="{{ major_credits }}"
+               data-general="{{ general_credits }}"
+               data-free="{{ free_credits }}">
+            <canvas id="graduationChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추가 기능: 시간표 이동 등 -->
+  <div class="row">
+    <div class="col-md-12 text-end">
+      <a href="{% url 'timetable' %}" class="btn btn-outline-secondary">시간표 확인</a>
+      <a href="/counseling/" class="btn btn-outline-secondary">상담 내역</a>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js (mypage.js에서 사용) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- 별도 JS 파일 (mypage.js) -->
+<script src="{% static 'home/js/mypage.js' %}"></script>
+
+</body>
+</html>

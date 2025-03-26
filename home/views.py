@@ -1,26 +1,57 @@
 import time
 import json
 from django.http import StreamingHttpResponse, JsonResponse
-from django.shortcuts import render
+import os
+from django.shortcuts import render, redirect
 from django.db import models
-from .models import Course, CourseSchedule
+from django.conf import settings
+from .models import Course, CourseSchedule, Department
+from collections import defaultdict
+
+from .services.pdf_service import pdf_to_text
+from .services.gpt_service import extract_graduation_info_from_text
+from .services.graduation_file_service import save_graduation_data_to_db
+
+# OR‑Tools CP‑SAT Solver import (pip install ortools)
+from ortools.sat.python import cp_model
+
+import time
+import json
+import os
+from collections import defaultdict
+
+from django.http import StreamingHttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django.conf import settings
+from django.db.models.functions import Upper
+
+from .models import Course, CourseSchedule, GraduationRecord
+from .services.pdf_service import pdf_to_text
+from .services.gpt_service import extract_graduation_info_from_text
+from .services.graduation_file_service import save_graduation_data_to_db
+
+# OR‑Tools CP‑SAT Solver (pip install ortools)
+from ortools.sat.python import cp_model
 
 def generate_timetable_stream(request):
     """
-    새로운 시간표 생성 알고리즘 프로토타입.
+    OR‑Tools CP‑SAT Solver를 사용하여 후보 시간표를 생성합니다.
     
-    우선순위 및 제약 조건:
-      1. 사용자가 선택한 공강요일(free_days)에 해당하는 강의는 후보에서 제외 (단, 미리 추가한 강좌는 예외)
-      2. 미리 시간표에 추가한 강좌(existing_courses)은 반드시 포함
-      3. 같은 과목명(course_name)의 강좌는 한 시간표에 중복 포함 불가
-      4. 시간표에 포함된 강좌들의 학점 합이 사용자가 입력한 총학점, 전공학점, 교양학점과 정확히 일치해야 함  
-         - 전공: 전공필수, 전공선택  
-         - 교양: 교양선택  
-      5. 0학점 강좌, 스케줄 정보가 아예 없거나 course_schedule의 times 값이 "00"인 강좌는 후보에서 제외  
-      
-    최종적으로 조건을 만족하는 시간표 후보(최대 50개)를 JSON 형식으로 SSE(Server-Sent Events)로 전달합니다.
+    조건:
+      1. 총학점, 전공학점, 교양학점이 사용자가 입력한 값과 정확히 일치
+      2. 같은 요일, 같은 시간 슬롯에는 한 강좌만 배치 (시간 충돌 방지)
+      3. 같은 과목명 중복 배제
+      4. 0학점 강좌, 스케줄 정보 없음, times=="00"인 강좌는 후보에서 제외
+      5. 미리 추가한 강좌는 반드시 선택
+      6. 학생의 현재 학년보다 높은 전공 강좌는 후보에서 제외
+         - 전공필수는 동일학년 또는 아래학년 강좌를 (충돌이 없으면) 반드시 포함
+         - 전공선택은 같은 학년의 강좌를 우선하도록 함
+      7. 이수한 과목(과목코드)는 GraduationRecord에 저장된 목록을 읽어 후보에서 제외
+      8. GraduationRecord의 user_major(학과)를 사용하여 Department 테이블에서 dept_id를 조회한 후,
+         전공 강좌의 경우 해당 dept_id와 일치하는 강좌만 후보에 포함
+    최종 후보(최대 50개)를 JSON 형식의 SSE 메시지로 전송합니다.
     """
-    # 1. GET 파라미터 파싱: free_days, existing_courses, 그리고 학점 조건
+    # 1. GET 파라미터 파싱
     free_days = request.GET.getlist('free_days[]')
     existing_course_ids = request.GET.getlist('existing_courses[]')
     try:
@@ -32,36 +63,78 @@ def generate_timetable_stream(request):
         target_major = int(request.GET.get('major_credits', 9))
         target_elective = int(request.GET.get('elective_credits', 9))
     except ValueError:
-        return JsonResponse({"error": "학점 파라미터가 올바르지 않습니다."}, status=400)
+        return JsonResponse({"error": "학점 파라미터가 올바르지 않습니다."}, status=500)
     
-    # 미리 추가한 강좌는 반드시 포함
+    print("DEBUG: free_days =", free_days)
+    print("DEBUG: pre_added_ids =", pre_added_ids)
+    print("DEBUG: target_total =", target_total, "target_major =", target_major, "target_elective =", target_elective)
+    
+    # 2. 미리 추가한 강좌 (반드시 포함)
     pre_added_courses = list(Course.objects.filter(course_id__in=pre_added_ids))
+    print("DEBUG: pre_added_courses count =", len(pre_added_courses))
     
-    # 하드코딩: 소프트웨어학부(dept_id=2) / 25년도 1학기(semester_id=21)
-    student_dept_id = 2
-    semester_id_filter = 21
+    # 학생 ID 및 GraduationRecord에서 현재 학년과 학과(전공) 정보 설정
+    student_id = request.user.id if request.user.is_authenticated else 1
+    grad_record = GraduationRecord.objects.filter(user_id=student_id).last()
     
-    # 2. 학생의 현재 수강 내역 (dummy 처리: 아직 수강한 강좌 없음)
-    completed_courses_ids = []  # 추후 실제 내역이 있다면 해당 course_id들을 여기에 포함
+    # 현재 학년: "전학년"이면 매우 큰 값으로 처리하여 모든 강좌 포함, 아니면 첫 글자를 정수로 파싱
+    try:
+        if grad_record and grad_record.user_year:
+            if grad_record.user_year == "전학년":
+                current_year = 100
+            else:
+                current_year = int(grad_record.user_year[0])
+        else:
+            current_year = 3
+    except Exception:
+        current_year = 3
+    print("DEBUG: current_year =", current_year)
     
-    # 3. 후보 강좌 조회 (조건: 이번 학기, 전공/교양 강좌)
-    candidate_qs = Course.objects.filter(semester_id=semester_id_filter, 
-                                         course_type__in=['전공필수', '전공선택', '교양선택'])
+    # GraduationRecord에 저장된 user_major(학과)를 사용하여 Department 테이블에서 dept_id 조회
+    dept_name = grad_record.user_major if grad_record and grad_record.user_major else ""
+    dept_obj = Department.objects.filter(dept_name=dept_name).first()
+    student_dept_id = dept_obj.dept_id if dept_obj else None
+    print("DEBUG: student_dept_id =", student_dept_id)
+    
+    # 2-1. GraduationRecord에서 이수한 과목(과목코드) 불러오기
+    completed_courses = []
+    if grad_record and grad_record.completed_courses:
+        try:
+            completed_courses = json.loads(grad_record.completed_courses)
+            completed_courses = [code.strip().upper() for code in completed_courses if code]
+        except Exception as e:
+            print("DEBUG: completed_courses parse error:", e)
+            completed_courses = []
+    print("DEBUG: completed_courses =", completed_courses)
+    
+    # 3. 후보 강좌 조회 (필터링)
+    # Course의 course_code를 대문자로 변환하여 비교
+    candidate_qs = Course.objects.filter(
+        semester_id=21,
+        course_type__in=['전공필수', '전공선택', '교양선택']
+    ).annotate(upper_course_code=Upper('course_code')).exclude(upper_course_code__in=completed_courses)
+    
     candidates = []
     for course in candidate_qs:
-        # 이미 수강한 강좌는 제외
-        if course.course_id in completed_courses_ids:
-            continue
-        # 미리 추가된 강좌는 이미 pre_added_courses에 있으므로 후보에서 제외
+        # 전공 강좌: 학생의 현재 학년보다 높은 강좌는 제외 (단, "전학년"이면 모두 포함)
+        if course.course_type in ['전공필수', '전공선택']:
+            if course.year != "전학년":
+                try:
+                    course_year = int(course.year[0])
+                except Exception:
+                    course_year = 0
+                if course_year > current_year:
+                    continue
+            # 학과 조건: GraduationRecord에서 조회한 student_dept_id와 일치해야 함
+            if student_dept_id is not None and course.dept.dept_id != student_dept_id:
+                continue
+        # 기존 필터: 미리 추가된 강좌, 학점 0, 스케줄 정보 없음, times=="00"인 강좌 제외
         if course.course_id in pre_added_ids:
             continue
-        # 0학점 강좌는 제외
         if course.credit <= 0:
             continue
-        # 스케줄 정보가 아예 없는 경우 제외
         if not course.courseschedule_set.exists():
             continue
-        # course_schedule의 times가 "00"인 스케줄이 하나라도 있으면 제외
         skip = False
         for sch in course.courseschedule_set.all():
             if sch.times.strip() == "00":
@@ -69,170 +142,248 @@ def generate_timetable_stream(request):
                 break
         if skip:
             continue
-        # 공강요일 조건: 미리 추가되지 않은 강좌의 경우, 스케줄 중 하나라도 free_days에 있으면 후보에서 제외
-        schedules = course.courseschedule_set.all()
         conflict_with_free_day = False
-        for sch in schedules:
+        for sch in course.courseschedule_set.all():
             if sch.day in free_days:
                 conflict_with_free_day = True
                 break
         if conflict_with_free_day:
             continue
-        # 타입별 추가 조건:
-        # 전공 강좌는 학생의 학과(dept)가 소프트웨어학부(dept_id=2)여야 함
-        if course.course_type in ['전공필수', '전공선택']:
-            if course.dept.dept_id != student_dept_id:
-                continue
-        # 교양 강좌는 year가 '전학년'이어야 함
-        elif course.course_type == '교양선택':
-            if course.year != '전학년':
-                continue
+        # 교양 강좌는 반드시 '전학년'이어야 함
+        if course.course_type == '교양선택' and course.year != '전학년':
+            continue
         candidates.append(course)
-    
-    # 디버그 로그
-    print("DEBUG: free_days =", free_days)
-    print("DEBUG: pre_added_courses count =", len(pre_added_courses))
     print("DEBUG: candidates count =", len(candidates))
-    print("DEBUG: Target 총학점 =", target_total, "전공학점 =", target_major, "교양학점 =", target_elective)
+    all_candidates = pre_added_courses + candidates
+    print("DEBUG: all_candidates count =", len(all_candidates))
     
-    # 4. 우선순위: 전공필수(3학년)을 우선 정렬
-    def candidate_priority(course):
-        return 0 if (course.course_type == '전공필수' and course.year == '3학년') else 1
-    candidates_sorted = sorted(candidates, key=candidate_priority)
-    
-    # 5. 헬퍼 함수: 시간 슬롯, 시간 충돌 체크
-    def get_time_slots(course):
-        """
-        주어진 강좌의 모든 스케줄을 분석하여, day별 시간 슬롯 집합을 반환.
-        예) "03,04" → {11, 12} (8을 더함)
-        """
-        slots = {}
+    # 4. 전처리: 각 후보 강좌의 스케줄 정보를 candidate_data에 저장
+    candidate_data = []
+    for course in all_candidates:
+        schedule_list = []
+        locations = []
         for sch in course.courseschedule_set.all():
-            day = sch.day
-            try:
-                time_slots = set(int(t.strip()) + 8 for t in sch.times.split(',') if t.strip().isdigit())
-            except Exception:
-                time_slots = set()
-            if day in slots:
-                slots[day].update(time_slots)
+            raw = sch.times.strip()
+            if "@" in raw:
+                parts = raw.split("@")
+                raw_time = parts[0]
+                loc = parts[1]
             else:
-                slots[day] = time_slots
-        return slots
-
-    def courses_conflict(course1, course2):
-        slots1 = get_time_slots(course1)
-        slots2 = get_time_slots(course2)
-        for day in slots1:
-            if day in slots2 and slots1[day].intersection(slots2[day]):
-                return True
-        return False
-
-    def has_conflict(selected_courses, new_course):
-        for course in selected_courses:
-            if courses_conflict(course, new_course):
-                return True
-        return False
-
-    # 6. 백트래킹: 학점 제약 및 중복 과목명(같은 course_name) 제약 반영
-    results = []         # 각 시간표는 강좌 객체들의 리스트
-    max_results = 50
-    start_time = time.time()
-    max_time = 10        # 초
-
-    # 초기 선택: 미리 추가한 강좌
-    initial_selection = pre_added_courses.copy()
-    # 초기 학점 합계 계산
-    init_total = sum(course.credit for course in initial_selection)
-    init_major = sum(course.credit for course in initial_selection if course.course_type in ['전공필수', '전공선택'])
-    init_elective = sum(course.credit for course in initial_selection if course.course_type == '교양선택')
-    # 초기 과목명 집합 (중복 방지를 위함)
-    init_used_names = set(course.course_name for course in initial_selection)
-    
-    print("DEBUG: 초기 총학점 =", init_total, "전공학점 =", init_major, "교양학점 =", init_elective)
-    
-    def backtrack(index, current_selection, current_total, current_major, current_elective, used_names):
-        nonlocal results
-        # 시간 초과 체크
-        if time.time() - start_time > max_time:
-            return
-        # 가지치기: 학점이 목표를 초과하면 중단
-        if current_total > target_total or current_major > target_major or current_elective > target_elective:
-            return
-        # 학점이 정확히 일치하면 후보에 추가
-        if current_total == target_total and current_major == target_major and current_elective == target_elective:
-            results.append(current_selection.copy())
-            print("DEBUG: 후보 시간표 추가, 현재 후보 수 =", len(results))
-            if len(results) >= max_results:
-                return
-            # 계속 탐색할 수 있음 (다른 조합 찾기)
-        # 후보 리스트에서 순회하며 추가
-        for i in range(index, len(candidates_sorted)):
-            candidate = candidates_sorted[i]
-            # 같은 과목명 이미 포함된 경우 건너뜀 (중복 분반 방지)
-            if candidate.course_name in used_names:
+                raw_time = raw
+                loc = sch.location
+            if not raw_time:
                 continue
-            # 시간 충돌 체크
-            if has_conflict(current_selection, candidate):
-                continue
-            # 추가 후 학점 업데이트
-            new_total = current_total + candidate.credit
-            new_major = current_major + (candidate.credit if candidate.course_type in ['전공필수', '전공선택'] else 0)
-            new_elective = current_elective + (candidate.credit if candidate.course_type == '교양선택' else 0)
-            # 목표 초과면 건너뜀
-            if new_total > target_total or new_major > target_major or new_elective > target_elective:
-                continue
-            # candidate 추가
-            current_selection.append(candidate)
-            used_names.add(candidate.course_name)
-            backtrack(i + 1, current_selection, new_total, new_major, new_elective, used_names)
-            if len(results) >= max_results:
-                return
-            # candidate 제거
-            current_selection.pop()
-            used_names.remove(candidate.course_name)
-    
-    backtrack(0, initial_selection, init_total, init_major, init_elective, init_used_names)
-    
-    print("DEBUG: 최종 생성된 시간표 후보 수 =", len(results))
-    
-    # 7. 결과 JSON 데이터 구성: 각 시간표 후보에 대해 강좌 정보를 course_id, course_name, section, credit, schedules 포함
-    timetables_data = []
-    for timetable in results:
-        timetable_data = []
-        for course in timetable:
-            schedules = []
-            for sch in course.courseschedule_set.all():
-                schedules.append({
-                    'day': sch.day,
-                    'times': sch.times,
-                    'location': sch.location
-                })
-            timetable_data.append({
-                'course_id': course.course_id,
-                'course_name': course.course_name,
-                'section': course.section,
-                'credit': course.credit,
-                'schedules': schedules
+            schedule_list.append({
+                'day': sch.day,
+                'times': raw_time,
+                'location': loc
             })
-        timetables_data.append(timetable_data)
+            locations.append(sch.location)
+        if not schedule_list:
+            continue
+        candidate_data.append({
+            'id': course.course_id,
+            'credit': course.credit,
+            'course_type': course.course_type,
+            'course_name': course.course_name,
+            'year': course.year,  # 예: "3학년", "전학년" 등
+            'schedule': schedule_list,
+            'location': locations[0] if locations else "",
+            'pre_added': course.course_id in pre_added_ids
+        })
+    print("DEBUG: candidate_data count =", len(candidate_data))
     
+    # 5. CP‑SAT 모델 구성
+    model = cp_model.CpModel()
+    x = {}
+    for data in candidate_data:
+        x[data['id']] = model.NewBoolVar(f"course_{data['id']}")
+    
+    # 미리 추가한 강좌는 강제 선택
+    for data in candidate_data:
+        if data.get('pre_added', False):
+            model.Add(x[data['id']] == 1)
+    
+    model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data) == target_total)
+    model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if data['course_type'] in ['전공필수', '전공선택']) == target_major)
+    model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if data['course_type'] == '교양선택') == target_elective)
+    
+    slot_mapping = defaultdict(list)
+    for data in candidate_data:
+        for sched in data['schedule']:
+            day = sched['day']
+            for t in sched['times'].split(","):
+                if t.strip().isdigit():
+                    slot = int(t.strip()) + 8
+                    slot_mapping[(day, slot)].append(data['id'])
+    for (day, slot), ids in slot_mapping.items():
+        model.Add(sum(x[cid] for cid in ids) <= 1)
+    
+    name_groups = defaultdict(list)
+    for data in candidate_data:
+        name_groups[data['course_name']].append(data['id'])
+    for name, ids in name_groups.items():
+        model.Add(sum(x[cid] for cid in ids) <= 1)
+    
+    # 6. 목표 함수 설정
+    # 전공필수: 학생의 현재 학년 이하(또는 '전학년')의 강좌를 최대한 포함하도록 우선 부여
+    required_priority = sum(x[data['id']] for data in candidate_data 
+                            if data['course_type'] == '전공필수' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) <= current_year))
+    # 전공선택: 같은 학년 강좌에 낮은 우선순위 부여 (가중치 0.1)
+    elective_priority = 0.1 * sum(x[data['id']] for data in candidate_data 
+                                    if data['course_type'] == '전공선택' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) == current_year))
+    model.Maximize(required_priority + elective_priority)
+    
+    solver = cp_model.CpSolver()
+    print("DEBUG: Starting Phase 1 optimization...")
+    status = solver.Solve(model)
+    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        return JsonResponse({"error": "해결책을 찾지 못했습니다."}, status=500)
+    best_value = solver.ObjectiveValue()
+    print("DEBUG: Phase 1 Best objective =", best_value)
+    
+    # 7. Phase 2: 새 모델 구성 (최적 목표값 강제)
+    model2 = cp_model.CpModel()
+    x2 = {}
+    for data in candidate_data:
+        x2[data['id']] = model2.NewBoolVar(f"course2_{data['id']}")
+    
+    for data in candidate_data:
+        if data.get('pre_added', False):
+            model2.Add(x2[data['id']] == 1)
+    
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data) == target_total)
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if data['course_type'] in ['전공필수', '전공선택']) == target_major)
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if data['course_type'] == '교양선택') == target_elective)
+    
+    for (day, slot), ids in slot_mapping.items():
+        model2.Add(sum(x2[cid] for cid in ids) <= 1)
+    
+    for name, ids in name_groups.items():
+        model2.Add(sum(x2[cid] for cid in ids) <= 1)
+    
+    # 동일 학년 이하(또는 '전학년')의 전공필수 강좌 선택 수를 Phase 1 목표값(best_value)와 동일하게 강제
+    model2.Add(sum(x2[data['id']] for data in candidate_data 
+               if data['course_type'] == '전공필수' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) <= current_year)) == int(best_value))
+    
+    class TimetableSolutionCollector(cp_model.CpSolverSolutionCallback):
+        def __init__(self, x, candidate_data, limit):
+            cp_model.CpSolverSolutionCallback.__init__(self)
+            self._x = x
+            self._candidate_data = {d['id']: d for d in candidate_data}
+            self._limit = limit
+            self._solutions = []
+            self._solution_count = 0
+
+        def OnSolutionCallback(self):
+            self._solution_count += 1
+            print(f"DEBUG: [Phase 2] Found solution #{self._solution_count}")
+            if self._solution_count > self._limit:
+                self.StopSearch()
+                return
+            solution = []
+            for cid, var in self._x.items():
+                if self.Value(var) == 1:
+                    data = self._candidate_data[cid]
+                    solution.append({
+                        'course_id': data['id'],
+                        'course_name': data['course_name'],
+                        'credit': data['credit'],
+                        'course_type': data['course_type'],
+                        'schedules': data['schedule'],
+                        'location': data['location']
+                    })
+            self._solutions.append(solution)
+
+        def Solutions(self):
+            return self._solutions
+
+    solution_collector2 = TimetableSolutionCollector(x2, candidate_data, limit=50)
+    solver2 = cp_model.CpSolver()
+    print("DEBUG: Starting Phase 2 search for all solutions...")
+    solver2.SearchForAllSolutions(model2, solution_collector2)
+    print("DEBUG: Phase 2 search finished. Total solutions:", solution_collector2._solution_count)
+    
+    timetables_data = solution_collector2.Solutions()
+    result = {
+        'progress': '완료',
+        'found': len(timetables_data),
+        'timetables': timetables_data
+    }
     def event_stream():
-        result = {
-            'progress': '완료',
-            'found': len(timetables_data),
-            'timetables': timetables_data
-        }
         yield f"data: {json.dumps(result)}\n\n"
-    
     return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
 
-
-# 기존의 다른 뷰 함수들
 def login_view(request):
     return render(request, "home/login.html")
 
+
 def dashboard_view(request):
     return render(request, "home/dashboard.html")
+
+def mypage_view(request):
+    from .models import GraduationRecord
+    import json
+    user_id = request.user.id if request.user.is_authenticated else 1
+
+    record = GraduationRecord.objects.filter(user_id=user_id).last()
+
+    if record:
+        total_credits = record.total_credits
+        major_credits = record.major_credits
+        general_credits = record.general_credits
+        free_credits = record.free_credits
+        user_student_id = record.user_student_id or ""
+        user_name = record.user_name or ""
+        user_major = record.user_major or ""
+        user_year = record.user_year or ""
+        total_requirement = record.total_requirement or 0
+        major_requirement = record.major_requirement or 0
+        general_requirement = record.general_requirement or 0
+        free_requirement = record.free_requirement or 0
+
+        try:
+            raw_alerts = json.loads(record.missing_major_subjects)
+            alerts = []
+            for item in raw_alerts:
+                alert_str = f"{item.get('type', '')}: {item.get('description', '')}"
+                alerts.append(alert_str)
+        except Exception:
+            alerts = []
+    else:
+        total_credits = major_credits = general_credits = free_credits = 0
+        user_student_id = user_name = user_major = user_year = ""
+        total_requirement = major_requirement = general_requirement = free_requirement = 0
+        alerts = []
+
+    missing_total = total_requirement - total_credits
+    missing_major = major_requirement - major_credits
+    missing_general = general_requirement - general_credits
+    missing_free = free_requirement - free_credits
+
+    context = {
+        'user_student_id': user_student_id,
+        'user_name': user_name,
+        'user_major': user_major,
+        'user_year': user_year,  # 학년 정보
+        'alerts': alerts,  # 포맷팅된 미이수 과목 알림
+        'total_credits': total_credits,
+        'major_credits': major_credits,
+        'general_credits': general_credits,
+        'free_credits': free_credits,
+        'total_requirement': total_requirement,
+        'major_requirement': major_requirement,
+        'general_requirement': general_requirement,
+        'free_requirement': free_requirement,
+        'missing_total': missing_total,
+        'missing_major': missing_major,
+        'missing_general': missing_general,
+        'missing_free': missing_free,
+    }
+    return render(request, 'home/mypage.html', context)
+
+
+
 
 def timetable_view(request):
     semester_id_filter = 21  # 25년도 1학기
@@ -248,3 +399,32 @@ def timetable_view(request):
         'free_elective': free_elective,
         'teaching_required': teaching_required,
     })
+
+def upload_pdf_view(request):
+    """
+    1) PDF 업로드 받음
+    2) 임시 저장
+    3) pdfplumber로 텍스트 추출
+    4) GPT API로 분석 (JSON)
+    5) DB 저장 후 mypage로 리디렉션
+    """
+    if request.method == "POST":
+        pdf_file = request.FILES.get("graduation_pdf")
+        if not pdf_file:
+            return JsonResponse({"error": "파일이 업로드되지 않았습니다."}, status=400)
+
+        file_path = os.path.join(settings.BASE_DIR, "user_uploads", pdf_file.name)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "wb+") as dest:
+            for chunk in pdf_file.chunks():
+                dest.write(chunk)
+
+        text = pdf_to_text(file_path)
+        print("debug text:", text)
+        parsed_data = extract_graduation_info_from_text(text)
+        user_id = request.user.id if request.user.is_authenticated else 1
+        record = save_graduation_data_to_db(parsed_data, user_id)
+
+        return redirect('mypage')
+    else:
+        return render(request, "home/upload_pdf.html")

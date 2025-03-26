@@ -244,6 +244,35 @@ class TimeTableDetail(models.Model):
         managed = False
         db_table = 'time_table_detail'
         unique_together = (('timetable', 'course'),)
+class GraduationRecord(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user_id = models.IntegerField()
+    user_student_id = models.CharField(max_length=50, blank=True, null=True)
+    user_name = models.CharField(max_length=255, blank=True, null=True)
+    user_major = models.CharField(max_length=255, blank=True, null=True)
+    user_year = models.CharField(max_length=10, blank=True, null=True)  # 학년 정보
+    total_credits = models.IntegerField()
+    major_credits = models.IntegerField()
+    general_credits = models.IntegerField()
+    free_credits = models.IntegerField()
+    total_requirement = models.IntegerField(blank=True, null=True)
+    major_requirement = models.IntegerField(blank=True, null=True)
+    general_requirement = models.IntegerField(blank=True, null=True)
+    free_requirement = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    missing_major_subjects = models.TextField(blank=True, null=True)  # JSON 문자열
+    completed_courses = models.TextField(blank=True, null=True)  # JSON 문자열로 이수한 과목 목록 저장
+
+    class Meta:
+        managed = False
+        db_table = 'graduation_record'
+
+
+
+    class Meta:
+        managed = False
+        db_table = 'graduation_record'
 
 
 class Transcript(models.Model):

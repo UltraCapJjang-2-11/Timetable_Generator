@@ -298,7 +298,7 @@ def generate_timetable_stream(request):
         def Solutions(self):
             return self._solutions
 
-    solution_collector2 = TimetableSolutionCollector(x2, candidate_data, limit=500000)
+    solution_collector2 = TimetableSolutionCollector(x2, candidate_data, limit=50)
     solver2 = cp_model.CpSolver()
     print("DEBUG: Starting Phase 2 search for all solutions...")
     solver2.SearchForAllSolutions(model2, solution_collector2)

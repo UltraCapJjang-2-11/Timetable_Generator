@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login_view, dashboard_view, timetable_view, generate_timetable_stream, upload_pdf_view
+from .views import login_view, dashboard_view, timetable_view, generate_timetable_stream, upload_pdf_view, course_serach_test_view
 from . import views
 
 urlpatterns = [

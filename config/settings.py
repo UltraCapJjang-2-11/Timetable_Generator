@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "api입력") 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,14 +38,14 @@ LOGOUT_REDIRECT_URL = '/'
 
 INSTALLED_APPS = [
     'home',  # 홈페이지 메인 앱
-    'rest_framework',
-    'data_manager.apps.DataManagerConfig',
+    'data_manager',  # 데이터 관리 앱
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',  # Django Extensions 추가
 ]
 
 MIDDLEWARE = [
@@ -83,13 +85,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'college_course_db',            # 이미 구축된 MySQL DB 이름
-        'USER': 'dbadmin',                      # MySQL 사용자명
-        'PASSWORD': '1q2w3e4r!',                # MySQL 비밀번호
-        'HOST': 'localhost',                    # 또는 IP 주소
-        'PORT': '3306',
+        'NAME': 'college_course_db',
+        'USER': 'root',
+        'PASSWORD': '1q2w3e4r!',
+        'HOST': 'localhost',  # 또는 MySQL 서버 주소
+        'PORT': '3306',       # 포트 번호
     }
 }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -9,20 +9,6 @@
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/timetable_style.css' %}">
 
-<<<<<<< HEAD
-    <!-- ✅ 부트스트랩 CSS 추가 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-</head>
-<body>
-    <!-- ✅ header -->
-    <header>
-        <nav class="navigation">
-            <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
-            <div class="nav-links">
-                <a href="{% url 'dashboard' %}">Home<span></span></a>
-                <a href="#">MyPage<span></span></a>
-=======
     <!-- 부트스트랩 CSS 추가 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -74,31 +60,17 @@
             <div class="nav-links">
                 <a href="{% url 'dashboard' %}">Home<span></span></a>
                 <a href="{% url 'mypage' %}">MyPage<span></span></a>
->>>>>>> Sihun
                 <a href="{% url 'timetable' %}">TimeTable<span></span></a>
                 <a href="#">Logout<span></span></a>
             </div>
         </nav>
     </header> 
-<<<<<<< HEAD
-    <!-- ✅ end header -->
-
-    <div class="container-fluid">
-
-        <!-- 왼쪽-->
-        <div class="left-panel">
-            <!-- ✅ 검색창 -->
-            <div class="course-search-container">
-                <input type="text" id="course-search" placeholder="강의 검색..." class="course-search">
-                <!-- ✅ 필터 버튼 -->
-=======
     <!-- 컨테이너 -->
     <div class="container-fluid">
         <!-- 왼쪽 패널: 강의 검색/필터 및 강의 목록 -->
         <div class="left-panel">
             <div class="course-search-container">
                 <input type="text" id="course-search" placeholder="강의 검색..." class="course-search">
->>>>>>> Sihun
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-type="all">전체</button>
                     <button class="filter-btn" data-type="major_required">전공필수</button>
@@ -108,104 +80,6 @@
                     <button class="filter-btn" data-type="teaching_required">교직필수</button>
                 </div>
             </div>
-<<<<<<< HEAD
-        
-            <!-- ✅ 강의 리스트 -->
-            <div class="course-list-container">
-                <div class="course-category" id="major-required">
-                    {% for course in major_required %}
-                    <div class="course-item" data-type="major_required">
-                        <div class="course-name">{{ course.course_name }}</div>
-                        <div class="course-info">
-                            <span class="instructor">{{ course.instructor }}</span>
-                            <span class="credit">{{ course.credit }}학점</span>
-                            <span class="year">{{ course.year }}</span>
-                            <span class="year">{{ course.section }}</span>
-                        </div>
-                        <div class="course-meta">
-                           
-                        </div>
-                        <button class="add-course-btn">추가</button>
-                    </div>
-                    {% empty %}
-                    <p class="no-courses">전공 필수 강의가 없습니다.</p>
-                    {% endfor %}
-                </div>
-                <div class="course-category" id="major-elective">
-                    {% for course in major_elective %}
-                    <div class="course-item" data-type="major_elective">
-                        <div class="course-name">{{ course.course_name }}</div>
-                        <div class="course-info">
-                            <span class="instructor">{{ course.instructor }}</span>
-                            <span class="credit">{{ course.credit }}학점</span>
-                            <span class="year">{{ course.year }}</span>
-                            <span class="year">{{ course.section }}</span>
-                        </div>
-                        <div class="course-meta">
-                            
-                        </div>
-                        <button class="add-course-btn">추가</button>
-                    </div>
-                    {% empty %}
-                    <p class="no-courses">전공 선택 강의가 없습니다.</p>
-                    {% endfor %}
-                </div>
-                <div class="course-category" id="general-elective">
-                    {% for course in general_elective %}
-                    <div class="course-item" data-type="general_elective">
-                        <div class="course-name">{{ course.course_name }}</div>
-                        <div class="course-info">
-                            <span class="instructor">{{ course.instructor }}</span>
-                            <span class="credit">{{ course.credit }}학점</span>
-                            <span class="year">{{ course.year }}</span>
-                            <span class="year">{{ course.section }}</span>
-                        </div>
-                        <div class="course-meta">
-                           
-                        </div>
-                        <button class="add-course-btn">추가</button>
-                    </div>
-                    {% empty %}
-                    <p class="no-courses">교양 선택 강의가 없습니다.</p>
-                    {% endfor %}
-                </div>
-                <div class="course-category" id="free-elective">
-                    {% for course in free_elective %}
-                    <div class="course-item" data-type="free_elective">
-                        <div class="course-name">{{ course.course_name }}</div>
-                        <div class="course-info">
-                            <span class="instructor">{{ course.instructor }}</span>
-                            <span class="credit">{{ course.credit }}학점</span>
-                            <span class="year">{{ course.year }}</span>
-                            <span class="year">{{ course.section }}</span>
-                        </div>
-                        <div class="course-meta">
-                            
-                        </div>
-                        <button class="add-course-btn">추가</button>
-                    </div>
-                    {% empty %}
-                    <p class="no-courses">일반 선택 강의가 없습니다.</p>
-                    {% endfor %}
-                </div>
-                <div class="course-category" id="teaching-required">
-                    {% for course in teaching_required %}
-                    <div class="course-item" data-type="teaching_required">
-                        <div class="course-name">{{ course.course_name }}</div>
-                        <div class="course-info">
-                            <span class="instructor">{{ course.instructor }}</span>
-                            <span class="credit">{{ course.credit }}학점</span>
-                            <span class="year">{{ course.year }}</span>
-                            <span class="year">{{ course.section }}</span>
-                        </div>
-                        <div class="course-meta">
-                            
-                        </div>
-                        <button class="add-course-btn">추가</button>
-                    </div>
-                    {% empty %}
-                    <p class="no-courses">교직 필수 강의가 없습니다.</p>
-=======
             <!-- 강의 리스트 -->
             <div class="course-list-container">
                 <!-- 전공 필수 -->
@@ -392,18 +266,11 @@
                         </div>
                     {% empty %}
                         <p class="no-courses">교직 필수 강의가 없습니다.</p>
->>>>>>> Sihun
                     {% endfor %}
                 </div>
             </div>
         </div>
-<<<<<<< HEAD
-        
-    
-        <!-- 가운데 시간표 -->
-=======
         <!-- 가운데 패널: 시간표 표시 -->
->>>>>>> Sihun
         <div class="middle-panel">
             <table class="timetable">
                 <thead>
@@ -417,25 +284,13 @@
                     </tr>
                 </thead>
                 <tbody>
-<<<<<<< HEAD
-                    <!-- 오전 8시 ~ 오후 8시 (1시간 단위) -->
-                    <script>
-                        const timetableBody = document.querySelector(".timetable tbody");
-                        for (let hour = 8; hour <= 20; hour++) {
-=======
                     <script>
                         const timetableBody = document.querySelector(".timetable tbody");
                         for (let hour = 9; hour <= 18; hour++) {
->>>>>>> Sihun
                             const row = document.createElement("tr");
                             const timeCell = document.createElement("td");
                             timeCell.textContent = `${hour}:00`;
                             row.appendChild(timeCell);
-<<<<<<< HEAD
-                
-                            // 요일별 칸 생성
-=======
->>>>>>> Sihun
                             for (let i = 0; i < 5; i++) {
                                 const cell = document.createElement("td");
                                 cell.classList.add("timetable-cell");
@@ -443,22 +298,13 @@
                                 cell.setAttribute("data-day", i);
                                 row.appendChild(cell);
                             }
-<<<<<<< HEAD
-                
-=======
->>>>>>> Sihun
                             timetableBody.appendChild(row);
                         }
                     </script>
                 </tbody>
             </table>
         </div>
-<<<<<<< HEAD
-
-        <!-- 오른쪽-->
-=======
         <!-- 오른쪽 패널: 설정 및 탐색 -->
->>>>>>> Sihun
         <div class="right-panel">
             <div class="goal-settings">
                 <h3>목표 학점 설정 🎯</h3>
@@ -473,10 +319,6 @@
                     <input type="number" id="elective-credits" min="0" max="24" value="9">
                 </div>
             </div>
-<<<<<<< HEAD
-        
-=======
->>>>>>> Sihun
             <div class="day-off-settings">
                 <h3>공강 요일 선택 📅</h3>
                 <div class="day-options">
@@ -487,40 +329,12 @@
                     <label><input type="checkbox" value="금"> 금</label>
                 </div>
             </div>
-<<<<<<< HEAD
-        
             <button id="generate-btn">📅 시간표 생성</button>
-
-            <!-- ✅ 시간표 탐색 영역 (좌우 화살표 + 현재 위치 표시) -->
-=======
-            <button id="generate-btn">📅 시간표 생성</button>
->>>>>>> Sihun
             <div class="timetable-navigation">
                 <button id="prev-timetable" class="nav-arrow">◀</button>
                 <span id="timetable-index">1 / 1</span>
                 <button id="next-timetable" class="nav-arrow">▶</button>
             </div>
-<<<<<<< HEAD
-
-            <button id="save-timetable-btn">💾 현재 시간표 저장</button> <!-- ✅ 저장 버튼 추가 -->
-
-        </div>
-        
-
-
-
-
-
-
-    </div>
-
-<!-- ✅ 부트스트랩 JS 추가 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- ✅ script.js 파일 연결 -->
-<script src="{% static 'home/js/timetable_script.js' %}"></script>
-
-=======
             <button id="save-timetable-btn">💾 현재 시간표 저장</button>
         </div>
     </div>
@@ -540,6 +354,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- 업데이트된 timetable_script.js 파일 연결 -->
     <script src="{% static 'home/js/timetable_script.js' %}"></script>
->>>>>>> Sihun
 </body>
 </html>

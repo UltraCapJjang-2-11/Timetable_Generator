@@ -56,9 +56,20 @@ body {
 .timetable td {
     display: table-cell; /* Flexbox 제거하여 원래 테이블 레이아웃 유지 */
     vertical-align: middle; /* 병합된 블록이 중앙 정렬되도록 설정 */
+<<<<<<< HEAD
     padding: 0;
 }
 
+=======
+    position: relative;
+    padding: 0;
+}
+
+.preview-lecture {
+    pointer-events: none; /* 오버레이가 클릭 이벤트를 가로채지 않도록 함 */
+
+  }
+>>>>>>> Sihun
 /* 병합된 블록을 자연스럽게 표시 */
 .timetable td .lecture {
     background-color: #ffcccb;

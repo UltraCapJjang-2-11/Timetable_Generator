@@ -298,7 +298,7 @@ def generate_timetable_stream(request):
         def Solutions(self):
             return self._solutions
 
-    solution_collector2 = TimetableSolutionCollector(x2, candidate_data, limit=50)
+    solution_collector2 = TimetableSolutionCollector(x2, candidate_data, limit=500000)
     solver2 = cp_model.CpSolver()
     print("DEBUG: Starting Phase 2 search for all solutions...")
     solver2.SearchForAllSolutions(model2, solution_collector2)
@@ -317,9 +317,11 @@ def generate_timetable_stream(request):
 def login_view(request):
     return render(request, "home/login.html")
 
-
 def dashboard_view(request):
     return render(request, "home/dashboard.html")
+
+def manage_view(request):
+    return render(request, "home/manage.html")    
 
 def mypage_view(request):
     from .models import GraduationRecord
@@ -428,6 +430,3 @@ def upload_pdf_view(request):
         return redirect('mypage')
     else:
         return render(request, "home/upload_pdf.html")
-
-def course_serach_test_view(request):
-    return render(request, 'home/search_test.html')

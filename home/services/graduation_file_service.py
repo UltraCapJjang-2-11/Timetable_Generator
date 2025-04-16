@@ -1,7 +1,5 @@
-# home/services/graduation_file_service.py
-from home.models import GraduationRecord
 import json
-import datetime
+from home.models import GraduationRecord
 
 def save_graduation_data_to_db(parsed_data: dict, user_id: int):
     """
@@ -19,11 +17,13 @@ def save_graduation_data_to_db(parsed_data: dict, user_id: int):
             "general_credits": parsed_data.get("general_credits", 0),
             "free_credits": parsed_data.get("free_credits", 0),
             "total_requirement": parsed_data.get("total_requirement"),
-            "major_requirement": parsed_data.get("major_requirement"),
-            "general_requirement": parsed_data.get("general_requirement"),
+            "major_requirement": json.dumps(parsed_data.get("major_requirement", {}), ensure_ascii=False),
+            "general_requirement": json.dumps(parsed_data.get("general_requirement", {}), ensure_ascii=False),
             "free_requirement": parsed_data.get("free_requirement"),
-            "missing_major_subjects": json.dumps(parsed_data.get("missing_subjects", [])),
-            "completed_courses": json.dumps(parsed_data.get("completed_courses", [])),
+            "missing_major_subjects": json.dumps(parsed_data.get("missing_subjects", []), ensure_ascii=False),
+            "completed_courses": json.dumps(parsed_data.get("completed_courses", []), ensure_ascii=False),
+            "missing_general_sub": json.dumps(parsed_data.get("missing_general_sub", {}), ensure_ascii=False),
+            "detailed_credits": json.dumps(parsed_data.get("detailed_credits", {}), ensure_ascii=False),
         }
     )
     return record

@@ -238,6 +238,7 @@ class TimeTableDetail(models.Model):
         managed = False
         db_table = 'time_table_detail'
         unique_together = (('timetable', 'course'),)
+
 class GraduationRecord(models.Model):
     id = models.BigAutoField(primary_key=True)
     user_id = models.IntegerField()
@@ -247,27 +248,31 @@ class GraduationRecord(models.Model):
     user_year = models.CharField(max_length=10, blank=True, null=True)  # 학년 정보
     total_credits = models.IntegerField()
     major_credits = models.IntegerField()
-    general_credits = models.IntegerField()
+    general_credits = models.IntegerField()  # 교양 이수 학점
     free_credits = models.IntegerField()
     total_requirement = models.IntegerField(blank=True, null=True)
-    major_requirement = models.IntegerField(blank=True, null=True)
-    general_requirement = models.IntegerField(blank=True, null=True)
+    
+    # 기존 필드를 숫자형에서 JSON 문자열 저장이 가능한 텍스트형으로 변경합니다.
+    major_requirement = models.TextField(blank=True, null=True)
+    general_requirement = models.TextField(blank=True, null=True)
+    
     free_requirement = models.IntegerField(blank=True, null=True)
+    missing_major_subjects = models.TextField(blank=True, null=True)  # 미이수 과목 알림 (JSON 문자열)
+    completed_courses = models.TextField(blank=True, null=True)       # 이수한 과목 코드 목록 (JSON 문자열)
+    
+    # 새로 추가하는 필드
+    missing_general_sub = models.TextField(blank=True, null=True)
+    detailed_credits = models.TextField(blank=True, null=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    missing_major_subjects = models.TextField(blank=True, null=True)  # JSON 문자열
-    completed_courses = models.TextField(blank=True, null=True)  # JSON 문자열로 이수한 과목 목록 저장
-
+    
     class Meta:
         managed = False
         db_table = 'graduation_record'
-
-
-
-    class Meta:
-        managed = False
-        db_table = 'graduation_record'
-
+    
+    def __str__(self):
+        return f"GraduationRecord(user_id={self.user_id}, student_id={self.user_student_id})"
 
 class Transcript(models.Model):
     transcript_id = models.AutoField(primary_key=True)

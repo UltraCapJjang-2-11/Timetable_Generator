@@ -20,5 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),  # home 앱과 연결
-    path('data-manager/', include('data_manager.urls')),
+    #path('data-manager/', include('data_manager.urls')),
 ]

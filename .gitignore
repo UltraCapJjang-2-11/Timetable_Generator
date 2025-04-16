@@ -2,3 +2,4 @@ config/__pycache__/
 home/__pycache__/
 config/settings.py
 **/__pycache__/
+.venv/

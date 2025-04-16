@@ -42,23 +42,34 @@ def get_effective_general_category(course):
             print("ERROR: Parent category retrieval error for", cat.category_name, ":", e)
     return ""
 
-# -----------------------------------------------------------------------------
-# 2. generate_timetable_stream 함수
+# ------------------------------------
+# 2. 미이수 전공필수 과목 추출 함수 (변경 없음)
+def extract_missing_required_major_courses(user_dept_id, completed_courses):
+    """
+    사용자 전공(dept_id)에 해당하는 전공필수 강좌 중,
+    이미 이수한 과목(completed_courses 집합)에 포함되지 않은 고유 course_name(대문자 기준)들을 반환.
+    """
+    missing_courses = set()
+    required_courses = Course.objects.filter(course_type='전공필수', dept__dept_id=user_dept_id)
+    for course in required_courses:
+        cname = course.course_name.strip().upper()
+        if cname not in completed_courses:
+            missing_courses.add(cname)
+    return missing_courses
+
+# ------------------------------------
+# 3. generate_timetable_stream 함수
 def generate_timetable_stream(request):
     """
-    OR‑Tools CP‑SAT Solver를 사용하여 후보 시간표를 생성합니다.
-    
-    기존 조건 외에 아래 두 조건을 추가했습니다.
-      - GraduationRecord.completed_courses는 강좌명(대문자) 기준으로 저장되므로, 이미 이수한 강좌를 후보에서 제외.
-      - 교양강좌(교양선택)는 GraduationRecord.missing_general_sub(예, {"개신기초교양": 18, "자연이공계기초": 12, ...})
-        에서 해당 세부 항목의 남은 학점이 0이면 후보에서 제외.
-        
-    단, 여기서는 CP‑SAT 모델을 구성한 후 단일 해(solution)를 구해 출력합니다.
+    기존 코드에서 아래 두 조건을 추가합니다.
+      - GraduationRecord.completed_courses 필드는 강좌명(대문자)으로 저장되므로 이를 기준으로 후보에서 이미 이수한 강좌를 제외.
+      - 교양강좌(교양선택)의 경우, get_effective_general_category()를 이용하여 해당 강좌의 세부 항목을 구하고,
+        GraduationRecord.missing_general_sub (예, {"개신기초교양": 15, "자연이공계기초": 12, ...})에서 해당 항목의 값이 0이면 후보에서 제외.
     """
     start_time = time.time()
     print("DEBUG: --- Timetable Generation Start ---")
     
-    # 2-1. GET 파라미터 파싱
+    # 3-1. GET 파라미터 파싱
     free_days = request.GET.getlist('free_days[]')
     existing_course_ids = request.GET.getlist('existing_courses[]')
     try:
@@ -75,11 +86,11 @@ def generate_timetable_stream(request):
     print("DEBUG: pre_added_ids =", pre_added_ids)
     print("DEBUG: target_total =", target_total, "target_major =", target_major, "target_elective =", target_elective)
     
-    # 2-2. 미리 추가한 강좌 (반드시 포함)
+    # 3-2. 미리 추가한 강좌 (반드시 포함)
     pre_added_courses = list(Course.objects.filter(course_id__in=pre_added_ids))
     print("DEBUG: pre_added_courses count =", len(pre_added_courses))
     
-    # 2-3. 학생 정보 및 졸업 기록 로드
+    # 3-3. 학생 정보 및 졸업 기록 로드
     student_id = request.user.id if request.user.is_authenticated else 1
     grad_record = GraduationRecord.objects.filter(user_id=student_id).last()
     try:
@@ -99,7 +110,7 @@ def generate_timetable_stream(request):
     student_dept_id = dept_obj.dept_id if dept_obj else None
     print("DEBUG: student_dept_id =", student_dept_id)
     
-    # 2-4. GraduationRecord에서 이수한 과목은 이제 강좌명(대문자) 기준
+    # 3-4. completed_courses는 이제 강좌명(대문자)으로 저장되어 있다고 가정
     completed_courses = []
     if grad_record and grad_record.completed_courses:
         try:
@@ -110,18 +121,18 @@ def generate_timetable_stream(request):
             completed_courses = []
     print("DEBUG: completed_courses =", completed_courses)
     
-    # 2-5. GraduationRecord의 missing_general_sub (교양 세부 이수 상태)
+    # 3-5. graduation_record의 missing_general_sub (교양 세부 이수 상태)
     missing_gen_sub = {}
     try:
         missing_gen_sub = json.loads(grad_record.missing_general_sub or '{}')
         missing_gen_sub = {k: int(v) for k, v in missing_gen_sub.items()}
     except Exception as e:
-        print("DEBUG: missing_gen_sub parse error:", e)
+        print("DEBUG: missing_general_sub parse error:", e)
         missing_gen_sub = {}
     print("DEBUG: missing_gen_sub =", missing_gen_sub)
     
-    # 3. 후보 강좌 조회 (필터링)
-    # completed_courses는 강좌명(대문자) 기준으로 비교하므로, Course의 course_name을 대문자로 변환
+    # 3-6. 후보 강좌 조회 (필터링)
+    # 이제 completed_courses는 강좌명이므로, Course의 course_name(대문자) 기준으로 비교합니다.
     candidate_qs = Course.objects.filter(
         semester_id=21,
         course_type__in=['전공필수', '전공선택', '교양선택']
@@ -129,7 +140,7 @@ def generate_timetable_stream(request):
     
     candidates = []
     for course in candidate_qs:
-        # 전공 강좌: 학생의 현재 학년보다 높은 강좌 제외
+        # 전공강좌: 현재 학년보다 높은 강좌 제외
         if course.course_type in ['전공필수', '전공선택']:
             if course.year != "전학년":
                 try:
@@ -140,7 +151,7 @@ def generate_timetable_stream(request):
                     continue
             if student_dept_id is not None and course.dept.dept_id != student_dept_id:
                 continue
-        # 기존 필터: 미리 추가된 강좌, 학점 0, 스케줄 정보 없음, times가 "00"인 강좌 제외
+        # 기본 필터
         if course.course_id in pre_added_ids:
             continue
         if course.credit <= 0:
@@ -161,10 +172,10 @@ def generate_timetable_stream(request):
                 break
         if conflict_with_free_day:
             continue
-        # 교양 강좌는 반드시 '전학년'이어야 함
+        # 교양강좌는 반드시 '전학년'이어야 함
         if course.course_type == '교양선택' and course.year != '전학년':
             continue
-        # 추가 필터: 교양 강좌의 경우, 이미 해당 세부 교양 영역의 남은 학점이 0이면 제외
+        # 추가 필터: 교양 강좌의 경우, 해당 세부 항목의 남은 학점이 0이면 후보 제외
         if course.course_type == '교양선택':
             effective_cat = get_effective_general_category(course)
             if effective_cat and missing_gen_sub.get(effective_cat, 0) == 0:
@@ -175,7 +186,7 @@ def generate_timetable_stream(request):
     all_candidates = pre_added_courses + candidates
     print("DEBUG: all_candidates count =", len(all_candidates))
     
-    # 4. 전처리: 각 후보 강좌의 스케줄 정보를 candidate_data에 저장
+    # 3-7. 전처리: 각 후보 강좌의 스케줄 정보를 candidate_data에 저장
     candidate_data = []
     for course in all_candidates:
         schedule_list = []
@@ -199,7 +210,7 @@ def generate_timetable_stream(request):
             locations.append(loc)
         if not schedule_list:
             continue
-        cand_dict = {
+        candidate_data.append({
             'id': course.course_id,
             'credit': course.credit,
             'course_type': course.course_type,
@@ -208,19 +219,18 @@ def generate_timetable_stream(request):
             'schedule': schedule_list,
             'location': locations[0] if locations else "",
             'pre_added': course.course_id in pre_added_ids
-        }
+        })
+        # 교양강좌는 effective_category 추가
         if course.course_type == '교양선택':
-            cand_dict['effective_category'] = get_effective_general_category(course)
-        candidate_data.append(cand_dict)
+            candidate_data[-1]['effective_category'] = get_effective_general_category(course)
     print("DEBUG: candidate_data count =", len(candidate_data))
     
-    # 5. CP‑SAT 모델 구성
+    # 4. CP‑SAT 모델 구성 (이후 CP‑SAT 해 solution 수집 방식은 기존 코드와 동일)
     model = cp_model.CpModel()
     x = {}
     for data in candidate_data:
         x[data['id']] = model.NewBoolVar(f"course_{data['id']}")
     
-    # 미리 추가한 강좌는 강제 선택
     for data in candidate_data:
         if data.get('pre_added', False):
             model.Add(x[data['id']] == 1)
@@ -229,7 +239,6 @@ def generate_timetable_stream(request):
     model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if data['course_type'] in ['전공필수', '전공선택']) == target_major)
     model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if data['course_type'] == '교양선택') == target_elective)
     
-    # 시간 충돌 제약
     slot_mapping = defaultdict(list)
     for data in candidate_data:
         for sched in data['schedule']:
@@ -241,15 +250,13 @@ def generate_timetable_stream(request):
     for (day, slot), ids in slot_mapping.items():
         model.Add(sum(x[cid] for cid in ids) <= 1)
     
-    # 동일 과목명 중복 제약
     name_groups = defaultdict(list)
     for data in candidate_data:
         name_groups[data['course_name']].append(data['id'])
     for name, ids in name_groups.items():
         model.Add(sum(x[cid] for cid in ids) <= 1)
     
-    # 6. (옵션) 객관식 최적화—여기서는 전공(전공필수+전공선택)을 우선하도록 하기 위해 최적화 함수 사용
-    # 단, 본질적으로는 제약 조건을 만족하는 해가 존재하면 그 해를 출력하도록 합니다.
+    # 6. 목표 함수 설정 (기존과 동일)
     required_priority = sum(x[data['id']] for data in candidate_data 
                             if data['course_type'] == '전공필수' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) <= current_year))
     elective_priority = 0.1 * sum(x[data['id']] for data in candidate_data 
@@ -257,37 +264,83 @@ def generate_timetable_stream(request):
     model.Maximize(required_priority + elective_priority)
     
     solver = cp_model.CpSolver()
-    print("DEBUG: Starting CP-SAT solve...")
+    print("DEBUG: Starting Phase 1 optimization...")
     status = solver.Solve(model)
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return JsonResponse({"error": "해결책을 찾지 못했습니다."}, status=500)
+    best_value = solver.ObjectiveValue()
+    print("DEBUG: Phase 1 Best objective =", best_value)
     
-    # 7. 해(solution) 추출 (기존 코드 방식)
-    solution = []
+    # 7. Phase 2: 새 모델 구성 (최적 목표값 강제)
+    model2 = cp_model.CpModel()
+    x2 = {}
     for data in candidate_data:
-        if solver.Value(x[data['id']]) == 1:
-            solution.append(data)
+        x2[data['id']] = model2.NewBoolVar(f"course2_{data['id']}")
     
-    # 출력 순서를 전공 강좌가 먼저 나오도록 정렬 (전공필수와 전공선택 -> 교양)
-    def sort_key(item):
-        if item['course_type'] in ['전공필수', '전공선택']:
-            return (0, item['course_name'])
-        else:
-            return (1, item['course_name'])
-    solution.sort(key=sort_key)
+    for data in candidate_data:
+        if data.get('pre_added', False):
+            model2.Add(x2[data['id']] == 1)
     
-    print("DEBUG: Final solution ({} courses):".format(len(solution)))
-    for item in solution:
-        print("DEBUG:", item['course_name'], item['course_type'], item['credit'], "점")
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data) == target_total)
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if data['course_type'] in ['전공필수', '전공선택']) == target_major)
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if data['course_type'] == '교양선택') == target_elective)
     
-    total_time = time.time() - start_time
-    print("DEBUG: --- Timetable Generation End --- (Elapsed: {:.2f} seconds)".format(total_time))
+    for (day, slot), ids in slot_mapping.items():
+        model2.Add(sum(x2[cid] for cid in ids) <= 1)
+    for name, ids in name_groups.items():
+        model2.Add(sum(x2[cid] for cid in ids) <= 1)
+    model2.Add(sum(x2[data['id']] for data in candidate_data 
+               if data['course_type'] == '전공필수' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) <= current_year)) == int(best_value))
+    print("DEBUG: Phase 2 credit constraints added; forcing Phase 1 optimal objective =", best_value)
+    
+    # 여기서는 기존 코드 스타일 (CP‑SAT 해 수집 방식) 그대로 사용하므로, Collector 관련 코드는 그대로 두겠습니다.
+    class TimetableSolutionCollector(cp_model.CpSolverSolutionCallback):
+        def __init__(self, x, candidate_data, limit):
+            cp_model.CpSolverSolutionCallback.__init__(self)
+            self._x = x
+            self._candidate_data = {d['id']: d for d in candidate_data}
+            self._limit = limit
+            self._solutions = []
+            self._solution_count = 0
+
+        def OnSolutionCallback(self):
+            self._solution_count += 1
+            print(f"DEBUG: [Phase 2] Found solution #{self._solution_count}")
+            if self._solution_count > self._limit:
+                self.StopSearch()
+                return
+            solution = []
+            for cid, var in self._x.items():
+                if self.Value(var) == 1:
+                    data = self._candidate_data[cid]
+                    solution.append({
+                        'course_id': data['id'],
+                        'course_name': data['course_name'],
+                        'credit': data['credit'],
+                        'course_type': data['course_type'],
+                        'schedules': data['schedule'],
+                        'location': data['location']
+                    })
+            self._solutions.append(solution)
+
+        def Solutions(self):
+            return self._solutions
+
+    collector2 = TimetableSolutionCollector(x2, candidate_data, limit=50)
+    solver2 = cp_model.CpSolver()
+    print("DEBUG: Starting Phase 2 search for all solutions...")
+    solver2.SearchForAllSolutions(model2, collector2)
+    print("DEBUG: Phase 2 search finished. Total solutions:", collector2._solution_count)
+    
+    timetables_data = collector2.Solutions()
+    print("DEBUG: Total unique solutions found:", len(timetables_data))
+    print("DEBUG: --- Timetable Generation End ---")
     
     result = {
         'progress': '완료',
-        'found': 1,
-        'timetables': [solution],
-        'message': f"총 1개의 시간표를 찾았습니다."
+        'found': len(timetables_data),
+        'timetables': timetables_data,
+        'message': f"총 {len(timetables_data)}개의 시간표를 찾았습니다." if timetables_data else "조건에 맞는 시간표를 찾지 못했습니다. 조건을 변경해보세요."
     }
     def event_stream():
         yield f"data: {json.dumps(result, ensure_ascii=False)}\n\n"
@@ -398,4 +451,4 @@ def upload_pdf_view(request):
 
 
 def course_serach_test_view(request):
-    return render(request, 'home/search_test.html')
+    return render(request, 'home/search_test.html') 

@@ -58,13 +58,17 @@ def extract_missing_required_major_courses(user_dept_id, completed_courses):
     return missing_courses
 
 # ------------------------------------
-# 3. generate_timetable_stream 함수
+# 3. generate_timetable_stream 함수 (수정됨)
 def generate_timetable_stream(request):
     """
     기존 코드에서 아래 두 조건을 추가합니다.
       - GraduationRecord.completed_courses 필드는 강좌명(대문자)으로 저장되므로 이를 기준으로 후보에서 이미 이수한 강좌를 제외.
       - 교양강좌(교양선택)의 경우, get_effective_general_category()를 이용하여 해당 강좌의 세부 항목을 구하고,
         GraduationRecord.missing_general_sub (예, {"개신기초교양": 15, "자연이공계기초": 12, ...})에서 해당 항목의 값이 0이면 후보에서 제외.
+      
+      [수정 사항]
+      - 전공선택 과목에 대해 동일학년 전공선택(예, 현재 학년과 일치하거나 '전학년'인 경우)을 우선 반영하도록 후보 필터링을 추가.
+        동일학년 전공선택 과목으로 target_major 학점 충족이 가능한 경우, 낮은 학년의 전공선택은 후보에서 제거하여 시간표 생성 시 영향을 주지 않도록 함.
     """
     start_time = time.time()
     print("DEBUG: --- Timetable Generation Start ---")
@@ -210,7 +214,7 @@ def generate_timetable_stream(request):
             locations.append(loc)
         if not schedule_list:
             continue
-        candidate_data.append({
+        data_item = {
             'id': course.course_id,
             'credit': course.credit,
             'course_type': course.course_type,
@@ -219,11 +223,46 @@ def generate_timetable_stream(request):
             'schedule': schedule_list,
             'location': locations[0] if locations else "",
             'pre_added': course.course_id in pre_added_ids
-        })
+        }
         # 교양강좌는 effective_category 추가
         if course.course_type == '교양선택':
-            candidate_data[-1]['effective_category'] = get_effective_general_category(course)
+            data_item['effective_category'] = get_effective_general_category(course)
+        candidate_data.append(data_item)
     print("DEBUG: candidate_data count =", len(candidate_data))
+    
+    # ===== 수정된 부분: 전공선택 강좌 중 동일학년 강좌 우선 필터링 =====
+    # 전공선택 과목에 동일학년 여부 플래그 추가
+    for data in candidate_data:
+        if data['course_type'] == '전공선택':
+            # '전학년'은 동일학년으로 취급; 그 외 숫자로 표현된 연도일 경우 현재 학년(current_year)과 비교
+            if data['year'] == "전학년" or (data['year'] and data['year'][0].isdigit() and int(data['year'][0]) == current_year):
+                data['is_same_year'] = True
+            else:
+                data['is_same_year'] = False
+
+    # 미리 강제 선택(pre_added)된 전공(필수+선택) 강좌의 총 학점 계산
+    pre_added_major = sum(
+        data['credit'] for data in candidate_data 
+        if data['course_type'] in ['전공필수', '전공선택'] and data.get('pre_added', False)
+    )
+    # target_major와 비교하여 남은 전공 학점을 계산
+    if pre_added_major < target_major:
+        needed_major = target_major - pre_added_major
+        # 동일학년 전공선택 강좌(아직 pre_added 되지 않은)의 총 학점
+        available_same_year_elective = sum(
+            data['credit'] for data in candidate_data 
+            if data['course_type'] == '전공선택' and data.get('is_same_year', False) and not data.get('pre_added', False)
+        )
+        if available_same_year_elective >= needed_major:
+            # 동일학년 강좌만으로 전공 학점 충족이 가능하면, 낮은학년 전공선택 과목은 후보에서 제거
+            candidate_data = [
+                data for data in candidate_data 
+                if not (data['course_type'] == '전공선택' and data.get('is_same_year') is False)
+            ]
+            print("DEBUG: 낮은학년 전공선택 과목 제거 후 candidate_data count =", len(candidate_data))
+        else:
+            print("DEBUG: 동일학년 전공선택 강좌가 부족하여 낮은학년 전공선택 과목을 허용합니다.")
+    # ===== 수정된 부분 끝 =====
     
     # 4. CP‑SAT 모델 구성 (이후 CP‑SAT 해 solution 수집 방식은 기존 코드와 동일)
     model = cp_model.CpModel()
@@ -257,10 +296,14 @@ def generate_timetable_stream(request):
         model.Add(sum(x[cid] for cid in ids) <= 1)
     
     # 6. 목표 함수 설정 (기존과 동일)
-    required_priority = sum(x[data['id']] for data in candidate_data 
-                            if data['course_type'] == '전공필수' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) <= current_year))
-    elective_priority = 0.1 * sum(x[data['id']] for data in candidate_data 
-                                    if data['course_type'] == '전공선택' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) == current_year))
+    required_priority = sum(
+        x[data['id']] for data in candidate_data 
+        if data['course_type'] == '전공필수' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) <= current_year))
+    )
+    elective_priority = 0.1 * sum(
+        x[data['id']] for data in candidate_data 
+        if data['course_type'] == '전공선택' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) == current_year))
+    )
     model.Maximize(required_priority + elective_priority)
     
     solver = cp_model.CpSolver()
@@ -290,10 +333,10 @@ def generate_timetable_stream(request):
     for name, ids in name_groups.items():
         model2.Add(sum(x2[cid] for cid in ids) <= 1)
     model2.Add(sum(x2[data['id']] for data in candidate_data 
-               if data['course_type'] == '전공필수' and (data['year'] == "전학년" or int(data.get('year', '0')[0]) <= current_year)) == int(best_value))
+               if data['course_type'] == '전공필수' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) <= current_year))) == int(best_value))
     print("DEBUG: Phase 2 credit constraints added; forcing Phase 1 optimal objective =", best_value)
     
-    # 여기서는 기존 코드 스타일 (CP‑SAT 해 수집 방식) 그대로 사용하므로, Collector 관련 코드는 그대로 두겠습니다.
+    # CP‑SAT 해 solution 수집 방식 (Collector)
     class TimetableSolutionCollector(cp_model.CpSolverSolutionCallback):
         def __init__(self, x, candidate_data, limit):
             cp_model.CpSolverSolutionCallback.__init__(self)

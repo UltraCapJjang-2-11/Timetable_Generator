@@ -7,6 +7,7 @@ from collections import defaultdict
 from django.http import StreamingHttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
+from django.db.models import Q
 from django.db.models.functions import Upper
 
 from .models import Course, CourseSchedule, GraduationRecord, Department
@@ -17,7 +18,7 @@ from .services.graduation_file_service import save_graduation_data_to_db
 from ortools.sat.python import cp_model
 
 # ------------------------------------
-# 1. 효과적 교양 세부 항목 결정 함수
+# 1. 효과적 교양 세부 항목 결정 함수 (기존과 동일)
 def get_effective_general_category(course):
     mapping = {
         "개신기초교양": "개신기초교양",
@@ -50,7 +51,7 @@ def extract_missing_required_major_courses(user_dept_id, completed_courses):
     이미 이수한 과목(completed_courses 집합)에 포함되지 않은 고유 course_name(대문자 기준)들을 반환.
     """
     missing_courses = set()
-    required_courses = Course.objects.filter(course_type='전공필수', dept__dept_id=user_dept_id)
+    required_courses = Course.objects.filter(category__category_name='전공필수', dept__dept_id=user_dept_id)
     for course in required_courses:
         cname = course.course_name.strip().upper()
         if cname not in completed_courses:
@@ -58,17 +59,14 @@ def extract_missing_required_major_courses(user_dept_id, completed_courses):
     return missing_courses
 
 # ------------------------------------
-# 3. generate_timetable_stream 함수 (수정됨)
+# 3. generate_timetable_stream 함수 (교양의 parent_category 조건 추가)
 def generate_timetable_stream(request):
     """
-    기존 코드에서 아래 두 조건을 추가합니다.
+    기존 코드에서 아래 조건들을 처리합니다.
       - GraduationRecord.completed_courses 필드는 강좌명(대문자)으로 저장되므로 이를 기준으로 후보에서 이미 이수한 강좌를 제외.
-      - 교양강좌(교양선택)의 경우, get_effective_general_category()를 이용하여 해당 강좌의 세부 항목을 구하고,
+      - 교양 강좌의 경우, get_effective_general_category()를 이용하여 해당 강좌의 세부 항목을 구하고,
         GraduationRecord.missing_general_sub (예, {"개신기초교양": 15, "자연이공계기초": 12, ...})에서 해당 항목의 값이 0이면 후보에서 제외.
-      
-      [수정 사항]
-      - 전공선택 과목에 대해 동일학년 전공선택(예, 현재 학년과 일치하거나 '전학년'인 경우)을 우선 반영하도록 후보 필터링을 추가.
-        동일학년 전공선택 과목으로 target_major 학점 충족이 가능한 경우, 낮은 학년의 전공선택은 후보에서 제거하여 시간표 생성 시 영향을 주지 않도록 함.
+      - 전공선택 과목은 동일학년 여부를 체크하여, 필요 시 낮은 학년 강좌는 후보에서 제외합니다.
     """
     start_time = time.time()
     print("DEBUG: --- Timetable Generation Start ---")
@@ -114,7 +112,7 @@ def generate_timetable_stream(request):
     student_dept_id = dept_obj.dept_id if dept_obj else None
     print("DEBUG: student_dept_id =", student_dept_id)
     
-    # 3-4. completed_courses는 이제 강좌명(대문자)으로 저장되어 있다고 가정
+    # 3-4. completed_courses는 강좌명이므로, Course의 course_name(대문자) 기준으로 비교합니다.
     completed_courses = []
     if grad_record and grad_record.completed_courses:
         try:
@@ -136,16 +134,22 @@ def generate_timetable_stream(request):
     print("DEBUG: missing_gen_sub =", missing_gen_sub)
     
     # 3-6. 후보 강좌 조회 (필터링)
-    # 이제 completed_courses는 강좌명이므로, Course의 course_name(대문자) 기준으로 비교합니다.
+    general_categories = ["개신기초교양", "일반교양", "자연이공계기초", "자연이공계기초과학", "확대교양", "OCU", "OCU 과목"]
     candidate_qs = Course.objects.filter(
-        semester_id=21,
-        course_type__in=['전공필수', '전공선택', '교양선택']
-    ).annotate(upper_course_name=Upper('course_name')).exclude(upper_course_name__in=[name.upper() for name in completed_courses])
+        semester_id=21
+    ).filter(
+        Q(category__category_name__in=['전공필수', '전공선택']) |
+        Q(category__category_name__in=general_categories) |
+        Q(category__parent_category__category_name__in=general_categories)
+    ).annotate(upper_course_name=Upper('course_name')).exclude(
+        upper_course_name__in=[name.upper() for name in completed_courses]
+    )
     
     candidates = []
     for course in candidate_qs:
-        # 전공강좌: 현재 학년보다 높은 강좌 제외
-        if course.course_type in ['전공필수', '전공선택']:
+        # 전공 강좌: 현재 학년보다 높은 강좌는 제외 및 전공 소속 학과 여부 체크
+        if course.category.category_name in ['전공필수', '전공선택']:
+            print("DEBUG: Checking course", course.course_name)
             if course.year != "전학년":
                 try:
                     course_year = int(course.year[0])
@@ -176,13 +180,13 @@ def generate_timetable_stream(request):
                 break
         if conflict_with_free_day:
             continue
-        # 교양강좌는 반드시 '전학년'이어야 함
-        if course.course_type == '교양선택' and course.year != '전학년':
+        # 교양 강좌: 반드시 '전학년'이어야 함
+        if get_effective_general_category(course) and course.year != '전학년':
             continue
-        # 추가 필터: 교양 강좌의 경우, 해당 세부 항목의 남은 학점이 0이면 후보 제외
-        if course.course_type == '교양선택':
+        # 추가 필터: 교양 강좌(구 교양선택)의 경우, 해당 세부 항목의 남은 학점이 0이면 후보에서 제외
+        if get_effective_general_category(course):
             effective_cat = get_effective_general_category(course)
-            if effective_cat and missing_gen_sub.get(effective_cat, 0) == 0:
+            if missing_gen_sub.get(effective_cat, 0) == 0:
                 print("DEBUG: Excluding 교양 course", course.course_name, "as", effective_cat, "is already completed.")
                 continue
         candidates.append(course)
@@ -217,54 +221,48 @@ def generate_timetable_stream(request):
         data_item = {
             'id': course.course_id,
             'credit': course.credit,
-            'course_type': course.course_type,
+            'category': course.category.category_name,  # course_type
             'course_name': course.course_name,
             'year': course.year,
             'schedule': schedule_list,
             'location': locations[0] if locations else "",
             'pre_added': course.course_id in pre_added_ids
         }
-        # 교양강좌는 effective_category 추가
-        if course.course_type == '교양선택':
+        # 교양 강좌: effective_category 추가
+        if get_effective_general_category(course):
             data_item['effective_category'] = get_effective_general_category(course)
         candidate_data.append(data_item)
     print("DEBUG: candidate_data count =", len(candidate_data))
     
     # ===== 수정된 부분: 전공선택 강좌 중 동일학년 강좌 우선 필터링 =====
-    # 전공선택 과목에 동일학년 여부 플래그 추가
     for data in candidate_data:
-        if data['course_type'] == '전공선택':
-            # '전학년'은 동일학년으로 취급; 그 외 숫자로 표현된 연도일 경우 현재 학년(current_year)과 비교
+        if data['category'] == '전공선택':
             if data['year'] == "전학년" or (data['year'] and data['year'][0].isdigit() and int(data['year'][0]) == current_year):
                 data['is_same_year'] = True
             else:
                 data['is_same_year'] = False
 
-    # 미리 강제 선택(pre_added)된 전공(필수+선택) 강좌의 총 학점 계산
     pre_added_major = sum(
         data['credit'] for data in candidate_data 
-        if data['course_type'] in ['전공필수', '전공선택'] and data.get('pre_added', False)
+        if data['category'] in ['전공필수', '전공선택'] and data.get('pre_added', False)
     )
-    # target_major와 비교하여 남은 전공 학점을 계산
     if pre_added_major < target_major:
         needed_major = target_major - pre_added_major
-        # 동일학년 전공선택 강좌(아직 pre_added 되지 않은)의 총 학점
         available_same_year_elective = sum(
             data['credit'] for data in candidate_data 
-            if data['course_type'] == '전공선택' and data.get('is_same_year', False) and not data.get('pre_added', False)
+            if data['category'] == '전공선택' and data.get('is_same_year', False) and not data.get('pre_added', False)
         )
         if available_same_year_elective >= needed_major:
-            # 동일학년 강좌만으로 전공 학점 충족이 가능하면, 낮은학년 전공선택 과목은 후보에서 제거
             candidate_data = [
                 data for data in candidate_data 
-                if not (data['course_type'] == '전공선택' and data.get('is_same_year') is False)
+                if not (data['category'] == '전공선택' and data.get('is_same_year') is False)
             ]
             print("DEBUG: 낮은학년 전공선택 과목 제거 후 candidate_data count =", len(candidate_data))
         else:
             print("DEBUG: 동일학년 전공선택 강좌가 부족하여 낮은학년 전공선택 과목을 허용합니다.")
     # ===== 수정된 부분 끝 =====
     
-    # 4. CP‑SAT 모델 구성 (이후 CP‑SAT 해 solution 수집 방식은 기존 코드와 동일)
+    # 4. CP‑SAT 모델 구성 (후속 부분은 기존과 동일)
     model = cp_model.CpModel()
     x = {}
     for data in candidate_data:
@@ -275,9 +273,10 @@ def generate_timetable_stream(request):
             model.Add(x[data['id']] == 1)
     
     model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data) == target_total)
-    model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if data['course_type'] in ['전공필수', '전공선택']) == target_major)
-    model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if data['course_type'] == '교양선택') == target_elective)
+    model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if data['category'] in ['전공필수', '전공선택']) == target_major)
+    model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if get_effective_general_category(course=DummyObj({'effective':data.get('effective_category', None)})) or data['category'] not in ['전공필수','전공선택']) == target_elective)
     
+    # 시간표 충돌 제약
     slot_mapping = defaultdict(list)
     for data in candidate_data:
         for sched in data['schedule']:
@@ -295,14 +294,13 @@ def generate_timetable_stream(request):
     for name, ids in name_groups.items():
         model.Add(sum(x[cid] for cid in ids) <= 1)
     
-    # 6. 목표 함수 설정 (기존과 동일)
     required_priority = sum(
         x[data['id']] for data in candidate_data 
-        if data['course_type'] == '전공필수' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) <= current_year))
+        if data['category'] == '전공필수' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) <= current_year))
     )
     elective_priority = 0.1 * sum(
         x[data['id']] for data in candidate_data 
-        if data['course_type'] == '전공선택' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) == current_year))
+        if data['category'] == '전공선택' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) == current_year))
     )
     model.Maximize(required_priority + elective_priority)
     
@@ -325,15 +323,15 @@ def generate_timetable_stream(request):
             model2.Add(x2[data['id']] == 1)
     
     model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data) == target_total)
-    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if data['course_type'] in ['전공필수', '전공선택']) == target_major)
-    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if data['course_type'] == '교양선택') == target_elective)
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if data['category'] in ['전공필수', '전공선택']) == target_major)
+    model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if get_effective_general_category(course=DummyObj({'effective':data.get('effective_category', None)})) or data['category'] not in ['전공필수','전공선택']) == target_elective)
     
     for (day, slot), ids in slot_mapping.items():
         model2.Add(sum(x2[cid] for cid in ids) <= 1)
     for name, ids in name_groups.items():
         model2.Add(sum(x2[cid] for cid in ids) <= 1)
     model2.Add(sum(x2[data['id']] for data in candidate_data 
-               if data['course_type'] == '전공필수' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) <= current_year))) == int(best_value))
+               if data['category'] == '전공필수' and (data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) <= current_year))) == int(best_value))
     print("DEBUG: Phase 2 credit constraints added; forcing Phase 1 optimal objective =", best_value)
     
     # CP‑SAT 해 solution 수집 방식 (Collector)
@@ -360,7 +358,7 @@ def generate_timetable_stream(request):
                         'course_id': data['id'],
                         'course_name': data['course_name'],
                         'credit': data['credit'],
-                        'course_type': data['course_type'],
+                        'category': data['category'],
                         'schedules': data['schedule'],
                         'location': data['location']
                     })
@@ -390,7 +388,7 @@ def generate_timetable_stream(request):
     return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
 
 # ---------------------------
-# 나머지 뷰 함수들
+# 나머지 뷰 함수들 (변경 없음)
 def login_view(request):
     return render(request, "home/login.html")
 
@@ -456,14 +454,16 @@ def mypage_view(request):
         })
     return render(request, 'home/mypage.html', context)
 
-
 def timetable_view(request):
     semester_id_filter = 21  # 25년도 1학기
-    major_required = Course.objects.filter(semester_id=semester_id_filter, course_type='전공필수').order_by('course_name')
-    major_elective = Course.objects.filter(semester_id=semester_id_filter, course_type='전공선택').order_by('course_name')
-    general_elective = Course.objects.filter(semester_id=semester_id_filter, course_type='교양선택').order_by('course_name')
-    free_elective = Course.objects.filter(semester_id=semester_id_filter, course_type='일반선택').order_by('course_name')
-    teaching_required = Course.objects.filter(semester_id=semester_id_filter, course_type='교직필수').order_by('course_name')
+    major_required = Course.objects.filter(semester_id=semester_id_filter, category__category_name='전공필수').order_by('course_name')
+    major_elective = Course.objects.filter(semester_id=semester_id_filter, category__category_name='전공선택').order_by('course_name')
+    general_elective = Course.objects.filter(semester_id=semester_id_filter).filter(
+        Q(category__category_name__in=["개신기초교양", "일반교양", "자연이공계기초", "자연이공계기초과학", "확대교양", "OCU", "OCU 과목"]) |
+        Q(category__parent_category__category_name__in=["개신기초교양", "일반교양", "자연이공계기초", "자연이공계기초과학", "확대교양", "OCU", "OCU 과목"])
+    ).order_by('course_name')
+    free_elective = Course.objects.filter(semester_id=semester_id_filter, category__category_name='일반선택').order_by('course_name')
+    teaching_required = Course.objects.filter(semester_id=semester_id_filter, category__category_name='교직').order_by('course_name')
     return render(request, "home/timetable.html", {
         'major_required': major_required,
         'major_elective': major_elective,
@@ -471,7 +471,6 @@ def timetable_view(request):
         'free_elective': free_elective,
         'teaching_required': teaching_required,
     })
-
 
 def upload_pdf_view(request):
     if request.method == "POST":
@@ -492,6 +491,10 @@ def upload_pdf_view(request):
     else:
         return render(request, "home/upload_pdf.html")
 
-
 def course_serach_test_view(request):
-    return render(request, 'home/search_test.html') 
+    return render(request, 'home/search_test.html')
+
+# Helper Dummy class for elective CP‑SAT 조건 처리 (필요에 따라 별도 처리)
+class DummyObj:
+    def __init__(self, data):
+        self.__dict__.update(data)

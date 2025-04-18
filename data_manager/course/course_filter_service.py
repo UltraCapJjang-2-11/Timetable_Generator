@@ -2,7 +2,7 @@
 
 from django.db.models import Q
 from data_manager.models import (
-    Course, Department, Category, CourseSchedule, Semester
+    Courses, Department, Category, CourseSchedule, Semester
 )
 
 class CourseFilterService:
@@ -17,7 +17,7 @@ class CourseFilterService:
         """
         기본적으로 전체 Course를 반환
         """
-        return Course.objects.all()
+        return Courses.objects.all()
 
     # -----------------------------
     # (1) 학과 필터
@@ -159,7 +159,7 @@ class CourseFilterService:
     # -----------------------------
     # (8) 종합 검색
     # -----------------------------
-    def get_final_results(
+    def course_search(
         self,
         dept_name=None,
         category_name=None,

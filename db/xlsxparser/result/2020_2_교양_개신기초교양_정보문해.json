@@ -1,0 +1,1367 @@
+{
+  "year": "2020",
+  "term": "2학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "구미숙",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-103(56-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 26,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "정보문해"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "홍인숙",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "정보문해"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신미예",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-201(56-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 12,
+      "capacity": 45,
+      "enrolled_count": 38,
+      "category": "정보문해"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "홍인숙",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 20,
+      "capacity": 45,
+      "enrolled_count": 47,
+      "category": "정보문해"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "문현주",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 25,
+      "capacity": 45,
+      "enrolled_count": 46,
+      "category": "정보문해"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신윤환",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 45,
+      "enrolled_count": 36,
+      "category": "정보문해"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "오명륜",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-704(56-704)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 17,
+      "capacity": 45,
+      "enrolled_count": 33,
+      "category": "정보문해"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "성순화",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-103(56-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 67,
+      "category": "정보문해"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "오명륜",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 48,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "정보문해"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 10,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신미예",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 37,
+      "category": "정보문해"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신윤환",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "정보문해"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 12,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "성순화",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 16,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "정보문해"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 13,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "구미숙",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 8,
+      "capacity": 45,
+      "enrolled_count": 37,
+      "category": "정보문해"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 14,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "문현주",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N13-401(59-401)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 45,
+      "enrolled_count": 34,
+      "category": "정보문해"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 15,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신윤환",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "정보문해"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914001,
+      "course_name": "컴퓨팅 사고력 기르기",
+      "section": 16,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "노창배",
+      "class_time": [
+        {
+          "day": "토",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S21-4-143(92-143)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 34,
+      "category": "정보문해"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이춘희",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03",
+            "05",
+            "06"
+          ],
+          "location": "S2-102(32-102)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 11,
+      "capacity": 40,
+      "enrolled_count": 31,
+      "category": "정보문해"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "성순화",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "E9-271(학연271)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-7-141(50-141)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 18,
+      "capacity": 40,
+      "enrolled_count": 39,
+      "category": "정보문해"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "엄남경",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "E8-7-440(50-440)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "E9-271(학연271)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 10,
+      "capacity": 40,
+      "enrolled_count": 34,
+      "category": "정보문해"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "주영관",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "E9-241(학연241)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "E8-7-440(50-440)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 10,
+      "capacity": 40,
+      "enrolled_count": 33,
+      "category": "정보문해"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최경주",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-7-435(50-435)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S2-102(32-102)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 12,
+      "capacity": 40,
+      "enrolled_count": 38,
+      "category": "정보문해"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조희승",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S2-101(32-101)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-7-435(50-435)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 6,
+      "capacity": 40,
+      "enrolled_count": 25,
+      "category": "정보문해"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이의종",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E9-271(학연271)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-7-440(50-440)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 6,
+      "capacity": 40,
+      "enrolled_count": 38,
+      "category": "정보문해"
+    },
+    {
+      "order": 24,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김명준",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E8-7-435(50-435)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "S2-101(32-101)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 9,
+      "capacity": 40,
+      "enrolled_count": 29,
+      "category": "정보문해"
+    },
+    {
+      "order": 25,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "노창배",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03",
+            "05",
+            "06"
+          ],
+          "location": "S1-2-108(41-108)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 22,
+      "capacity": 40,
+      "enrolled_count": 63,
+      "category": "정보문해"
+    },
+    {
+      "order": 26,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 10,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "류관희",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-7-435(50-435)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "E9-271(학연271)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 6,
+      "capacity": 40,
+      "enrolled_count": 37,
+      "category": "정보문해"
+    },
+    {
+      "order": 27,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914002,
+      "course_name": "기초컴퓨터프로그래밍",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "구미숙",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S2-101(32-101)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "E8-7-435(50-435)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 20,
+      "capacity": 40,
+      "enrolled_count": 34,
+      "category": "정보문해"
+    },
+    {
+      "order": 28,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "홍장의",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E8-7-435(50-435)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E9-241(학연241)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 1,
+      "capacity": 40,
+      "enrolled_count": 37,
+      "category": "정보문해"
+    },
+    {
+      "order": 29,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조오현",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E8-7-440(50-440)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "S2-102(32-102)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 21,
+      "capacity": 40,
+      "enrolled_count": 44,
+      "category": "정보문해"
+    },
+    {
+      "order": 30,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이춘희",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E8-7-435(50-435)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E9-241(학연241)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 10,
+      "capacity": 40,
+      "enrolled_count": 32,
+      "category": "정보문해"
+    },
+    {
+      "order": 31,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "오명륜",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S2-101(32-101)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S2-101(32-101)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 16,
+      "capacity": 40,
+      "enrolled_count": 27,
+      "category": "정보문해"
+    },
+    {
+      "order": 32,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "안광모, 엄남경",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E8-7-440(50-440)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S2-102(32-102)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 8,
+      "capacity": 40,
+      "enrolled_count": 35,
+      "category": "정보문해"
+    },
+    {
+      "order": 33,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "류성필",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E8-7-440(50-440)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E9-271(학연271)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 9,
+      "capacity": 40,
+      "enrolled_count": 36,
+      "category": "정보문해"
+    },
+    {
+      "order": 34,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "임종태",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E8-7-435(50-435)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E9-241(학연241)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 9,
+      "capacity": 40,
+      "enrolled_count": 37,
+      "category": "정보문해"
+    },
+    {
+      "order": 35,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이의신",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E8-7-141(50-141)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E9-241(학연241)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 6,
+      "capacity": 40,
+      "enrolled_count": 33,
+      "category": "정보문해"
+    },
+    {
+      "order": 36,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "서영훈",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E9-271(학연271)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "E8-1-316(44-316)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 12,
+      "capacity": 40,
+      "enrolled_count": 39,
+      "category": "정보문해"
+    },
+    {
+      "order": 37,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "황경순",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-7-141(50-141)"
+        },
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "E9-271(학연271)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 9,
+      "capacity": 40,
+      "enrolled_count": 64,
+      "category": "정보문해"
+    },
+    {
+      "order": 38,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914003,
+      "course_name": "응용컴퓨터프로그래밍",
+      "section": 12,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "황경순",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "E9-241(학연241)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "E8-7-440(50-440)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 19,
+      "capacity": 40,
+      "enrolled_count": 38,
+      "category": "정보문해"
+    },
+    {
+      "order": 39,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 914004,
+      "course_name": "정보기술 프로그래밍",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "전중남",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "E8-7-141(50-141)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "S2-101(32-101)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 13,
+      "capacity": 40,
+      "enrolled_count": 38,
+      "category": "정보문해"
+    }
+  ]
+}

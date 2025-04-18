@@ -1,0 +1,1025 @@
+{
+  "year": "2023",
+  "term": "2학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923001,
+      "course_name": "지구와환경",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정원석",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S1-4-111(43-111)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 104,
+      "capacity": 100,
+      "enrolled_count": 103,
+      "category": "자연과과학"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923001,
+      "course_name": "지구와환경",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "우주환",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "S1-6-210(36-210)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 28,
+      "capacity": 80,
+      "enrolled_count": 40,
+      "category": "자연과과학"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923004,
+      "course_name": "도시와건축",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최유종",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "E8-2-101(45-101)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 41,
+      "capacity": 80,
+      "enrolled_count": 60,
+      "category": "자연과과학"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923005,
+      "course_name": "식품과영양",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이영은",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N20-1-115(62-115)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 23,
+      "capacity": 80,
+      "enrolled_count": 17,
+      "category": "자연과과학"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923005,
+      "course_name": "식품과영양",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "한영희",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N20-1-115(62-115)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 30,
+      "capacity": 80,
+      "enrolled_count": 61,
+      "category": "자연과과학"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923005,
+      "course_name": "식품과영양",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "장은경",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N20-1-115(62-115)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 21,
+      "capacity": 80,
+      "enrolled_count": 37,
+      "category": "자연과과학"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923005,
+      "course_name": "식품과영양",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤도경",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-102(56-102)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 89,
+      "capacity": 80,
+      "enrolled_count": 80,
+      "category": "자연과과학"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923006,
+      "course_name": "우주로의여행",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김용기",
+      "class_time": [
+        {
+          "day": "토",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "가상강의실2"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 66,
+      "capacity": 50,
+      "enrolled_count": 72,
+      "category": "자연과과학"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923007,
+      "course_name": "현대 생물학사",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "남궁석",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "S1-2-301(41-301)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 21,
+      "capacity": 40,
+      "enrolled_count": 46,
+      "category": "자연과과학"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923008,
+      "course_name": "알기 쉬운 우리 몸의 기능",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김영철, 김진하, 김찬형, 최웅",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-104(56-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 32,
+      "capacity": 100,
+      "enrolled_count": 50,
+      "category": "자연과과학"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923012,
+      "course_name": "자연과 행복",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "유진희",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "S21-4-146(92-146)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 54,
+      "capacity": 80,
+      "enrolled_count": 76,
+      "category": "자연과과학"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923013,
+      "course_name": "현대산업사회와환경문제",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정영도",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "E8-10-103(508-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 67,
+      "capacity": 100,
+      "enrolled_count": 96,
+      "category": "자연과과학"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923013,
+      "course_name": "현대산업사회와환경문제",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정영도",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "E8-10-103(508-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 73,
+      "capacity": 100,
+      "enrolled_count": 88,
+      "category": "자연과과학"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923017,
+      "course_name": "문화로 즐기는 음식",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김의환",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-704(56-704)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 17,
+      "capacity": 70,
+      "enrolled_count": 19,
+      "category": "자연과과학"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923017,
+      "course_name": "문화로 즐기는 음식",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이선희",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-704(56-704)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 46,
+      "capacity": 80,
+      "enrolled_count": 62,
+      "category": "자연과과학"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923019,
+      "course_name": "영화로 읽는 과학과 문화",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박권수",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-205(56-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 27,
+      "capacity": 45,
+      "enrolled_count": 33,
+      "category": "자연과과학"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923022,
+      "course_name": "서양문명과 전쟁기술",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이찬행",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N16-1-127(58-127)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 56,
+      "capacity": 100,
+      "enrolled_count": 74,
+      "category": "자연과과학"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923025,
+      "course_name": "신체활동과스트레스",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김근수",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-202(56-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 68,
+      "capacity": 60,
+      "enrolled_count": 65,
+      "category": "자연과과학"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923026,
+      "course_name": "스포츠와건강",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김현주",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-207(56-207)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 48,
+      "capacity": 60,
+      "enrolled_count": 59,
+      "category": "자연과과학"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923027,
+      "course_name": "환경과 곤충산업의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김재용",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "E8-10-104(508-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 100,
+      "enrolled_count": 7,
+      "category": "자연과과학"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923028,
+      "course_name": "에너지와환경",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김가현",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "S1-1-239(40-239)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 50,
+      "capacity": 80,
+      "enrolled_count": 79,
+      "category": "자연과과학"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923029,
+      "course_name": "숲으로 떠나는 건강여행, 산림치유",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신원섭",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "10",
+            "11",
+            "12"
+          ],
+          "location": "가상강의실1"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 86,
+      "capacity": 50,
+      "enrolled_count": 48,
+      "category": "자연과과학"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923030,
+      "course_name": "환경과 그린에너지의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김재용",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "E8-10-104(508-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 100,
+      "enrolled_count": 5,
+      "category": "자연과과학"
+    },
+    {
+      "order": 24,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923034,
+      "course_name": "한국 지형 여행",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김종연",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "00"
+          ],
+          "location": "가상강의실1"
+        },
+        {
+          "day": "화",
+          "times": [
+            "00"
+          ],
+          "location": "가상강의실1"
+        },
+        {
+          "day": "수",
+          "times": [
+            "00"
+          ],
+          "location": "가상강의실1"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 111,
+      "capacity": 50,
+      "enrolled_count": 126,
+      "category": "자연과과학"
+    },
+    {
+      "order": 25,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923036,
+      "course_name": "융합 기초 동역학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김원섭",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "E8-8-305(51-305)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 50,
+      "enrolled_count": 43,
+      "category": "자연과과학"
+    },
+    {
+      "order": 26,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923036,
+      "course_name": "융합 기초 동역학",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신응수, 임은지",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "E8-7-435(50-435)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 60,
+      "enrolled_count": 37,
+      "category": "자연과과학"
+    },
+    {
+      "order": 27,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923036,
+      "course_name": "융합 기초 동역학",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김강배",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "E8-10-104(508-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 50,
+      "enrolled_count": 44,
+      "category": "자연과과학"
+    },
+    {
+      "order": 28,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923036,
+      "course_name": "융합 기초 동역학",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박혜연, 신응수",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "E8-7-317(50-317)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 50,
+      "enrolled_count": 47,
+      "category": "자연과과학"
+    },
+    {
+      "order": 29,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923038,
+      "course_name": "S.M.A.R.T 스포츠",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "송주호",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-201(56-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 29,
+      "capacity": 50,
+      "enrolled_count": 41,
+      "category": "자연과과학"
+    },
+    {
+      "order": 30,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923039,
+      "course_name": "생명의 파노라마",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "성현아",
+      "class_time": [
+        {
+          "day": "토",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "가상강의실1"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 42,
+      "capacity": 50,
+      "enrolled_count": 51,
+      "category": "자연과과학"
+    },
+    {
+      "order": 31,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923040,
+      "course_name": "한국 지오파크의 지형",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김종연",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "00"
+          ],
+          "location": "가상강의실1"
+        },
+        {
+          "day": "금",
+          "times": [
+            "00"
+          ],
+          "location": "가상강의실1"
+        },
+        {
+          "day": "토",
+          "times": [
+            "00"
+          ],
+          "location": "가상강의실1"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 47,
+      "capacity": 50,
+      "enrolled_count": 58,
+      "category": "자연과과학"
+    },
+    {
+      "order": 32,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 923043,
+      "course_name": "알기 쉬운 뇌와 몸의 융합적 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김영철, 김진하, 김찬형, 최웅",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-104(56-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 100,
+      "enrolled_count": 14,
+      "category": "자연과과학"
+    }
+  ]
+}

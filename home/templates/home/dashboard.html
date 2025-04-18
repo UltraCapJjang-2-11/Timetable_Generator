@@ -21,9 +21,9 @@
             <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
             <div class="nav-links">
                 <a href="{% url 'dashboard' %}">Home<span></span></a>
-                <a href="{% url 'mypage' %}">MyPage</a>
+                <a href="{% url 'mypage' %}">MyPage<span></span></a>
                 <a href="{% url 'timetable' %}">TimeTable<span></span></a>
-                <a href="#">Logout<span></span></a>
+                <a href="{% url 'logout' %}">Logout<span></span></a>
             </div>
         </nav>
     </header> 

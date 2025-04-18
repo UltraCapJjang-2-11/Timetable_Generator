@@ -1,0 +1,664 @@
+{
+  "year": "2020",
+  "term": "2학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "1학년",
+      "course_type": "일반선택",
+      "course_code": 281023,
+      "course_name": "인턴십 Ⅰ",
+      "section": 1,
+      "credit": 15,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04",
+            "05"
+          ],
+          "location": "E3-214(38-214)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04",
+            "05"
+          ],
+          "location": "E3-214(38-214)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "E3-214(38-214)"
+        }
+      ],
+      "lecture_hours": 0.0,
+      "lecture_times": 0.0,
+      "lab_hours": 16,
+      "lab_times": 8,
+      "pre_enrollment_count": 0,
+      "capacity": 100,
+      "enrolled_count": 10,
+      "category": "일선"
+    },
+    {
+      "order": 2,
+      "target_year": "1학년",
+      "course_type": "일반선택",
+      "course_code": 281024,
+      "course_name": "인턴십 Ⅱ",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "토",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "E3-214(38-214)"
+        }
+      ],
+      "lecture_hours": 0.0,
+      "lecture_times": 0.0,
+      "lab_hours": 4,
+      "lab_times": 2,
+      "pre_enrollment_count": 0,
+      "capacity": 100,
+      "enrolled_count": 1,
+      "category": "일선"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 280774,
+      "course_name": "안전 및 조직관리 사례연구",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정승현",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "00",
+            "01",
+            "02"
+          ],
+          "location": "학군"
+        },
+        {
+          "day": "금",
+          "times": [
+            "00",
+            "01",
+            "02"
+          ],
+          "location": "학군"
+        }
+      ],
+      "lecture_hours": 4.0,
+      "lecture_times": 4.0,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 30,
+      "capacity": 80,
+      "enrolled_count": 42,
+      "category": "일선"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 280776,
+      "course_name": "조직리더십 사례연구",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정승현",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "00",
+            "01",
+            "02"
+          ],
+          "location": "학군2"
+        },
+        {
+          "day": "금",
+          "times": [
+            "00",
+            "01",
+            "02"
+          ],
+          "location": "학군2"
+        }
+      ],
+      "lecture_hours": 4.0,
+      "lecture_times": 4.0,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 44,
+      "capacity": 80,
+      "enrolled_count": 46,
+      "category": "일선"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281021,
+      "course_name": "사회봉사 I",
+      "section": 1,
+      "credit": 1,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "김학실",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N15-171(57-171)"
+        }
+      ],
+      "lecture_hours": 0.1,
+      "lecture_times": 0.1,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 86,
+      "capacity": 350,
+      "enrolled_count": 99,
+      "category": "일선"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281021,
+      "course_name": "사회봉사 I",
+      "section": 2,
+      "credit": 1,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "김남준",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "N15-171(57-171)"
+        }
+      ],
+      "lecture_hours": 0.1,
+      "lecture_times": 0.1,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 171,
+      "capacity": 350,
+      "enrolled_count": 184,
+      "category": "일선"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281022,
+      "course_name": "사회봉사 II",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "윤상용",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N15-171(57-171)"
+        }
+      ],
+      "lecture_hours": 0.06,
+      "lecture_times": 0.06,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 145,
+      "capacity": 350,
+      "enrolled_count": 144,
+      "category": "일선"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281031,
+      "course_name": "다문화사회의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 18,
+      "capacity": 30,
+      "enrolled_count": 29,
+      "category": "일선"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281032,
+      "course_name": "소비문화",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 21,
+      "capacity": 30,
+      "enrolled_count": 24,
+      "category": "일선"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281033,
+      "course_name": "생물다양성",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 16,
+      "capacity": 30,
+      "enrolled_count": 18,
+      "category": "일선"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281035,
+      "course_name": "국제화시대의 언어",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 13,
+      "capacity": 30,
+      "enrolled_count": 25,
+      "category": "일선"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281036,
+      "course_name": "평화사상과통일의길",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 2.0,
+      "lecture_times": 2.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 30,
+      "enrolled_count": 15,
+      "category": "일선"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281037,
+      "course_name": "위험사회와 미래직업",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 22,
+      "capacity": 30,
+      "enrolled_count": 26,
+      "category": "일선"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281038,
+      "course_name": "디지털 시대의 영상과 문화",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 11,
+      "capacity": 30,
+      "enrolled_count": 28,
+      "category": "일선"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281039,
+      "course_name": "멀티미디어와 교육",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 30,
+      "enrolled_count": 3,
+      "category": "일선"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281040,
+      "course_name": "분쟁의 세계지리",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 18,
+      "capacity": 30,
+      "enrolled_count": 28,
+      "category": "일선"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281041,
+      "course_name": "리더십",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 29,
+      "capacity": 30,
+      "enrolled_count": 24,
+      "category": "일선"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281042,
+      "course_name": "한옥개론",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 30,
+      "enrolled_count": 5,
+      "category": "일선"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281043,
+      "course_name": "4차산업혁명기술의이해",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 2.0,
+      "lecture_times": 2.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 28,
+      "capacity": 30,
+      "enrolled_count": 18,
+      "category": "일선"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281044,
+      "course_name": "환경문제와 윤리",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 2.0,
+      "lecture_times": 2.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 28,
+      "capacity": 30,
+      "enrolled_count": 25,
+      "category": "일선"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281045,
+      "course_name": "4차 산업혁명과 수학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 18,
+      "capacity": 30,
+      "enrolled_count": 22,
+      "category": "일선"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 281046,
+      "course_name": "심리학 START",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "미지정",
+      "class_time": [],
+      "lecture_hours": 3.0,
+      "lecture_times": 3.0,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 41,
+      "capacity": 30,
+      "enrolled_count": 29,
+      "category": "일선"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "일반선택",
+      "course_code": 5963304,
+      "course_name": "인턴십IV",
+      "section": 1,
+      "credit": 12,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "김경완",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "인턴십용가상강의실02"
+        },
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "인턴십용가상강의실02"
+        },
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "인턴십용가상강의실02"
+        },
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "인턴십용가상강의실02"
+        },
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "인턴십용가상강의실02"
+        },
+        {
+          "day": "토",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "인턴십용가상강의실02"
+        }
+      ],
+      "lecture_hours": 0.0,
+      "lecture_times": 0.0,
+      "lab_hours": 24,
+      "lab_times": 12,
+      "pre_enrollment_count": 0,
+      "capacity": 20,
+      "enrolled_count": 2,
+      "category": "일선"
+    }
+  ]
+}

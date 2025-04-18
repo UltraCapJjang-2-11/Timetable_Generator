@@ -1,0 +1,499 @@
+{
+  "year": "2021",
+  "term": "1학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933002,
+      "course_name": "직업과 사회진출",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E3-213(38-213)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 148,
+      "capacity": 100,
+      "enrolled_count": 100,
+      "category": "진로와취업"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933003,
+      "course_name": "여성취업과경력개발",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E3-213(38-213)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 34,
+      "capacity": 100,
+      "enrolled_count": 40,
+      "category": "진로와취업"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933006,
+      "course_name": "진로탐색과 진로설정",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N13-121(59-121)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 73,
+      "capacity": 100,
+      "enrolled_count": 98,
+      "category": "진로와취업"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933006,
+      "course_name": "진로탐색과 진로설정",
+      "section": 2,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "E3-213(38-213)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 58,
+      "capacity": 100,
+      "enrolled_count": 98,
+      "category": "진로와취업"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933006,
+      "course_name": "진로탐색과 진로설정",
+      "section": 3,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N15-171(57-171)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 22,
+      "capacity": 100,
+      "enrolled_count": 30,
+      "category": "진로와취업"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933006,
+      "course_name": "진로탐색과 진로설정",
+      "section": 4,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-105(56-105)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 26,
+      "capacity": 100,
+      "enrolled_count": 73,
+      "category": "진로와취업"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933006,
+      "course_name": "진로탐색과 진로설정",
+      "section": 5,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E3-213(38-213)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 41,
+      "capacity": 100,
+      "enrolled_count": 56,
+      "category": "진로와취업"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933006,
+      "course_name": "진로탐색과 진로설정",
+      "section": 7,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-105(56-105)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 24,
+      "capacity": 100,
+      "enrolled_count": 40,
+      "category": "진로와취업"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933006,
+      "course_name": "진로탐색과 진로설정",
+      "section": 9,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "N13-121(59-121)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 19,
+      "capacity": 100,
+      "enrolled_count": 37,
+      "category": "진로와취업"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933011,
+      "course_name": "창업옴니버스",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "김태준",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "E9-105A(학연105A)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 68,
+      "capacity": 200,
+      "enrolled_count": 94,
+      "category": "진로와취업"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933013,
+      "course_name": "여성 진로탐색과 경력개발",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E3-213(38-213)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 79,
+      "capacity": 100,
+      "enrolled_count": 91,
+      "category": "진로와취업"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933016,
+      "course_name": "코칭파워리더십",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "E3-213(38-213)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 79,
+      "capacity": 100,
+      "enrolled_count": 94,
+      "category": "진로와취업"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933007,
+      "course_name": "특강한국사",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김의환",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-703(56-703)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 40,
+      "capacity": 83,
+      "enrolled_count": 80,
+      "category": "진로와취업"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933007,
+      "course_name": "특강한국사",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조혁연",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 60,
+      "capacity": 50,
+      "enrolled_count": 67,
+      "category": "진로와취업"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933008,
+      "course_name": "생활 속의 창업아이디어",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김도형",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-103(56-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 13,
+      "capacity": 48,
+      "enrolled_count": 46,
+      "category": "진로와취업"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 933014,
+      "course_name": "실무한자",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최병덕",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "N16-1-329(58-329)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "07"
+          ],
+          "location": "N16-1-329(58-329)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 20,
+      "capacity": 80,
+      "enrolled_count": 62,
+      "category": "진로와취업"
+    }
+  ]
+}

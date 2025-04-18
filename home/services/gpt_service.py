@@ -1,24 +1,26 @@
 import openai
 import json
 from django.conf import settings
+from openai import OpenAI
+
 
 # 실제 API 키는 settings 또는 환경변수를 통해 관리하세요.
-openai.api_key = settings.OPENAI_API_KEY
+#openai.api_key = settings.OPENAI_API_KEY
 
 def extract_graduation_info_from_text(pdf_text: str) -> dict:
     """
     PDF 텍스트에서 졸업 이수 정보를 추출합니다.
-    
+
     PDF 텍스트는 두 개의 주요 행을 포함합니다.
       1. 첫 번째 행은 졸업 기준 학점 정보를 나타내며,
          특히 교양(일반 교육) 부문은 전체 기준(예, 최소:42, 최대:56)와 함께,
          교양 세부 항목별 required 학점(순서대로, 예: 18, 12, 9, 3, 0)이 제공됩니다.
       2. 두 번째 행은 학생이 실제 이수한 학점 정보를 나타냅니다.
-      
+
     또한 학생 기본정보(학번, 이름, 전공, 학년)도 포함되어 있습니다.
-    
+
     예상 출력 JSON 구조 예시는 다음과 같습니다:
-    
+
     {
       "user_student_id": "2022078070",
       "user_name": "윤시훈",
@@ -74,7 +76,7 @@ def extract_graduation_info_from_text(pdf_text: str) -> dict:
          }
       }
     }
-    
+
     출력은 반드시 valid JSON이어야 하며, 추가 설명 없이 JSON 객체만 내보내십시오.
     """
     system_prompt = (
@@ -152,31 +154,23 @@ Do not include any explanation or additional text.
 PDF TEXT:
 {pdf_text}
 """
-    response = openai.ChatCompletion.create(
-         model="gpt-4o-mini",
-         messages=[
-             {"role": "system", "content": system_prompt},
-             {"role": "user", "content": user_prompt},
-         ],
-         temperature=0.0,
-    )
-    raw_content = response.choices[0].message["content"].strip()
-    print("debug: raw response content =", raw_content)
-    
-    # Remove code block wrapper if present.
-    if raw_content.startswith("```"):
-         lines = raw_content.splitlines()
-         if lines[0].startswith("```"):
-              lines = lines[1:]
-         if lines and lines[-1].strip() == "```":
-              lines = lines[:-1]
-         content = "\n".join(lines).strip()
-    else:
-         content = raw_content
 
-    try:
-         result = json.loads(content)
-    except json.JSONDecodeError as e:
-         print("JSONDecodeError:", e)
-         result = {}
+    client = OpenAI()
+    response = client.responses.create(
+        model = "gpt-4o-mini",
+        input = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        text= {
+          "format" : {
+              "type": "json_object"
+          }
+        },
+        temperature=0.0,
+    )
+
+    # print(response.output_text)
+    result = json.loads(response.output_text)
+
     return result

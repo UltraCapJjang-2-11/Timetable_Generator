@@ -1,0 +1,1462 @@
+{
+  "year": "2020",
+  "term": "2학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921004,
+      "course_name": "중국문화의이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "배득렬",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N16-1-158(58-158)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 25,
+      "capacity": 50,
+      "enrolled_count": 43,
+      "category": "인간과문화"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921004,
+      "course_name": "중국문화의이해",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조현국",
+      "class_time": [],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 50,
+      "capacity": 54,
+      "enrolled_count": 52,
+      "category": "인간과문화"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921005,
+      "course_name": "독일과독일사람",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박현정",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N16-1-260(58-260)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 34,
+      "capacity": 40,
+      "enrolled_count": 38,
+      "category": "인간과문화"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921005,
+      "course_name": "독일과독일사람",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "편영수",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N13-502(59-502)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 50,
+      "enrolled_count": 10,
+      "category": "인간과문화"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921006,
+      "course_name": "한자와한문",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "어강석",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N16-1-329(58-329)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 92,
+      "capacity": 80,
+      "enrolled_count": 74,
+      "category": "인간과문화"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921007,
+      "course_name": "러시아문학과예술의산책",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김원한",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N16-1-123(58-123)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 60,
+      "capacity": 80,
+      "enrolled_count": 76,
+      "category": "인간과문화"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921008,
+      "course_name": "프랑스문화와예술기행",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "고봉만",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 88,
+      "capacity": 106,
+      "enrolled_count": 102,
+      "category": "인간과문화"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921008,
+      "course_name": "프랑스문화와예술기행",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신명숙",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-207(56-207)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 89,
+      "capacity": 80,
+      "enrolled_count": 74,
+      "category": "인간과문화"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921008,
+      "course_name": "프랑스문화와예술기행",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "곽노경",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 62,
+      "capacity": 50,
+      "enrolled_count": 51,
+      "category": "인간과문화"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921009,
+      "course_name": "현대 한국소설과의 만남",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이익성",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N16-1-123(58-123)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 80,
+      "enrolled_count": 31,
+      "category": "인간과문화"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921010,
+      "course_name": "독일예술문화산책",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "문광훈",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N16-1-329(58-329)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 80,
+      "enrolled_count": 5,
+      "category": "인간과문화"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921011,
+      "course_name": "언어로의 초대",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최성호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N16-1-123(58-123)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 27,
+      "capacity": 80,
+      "enrolled_count": 34,
+      "category": "인간과문화"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921012,
+      "course_name": "한자와 동양문화",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "서대원",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-104(56-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 106,
+      "enrolled_count": 13,
+      "category": "인간과문화"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921013,
+      "course_name": "사랑과 문화",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김경화, 안상원",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-105(56-105)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 23,
+      "capacity": 160,
+      "enrolled_count": 37,
+      "category": "인간과문화"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921014,
+      "course_name": "한국 대중문화의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": "Y",
+      "instructor_name": "김영미",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "E8-2-201(45-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 7,
+      "capacity": 75,
+      "enrolled_count": 19,
+      "category": "인간과문화"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921016,
+      "course_name": "만화 인문학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "백용식",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08"
+          ],
+          "location": "N16-1-123(58-123)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "N16-1-123(58-123)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 86,
+      "capacity": 80,
+      "enrolled_count": 74,
+      "category": "인간과문화"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921017,
+      "course_name": "고전으로 읽는 한국의 문화코드",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "어강석",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N16-1-125(58-125)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 45,
+      "capacity": 80,
+      "enrolled_count": 78,
+      "category": "인간과문화"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921018,
+      "course_name": "현대 한국사회의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": "Y",
+      "instructor_name": "이진숙",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N13-401(59-401)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 60,
+      "enrolled_count": 10,
+      "category": "인간과문화"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921019,
+      "course_name": "미국대중문화의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤서영, 한광택",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-103(56-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 83,
+      "capacity": 48,
+      "enrolled_count": 47,
+      "category": "인간과문화"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921020,
+      "course_name": "한글맞춤법의 이론과 실제",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "장충덕",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-701(56-701)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 24,
+      "capacity": 54,
+      "enrolled_count": 38,
+      "category": "인간과문화"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921021,
+      "course_name": "우리의선사문화",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이진옥",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "S21-4-334(92-334)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 39,
+      "capacity": 40,
+      "enrolled_count": 40,
+      "category": "인간과문화"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921022,
+      "course_name": "생활속의철학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박보람",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N16-1-125(58-125)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 27,
+      "capacity": 80,
+      "enrolled_count": 45,
+      "category": "인간과문화"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921022,
+      "course_name": "생활속의철학",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최천식",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 31,
+      "capacity": 106,
+      "enrolled_count": 51,
+      "category": "인간과문화"
+    },
+    {
+      "order": 24,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921023,
+      "course_name": "세계문화유산의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "임병덕",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N13-101(59-101)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 35,
+      "capacity": 100,
+      "enrolled_count": 76,
+      "category": "인간과문화"
+    },
+    {
+      "order": 25,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921023,
+      "course_name": "세계문화유산의 이해",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정재균",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-105(56-105)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 31,
+      "capacity": 100,
+      "enrolled_count": 43,
+      "category": "인간과문화"
+    },
+    {
+      "order": 26,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921023,
+      "course_name": "세계문화유산의 이해",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이선희",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N13-101(59-101)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 22,
+      "capacity": 100,
+      "enrolled_count": 21,
+      "category": "인간과문화"
+    },
+    {
+      "order": 27,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921024,
+      "course_name": "세계 미술문화재 탐구",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박화선",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N16-1-222(58-222)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 67,
+      "capacity": 70,
+      "enrolled_count": 71,
+      "category": "인간과문화"
+    },
+    {
+      "order": 28,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921025,
+      "course_name": "대중문화와 예술의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤석빈",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N15-245(57-245)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 39,
+      "capacity": 90,
+      "enrolled_count": 68,
+      "category": "인간과문화"
+    },
+    {
+      "order": 29,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921026,
+      "course_name": "논리와 비판적 사고",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박현숙",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N16-1-329(58-329)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 32,
+      "capacity": 80,
+      "enrolled_count": 57,
+      "category": "인간과문화"
+    },
+    {
+      "order": 30,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921027,
+      "course_name": "행복의 철학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "배기호",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "S20-101"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 167,
+      "capacity": 170,
+      "enrolled_count": 172,
+      "category": "인간과문화"
+    },
+    {
+      "order": 31,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921028,
+      "course_name": "과학과 철학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김완구",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N13-121(59-121)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 19,
+      "capacity": 230,
+      "enrolled_count": 37,
+      "category": "인간과문화"
+    },
+    {
+      "order": 32,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921029,
+      "course_name": "철학고전읽기",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이경희",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "S21-4-338(92-338)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 15,
+      "capacity": 46,
+      "enrolled_count": 13,
+      "category": "인간과문화"
+    },
+    {
+      "order": 33,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921031,
+      "course_name": "한국고대문화 산책",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김현우",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-205(56-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 24,
+      "capacity": 50,
+      "enrolled_count": 46,
+      "category": "인간과문화"
+    },
+    {
+      "order": 34,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921033,
+      "course_name": "다문화와 세계종교 기행",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정세근",
+      "class_time": [
+        {
+          "day": "토",
+          "times": [
+            "11",
+            "12",
+            "13"
+          ],
+          "location": "가상강의실1"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 51,
+      "capacity": 50,
+      "enrolled_count": 48,
+      "category": "인간과문화"
+    },
+    {
+      "order": 35,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921034,
+      "course_name": "인간·상징·커뮤니케이션",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "안상원",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "03",
+            "04",
+            "05"
+          ],
+          "location": "N14-704(56-704)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 80,
+      "enrolled_count": 14,
+      "category": "인간과문화"
+    },
+    {
+      "order": 36,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921036,
+      "course_name": "동양 고전 이야기",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "서대원",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 21,
+      "capacity": 83,
+      "enrolled_count": 23,
+      "category": "인간과문화"
+    },
+    {
+      "order": 37,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921037,
+      "course_name": "문화로 보는 생활사",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조혁연",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-105(56-105)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 165,
+      "capacity": 100,
+      "enrolled_count": 205,
+      "category": "인간과문화"
+    },
+    {
+      "order": 38,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921037,
+      "course_name": "문화로 보는 생활사",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이승민",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-104(56-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 108,
+      "capacity": 80,
+      "enrolled_count": 80,
+      "category": "인간과문화"
+    },
+    {
+      "order": 39,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921038,
+      "course_name": "한국 속의 세계문화유산",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조혁연",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 96,
+      "capacity": 100,
+      "enrolled_count": 122,
+      "category": "인간과문화"
+    },
+    {
+      "order": 40,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921038,
+      "course_name": "한국 속의 세계문화유산",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "전진국",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 53,
+      "capacity": 80,
+      "enrolled_count": 78,
+      "category": "인간과문화"
+    },
+    {
+      "order": 41,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921042,
+      "course_name": "발표와 토론",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이상희",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-103(56-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 40,
+      "enrolled_count": 15,
+      "category": "인간과문화"
+    },
+    {
+      "order": 42,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921043,
+      "course_name": "영화 속의 철학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "허준",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 39,
+      "capacity": 87,
+      "enrolled_count": 63,
+      "category": "인간과문화"
+    },
+    {
+      "order": 43,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921044,
+      "course_name": "페미니즘 철학의 이해",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조주영",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 24,
+      "capacity": 106,
+      "enrolled_count": 26,
+      "category": "인간과문화"
+    },
+    {
+      "order": 44,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921046,
+      "course_name": "예술로 만나는 시민교육",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최승현",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N16-1-258(58-258)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 26,
+      "capacity": 40,
+      "enrolled_count": 33,
+      "category": "인간과문화"
+    },
+    {
+      "order": 45,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921047,
+      "course_name": "갈등사회와 시민",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김남준, 김민재, 조일수",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "E1-2-331(81-331)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 23,
+      "capacity": 60,
+      "enrolled_count": 27,
+      "category": "인간과문화"
+    },
+    {
+      "order": 46,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921048,
+      "course_name": "스토리텔링과 소통",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "백용식",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N16-1-123(58-123)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 31,
+      "capacity": 80,
+      "enrolled_count": 63,
+      "category": "인간과문화"
+    },
+    {
+      "order": 47,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 921049,
+      "course_name": "불교가 묻고 내가 답한다",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박보람",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09",
+            "10"
+          ],
+          "location": "N15-242(57-242)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 19,
+      "capacity": 70,
+      "enrolled_count": 24,
+      "category": "인간과문화"
+    }
+  ]
+}

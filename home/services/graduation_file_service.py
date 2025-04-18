@@ -1,5 +1,5 @@
 import json
-from home.models import GraduationRecord
+from data_manager.models import GraduationRecord
 
 def save_graduation_data_to_db(parsed_data: dict, user_id: int):
     """

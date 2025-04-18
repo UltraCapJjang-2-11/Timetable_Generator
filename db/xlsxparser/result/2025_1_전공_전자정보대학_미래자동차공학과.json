@@ -1,0 +1,76 @@
+{
+  "year": "2025",
+  "term": "1학기",
+  "college": "전자정보대학",
+  "department": "미래자동차공학과",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5121026,
+      "course_name": "자동차인공지능",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "황영배",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E10-교육318"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02"
+          ],
+          "location": "E10-교육318"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 17,
+      "capacity": 40,
+      "enrolled_count": 13,
+      "category": "전공선택"
+    },
+    {
+      "order": 2,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5121039,
+      "course_name": "UROP I",
+      "section": 2,
+      "credit": 1,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "김곤우",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "10",
+            "11"
+          ],
+          "location": "E8-8-305(51-305)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 47,
+      "capacity": 50,
+      "enrolled_count": 49,
+      "category": "전공선택"
+    }
+  ]
+}

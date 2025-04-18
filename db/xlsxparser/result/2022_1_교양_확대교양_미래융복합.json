@@ -1,0 +1,102 @@
+{
+  "year": "2022",
+  "term": "1학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 931001,
+      "course_name": "4차 산업혁명과 융합기술",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "안재형",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "E8-7-235(50-235)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 58,
+      "capacity": 80,
+      "enrolled_count": 73,
+      "category": "미래융복합"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 931010,
+      "course_name": "알기 쉬운 인문학과 자연과학의 만남",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "강희택, 김영관, 김영철, 김진하, 김찬형, 김학수",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-104(56-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 84,
+      "capacity": 100,
+      "enrolled_count": 99,
+      "category": "미래융복합"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 931011,
+      "course_name": "지속가능한 사회를 위한 시민의 과학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신세인",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-104(56-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 11,
+      "capacity": 106,
+      "enrolled_count": 12,
+      "category": "미래융복합"
+    }
+  ]
+}

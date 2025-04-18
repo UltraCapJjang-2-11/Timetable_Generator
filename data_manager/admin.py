@@ -1,63 +1,95 @@
-
 from django.contrib import admin
-from .models import (
-    Department, Category, Semester, Student, Course,
-    CourseSchedule,TimeTable, TimeTableDetail,
-    Transcript, GraduationRequirement
-)
+from .models import *
+
+@admin.register(University)
+class UniversityAdmin(admin.ModelAdmin):
+    list_display = ('university_id', 'university_name')
+    search_fields = ('university_name',)
+
+@admin.register(College)
+class CollegeAdmin(admin.ModelAdmin):
+    list_display = ('college_id', 'college_name', 'university')
+    list_filter = ('university',)
+    search_fields = ('college_name',)
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display = ('dept_id', 'dept_name')
+    list_display = ('dept_id', 'dept_name', 'university', 'college')
+    list_filter = ('university', 'college')
     search_fields = ('dept_name',)
+
+@admin.register(Major)
+class MajorAdmin(admin.ModelAdmin):
+    list_display = ('major_id', 'major_name', 'dept')
+    list_filter = ('dept',)
+    search_fields = ('major_name',)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('category_id', 'category_name', 'category_type', 'parent_category_id')
-    search_fields = ('category_name', 'category_type')
+    list_display = ('category_id', 'category_name', 'category_level', 'version_year')
+    list_filter = ('category_level', 'version_year')
+    search_fields = ('category_name',)
 
 @admin.register(Semester)
 class SemesterAdmin(admin.ModelAdmin):
-    list_display = ('semester_id', 'year', 'term', 'start_date', 'end_date',
-                    'registration_start', 'registration_end')
+    list_display = (
+        'semester_id', 'year', 'term', 'start_date', 'end_date',
+        'course_registration_start', 'course_registration_end'
+    )
     list_filter = ('year', 'term')
+    search_fields = ('term',)
 
-@admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('student_id', 'student_name', 'dept_id', 'admission_year', 'email')
-    list_filter = ('admission_year', 'dept_id')
-    search_fields = ('student_name', 'email')
-
-@admin.register(Course)
+@admin.register(Courses)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('course_id', 'course_code', 'section', 'dept_id',
-                    'category_id', 'course_name', 'credit', 'instructor', 'course_type')
-    search_fields = ('course_code', 'course_name', 'instructor')
-    list_filter = ('course_type', 'year', 'dept_id', 'category_id')
+    list_display = (
+        'course_id', 'course_code', 'section', 'course_name',
+        'credits', 'target_year', 'grade_type', 'instructor_name'
+    )
+    list_filter = ('target_year', 'grade_type', 'semester')
+    search_fields = ('course_code', 'course_name')
 
 @admin.register(CourseSchedule)
 class CourseScheduleAdmin(admin.ModelAdmin):
-    list_display = ('schedule_id', 'course_id', 'day', 'times', 'location')
+    list_display = ('schedule_id', 'course', 'day', 'times', 'location')
     list_filter = ('day',)
-
-@admin.register(TimeTable)
-class TimeTableAdmin(admin.ModelAdmin):
-    list_display = ('timetable_id', 'student_id', 'semester_id', 'title', 'created_at')
-    list_filter = ('semester_id',)
-
-@admin.register(TimeTableDetail)
-class TimeTableDetailAdmin(admin.ModelAdmin):
-    list_display = ('detail_id', 'timetable', 'course', 'schedule_info', 'user_note', 'custom_color')
-    search_fields = ('schedule_info', 'user_note')
-
-@admin.register(Transcript)
-class TranscriptAdmin(admin.ModelAdmin):
-    list_display = ('transcript_id', 'student_id_id', 'course_id_id', 'semester_id_id',
-                    'grade', 'credit_taken', 'retake_available')
-    list_filter = ('semester_id_id', 'grade', 'retake_available')
+    search_fields = ('location',)
 
 @admin.register(GraduationRequirement)
 class GraduationRequirementAdmin(admin.ModelAdmin):
-    list_display = ('requirement_id', 'dept_id_id', 'admission_year')
-    list_filter = ('dept_id_id', 'admission_year')
-    search_fields = ('dept_id__course__course_name',)
+    list_display = ('requirement_id', 'dept', 'applicable_year', 'maximum_value', 'minimum_value')
+    list_filter = ('dept', 'applicable_year')
+    search_fields = ('description',)
+
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ('student_id', 'auth_user_id', 'dept', 'admission_year', 'completed_semester')
+    list_filter = ('admission_year', 'completed_semester', 'dept')
+    search_fields = ('auth_user_id',)
+
+@admin.register(TimeTable)
+class TimeTableAdmin(admin.ModelAdmin):
+    list_display = ('timetable_id', 'student', 'semester', 'title', 'created_at')
+    list_filter = ('student', 'semester')
+    search_fields = ('title',)
+
+@admin.register(TimeTableDetail)
+class TimeTableDetailAdmin(admin.ModelAdmin):
+    list_display = ('detail_id', 'timetable', 'course', 'schedule_info')
+    list_filter = ('timetable', 'course')
+    search_fields = ('schedule_info',)
+
+@admin.register(Transcript)
+class TranscriptAdmin(admin.ModelAdmin):
+    list_display = ('transcript_id', 'student', 'course', 'semester', 'grade', 'retake_available')
+    list_filter = ('semester', 'grade', 'retake_available')
+    search_fields = ('grade',)
+
+@admin.register(GraduationRecord)
+class GraduationRecordAdmin(admin.ModelAdmin):
+    # 목록 페이지에 표시할 컬럼
+    list_display = ('id', 'user_student_id','user_name','user_major','user_year','total_credits','major_credits',
+                    'general_credits','free_credits','created_at',)
+    # 필터 사이드바
+    list_filter = ('user_major','user_year','created_at',)
+    # 검색 박스 대상 필드
+    search_fields = ('user_student_id','user_name',)

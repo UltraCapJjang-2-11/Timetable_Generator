@@ -1,0 +1,1373 @@
+{
+  "year": "2023",
+  "term": "1학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김은일",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 45,
+      "enrolled_count": 47,
+      "category": "의사소통"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이현서",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "오영록",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 12,
+      "capacity": 45,
+      "enrolled_count": 49,
+      "category": "의사소통"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "임세화",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-102(56-102)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "오영록",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 13,
+      "capacity": 45,
+      "enrolled_count": 46,
+      "category": "의사소통"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이향애",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이익성",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-205(56-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "의사소통"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "전계영",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-203(56-203)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김용남",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 7,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "의사소통"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 10,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤예영",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 45,
+      "enrolled_count": 47,
+      "category": "의사소통"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김용남",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "의사소통"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 12,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박성준",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 49,
+      "category": "의사소통"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 13,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이익성",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 8,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 14,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤예영",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 8,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 15,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이향애",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 16,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김은일",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 7,
+      "capacity": 45,
+      "enrolled_count": 43,
+      "category": "의사소통"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 17,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이현서",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 18,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "전계영",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-201(56-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 19,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김용남",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-102(56-102)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 43,
+      "category": "의사소통"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 20,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "임세화",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-201(56-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 21,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "전계영",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 22,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤예영",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-202(56-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 23,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김보현",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-202(56-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 24,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 24,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이은경, 장충덕",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-704(56-704)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "의사소통"
+    },
+    {
+      "order": 25,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 25,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "마희정",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 26,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 26,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "마희정",
+      "class_time": [
+        {
+          "day": "토",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S21-4-143(92-143)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 45,
+      "enrolled_count": 32,
+      "category": "의사소통"
+    },
+    {
+      "order": 27,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 27,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이지원",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-202(56-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 28,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 28,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김보현",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 47,
+      "category": "의사소통"
+    },
+    {
+      "order": 29,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 29,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "마희정",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 26,
+      "category": "의사소통"
+    },
+    {
+      "order": 30,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912001,
+      "course_name": "대학 글쓰기",
+      "section": 30,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "마희정",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N7-402"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 15,
+      "category": "의사소통"
+    },
+    {
+      "order": 31,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이상희",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-102(56-102)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 12,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "의사소통"
+    },
+    {
+      "order": 32,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이은경",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N7-403"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 29,
+      "category": "의사소통"
+    },
+    {
+      "order": 33,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김정선",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N7-404"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 39,
+      "category": "의사소통"
+    },
+    {
+      "order": 34,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김혜정",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-203(56-203)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "의사소통"
+    },
+    {
+      "order": 35,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김보현",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N7-406"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 45,
+      "enrolled_count": 38,
+      "category": "의사소통"
+    },
+    {
+      "order": 36,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김혜정",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N7-403"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 36,
+      "category": "의사소통"
+    },
+    {
+      "order": 37,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이지원",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 43,
+      "category": "의사소통"
+    },
+    {
+      "order": 38,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이상희",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "의사소통"
+    },
+    {
+      "order": 39,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김보현",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N7-406"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 40,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 10,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김정선",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N7-407"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 41,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이지원",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-203(56-203)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 19,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "의사소통"
+    },
+    {
+      "order": 42,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 12,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이지원",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "N14-203(56-203)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 42,
+      "category": "의사소통"
+    },
+    {
+      "order": 43,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 13,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이은경",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "N14-702(56-702)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "의사소통"
+    },
+    {
+      "order": 44,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 912002,
+      "course_name": "글쓰기와 발표",
+      "section": 14,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김정선",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-202(56-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "의사소통"
+    }
+  ]
+}

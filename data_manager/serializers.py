@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from data_manager.models import (
-    Department, Category, Semester, Student, Course,
+    Department, Category, Semester, Student, Courses,
     CourseSchedule, TimeTable, TimeTableDetail,
     Transcript, GraduationRequirement
 )
@@ -27,7 +27,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Course
+        model = Courses
         fields = '__all__'
 
 class CourseScheduleSerializer(serializers.ModelSerializer):

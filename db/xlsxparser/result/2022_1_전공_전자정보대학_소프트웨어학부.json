@@ -1,0 +1,101 @@
+{
+  "year": "2022",
+  "term": "1학기",
+  "college": "전자정보대학",
+  "department": "소프트웨어학부",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "1학년",
+      "course_type": "전공선택",
+      "course_code": 5118002,
+      "course_name": "미래설계탐색",
+      "section": 1,
+      "credit": 1,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최경주",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-4-111(43-111)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 2,
+      "lab_times": 1,
+      "pre_enrollment_count": 12,
+      "capacity": 315,
+      "enrolled_count": 90,
+      "category": "전공선택"
+    },
+    {
+      "order": 2,
+      "target_year": "1학년",
+      "course_type": "전공필수",
+      "course_code": 5118001,
+      "course_name": "이산수학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정지훈",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "S4-1-104(21-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 20,
+      "capacity": 50,
+      "enrolled_count": 58,
+      "category": "전공필수"
+    },
+    {
+      "order": 3,
+      "target_year": "1학년",
+      "course_type": "전공필수",
+      "course_code": 5118001,
+      "course_name": "이산수학",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이병훈",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "S4-1-103(21-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 23,
+      "capacity": 50,
+      "enrolled_count": 60,
+      "category": "전공필수"
+    }
+  ]
+}

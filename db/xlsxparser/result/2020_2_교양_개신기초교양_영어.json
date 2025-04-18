@@ -1,0 +1,1491 @@
+{
+  "year": "2020",
+  "term": "2학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이강영",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-109(56-109)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 1,
+      "enrolled_count": 9,
+      "category": "영어"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이강영",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 18,
+      "capacity": 1,
+      "enrolled_count": 30,
+      "category": "영어"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "피터 맥 고완",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N13-304(59-304)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 13,
+      "capacity": 45,
+      "enrolled_count": 24,
+      "category": "영어"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "트리쉬케루스",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 45,
+      "enrolled_count": 16,
+      "category": "영어"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "허선민",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 37,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "영어"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "벤자민조엘마크",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 45,
+      "enrolled_count": 31,
+      "category": "영어"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "프레드K.리벤버그",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 13,
+      "capacity": 45,
+      "enrolled_count": 47,
+      "category": "영어"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "레이몬드 레브니악",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-701(56-701)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-703(56-703)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 15,
+      "capacity": 45,
+      "enrolled_count": 22,
+      "category": "영어"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "헤이즐 로버츠",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 18,
+      "capacity": 45,
+      "enrolled_count": 43,
+      "category": "영어"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 10,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "헤이즐 로버츠",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "04",
+            "05"
+          ],
+          "location": "N14-108(56-108)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "04",
+            "05"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 31,
+      "capacity": 45,
+      "enrolled_count": 37,
+      "category": "영어"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "피터 맥 고완",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-107(56-107)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-106(56-106)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 20,
+      "category": "영어"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 12,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "레이몬드 레브니악",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-201(56-201)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 18,
+      "capacity": 45,
+      "enrolled_count": 40,
+      "category": "영어"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 13,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "레이몬드 레브니악",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "N14-201(56-201)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "N14-703(56-703)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 44,
+      "category": "영어"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 14,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "스테판P.호그",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N14-107(56-107)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 19,
+      "capacity": 45,
+      "enrolled_count": 47,
+      "category": "영어"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 15,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "벤자민조엘마크",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-107(56-107)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 35,
+      "category": "영어"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 16,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조나단 프렌치",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-108(56-108)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-107(56-107)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 31,
+      "capacity": 45,
+      "enrolled_count": 39,
+      "category": "영어"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 17,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "벤자민조엘마크",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N13-303(59-303)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 45,
+      "enrolled_count": 35,
+      "category": "영어"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 18,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조나단 프렌치",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N14-107(56-107)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "N14-201(56-201)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 18,
+      "capacity": 45,
+      "enrolled_count": 30,
+      "category": "영어"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 19,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정혜인",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "04",
+            "05"
+          ],
+          "location": "N14-207(56-207)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "04",
+            "05"
+          ],
+          "location": "N14-207(56-207)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 11,
+      "capacity": 45,
+      "enrolled_count": 35,
+      "category": "영어"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 20,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "피터 맥 고완",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-207(56-207)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-207(56-207)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 45,
+      "enrolled_count": 28,
+      "category": "영어"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 21,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "프레드K.리벤버그",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-109(56-109)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 7,
+      "capacity": 45,
+      "enrolled_count": 37,
+      "category": "영어"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 22,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "프레드K.리벤버그",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "N14-109(56-109)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-109(56-109)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 7,
+      "capacity": 45,
+      "enrolled_count": 38,
+      "category": "영어"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 23,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조나단 프렌치",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "04",
+            "05"
+          ],
+          "location": "N14-106(56-106)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-207(56-207)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 13,
+      "capacity": 45,
+      "enrolled_count": 38,
+      "category": "영어"
+    },
+    {
+      "order": 24,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 24,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "스테판P.호그",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-208(56-208)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-104(56-104)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 45,
+      "enrolled_count": 22,
+      "category": "영어"
+    },
+    {
+      "order": 25,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913001,
+      "course_name": "ACTION ENGLISH(영어Ⅱ)",
+      "section": 25,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "양희에리카리",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "S1-3-202(42-202)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "S1-3-202(42-202)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 45,
+      "enrolled_count": 11,
+      "category": "영어"
+    },
+    {
+      "order": 26,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "트리쉬케루스",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N13-303(59-303)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N13-103(59-103)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 7,
+      "capacity": 45,
+      "enrolled_count": 35,
+      "category": "영어"
+    },
+    {
+      "order": 27,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "벤자민조엘마크",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N13-502(59-502)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N13-303(59-303)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 45,
+      "enrolled_count": 29,
+      "category": "영어"
+    },
+    {
+      "order": 28,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "트리쉬케루스",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-3-203(42-203)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-3-203(42-203)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 34,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "영어"
+    },
+    {
+      "order": 29,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "안지희",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-701(56-701)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-703(56-703)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 22,
+      "capacity": 45,
+      "enrolled_count": 47,
+      "category": "영어"
+    },
+    {
+      "order": 30,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "트리쉬케루스",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-703(56-703)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "N14-703(56-703)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 16,
+      "capacity": 45,
+      "enrolled_count": 37,
+      "category": "영어"
+    },
+    {
+      "order": 31,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "레이몬드 레브니악",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-703(56-703)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-704(56-704)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 21,
+      "capacity": 45,
+      "enrolled_count": 40,
+      "category": "영어"
+    },
+    {
+      "order": 32,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "레이몬드 레브니악",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N13-104(59-104)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N13-103(59-103)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 36,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "영어"
+    },
+    {
+      "order": 33,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "프레드K.리벤버그",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-208(56-208)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 45,
+      "enrolled_count": 40,
+      "category": "영어"
+    },
+    {
+      "order": 34,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "헤이즐 로버츠",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N14-208(56-208)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 29,
+      "capacity": 45,
+      "enrolled_count": 46,
+      "category": "영어"
+    },
+    {
+      "order": 35,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 10,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "강선자",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "S1-3-203(42-203)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "S1-3-203(42-203)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "영어"
+    },
+    {
+      "order": 36,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "스테판P.호그",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N13-101(59-101)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N13-101(59-101)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 16,
+      "capacity": 45,
+      "enrolled_count": 36,
+      "category": "영어"
+    },
+    {
+      "order": 37,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 12,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "헤이즐 로버츠",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-207(56-207)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 39,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "영어"
+    },
+    {
+      "order": 38,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 13,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "스테판P.호그",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-703(56-703)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-703(56-703)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 45,
+      "enrolled_count": 39,
+      "category": "영어"
+    },
+    {
+      "order": 39,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 913002,
+      "course_name": "영어읽기와 토론(영어Ⅰ)",
+      "section": 14,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조나단 프렌치",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-207(56-207)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "N14-207(56-207)"
+        }
+      ],
+      "lecture_hours": 4,
+      "lecture_times": 4,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 26,
+      "capacity": 45,
+      "enrolled_count": 40,
+      "category": "영어"
+    }
+  ]
+}

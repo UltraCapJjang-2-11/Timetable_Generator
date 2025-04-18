@@ -11,7 +11,7 @@
 
     <!-- 부트스트랩 CSS 추가 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- (추가) 진행 상황 오버레이 스타일 -->
     <style>
       #progress-overlay {
@@ -48,7 +48,7 @@
           background: #4caf50;
       }
     </style>
-    
+
 </head>
 <body>
     <!-- header -->
@@ -61,10 +61,10 @@
                 <a href="{% url 'dashboard' %}">Home<span></span></a>
                 <a href="{% url 'mypage' %}">MyPage<span></span></a>
                 <a href="{% url 'timetable' %}">TimeTable<span></span></a>
-                <a href="#">Logout<span></span></a>
+                <a href="{% url 'logout' %}">Logout<span></span></a>
             </div>
         </nav>
-    </header> 
+    </header>
     <!-- 컨테이너 -->
     <div class="container-fluid">
         <!-- 왼쪽 패널: 강의 검색/필터 및 강의 목록 -->
@@ -88,9 +88,9 @@
                         <div class="course-item" data-type="major_required" data-course-id="{{ course.course_id }}">
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
-                                <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
-                                <span class="year">{{ course.year }}</span>
+                                <span class="instructor">{{ course.instructor_name }}</span>
+                                <span class="credit">{{ course.credits }}학점</span>
+                                <span class="year">{{ course.target_year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
                             <div class="course-meta">
@@ -127,7 +127,7 @@
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
                                 <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
+                                <span class="credit">{{ course.credits }}학점</span>
                                 <span class="year">{{ course.year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
@@ -164,7 +164,7 @@
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
                                 <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
+                                <span class="credit">{{ course.credits }}학점</span>
                                 <span class="year">{{ course.year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
@@ -201,7 +201,7 @@
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
                                 <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
+                                <span class="credit">{{ course.credits }}학점</span>
                                 <span class="year">{{ course.year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
@@ -238,7 +238,7 @@
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
                                 <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
+                                <span class="credit">{{ course.credits }}학점</span>
                                 <span class="year">{{ course.year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
@@ -311,10 +311,10 @@
                 <div class="goal-inputs">
                     <label for="total-credits">총 목표 학점 (최대 24):</label>
                     <input type="number" id="total-credits" min="1" max="24" value="18">
-                    
+
                     <label for="major-credits">전공 학점:</label>
                     <input type="number" id="major-credits" min="0" max="24" value="9">
-                    
+
                     <label for="elective-credits">교양 학점:</label>
                     <input type="number" id="elective-credits" min="0" max="24" value="9">
                 </div>
@@ -338,7 +338,7 @@
             <button id="save-timetable-btn">💾 현재 시간표 저장</button>
         </div>
     </div>
-    
+
     <!-- 진행 상황 오버레이 (추가된 부분) -->
     <div id="progress-overlay">
       <div id="progress-message">
@@ -349,7 +349,7 @@
         <p id="progress-count"></p>
       </div>
     </div>
-    
+
     <!-- 부트스트랩 JS 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- 업데이트된 timetable_script.js 파일 연결 -->

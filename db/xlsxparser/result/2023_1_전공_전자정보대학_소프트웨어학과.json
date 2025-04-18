@@ -1,0 +1,779 @@
+{
+  "year": "2023",
+  "term": "1학기",
+  "college": "전자정보대학",
+  "department": "소프트웨어학과",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "3학년",
+      "course_type": "전공필수",
+      "course_code": 5111015,
+      "course_name": "운영체제",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이건명",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05"
+          ],
+          "location": "S4-1-106(21-106)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S4-1-106(21-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 69,
+      "capacity": 50,
+      "enrolled_count": 56,
+      "category": "전공필수"
+    },
+    {
+      "order": 2,
+      "target_year": "3학년",
+      "course_type": "전공필수",
+      "course_code": 5111015,
+      "course_name": "운영체제",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조희승",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05"
+          ],
+          "location": "S4-1-103(21-103)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S4-1-103(21-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 46,
+      "capacity": 50,
+      "enrolled_count": 48,
+      "category": "전공필수"
+    },
+    {
+      "order": 3,
+      "target_year": "3학년",
+      "course_type": "전공필수",
+      "course_code": 5111015,
+      "course_name": "운영체제",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조희승",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "05"
+          ],
+          "location": "S4-1-103(21-103)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S4-1-103(21-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 7,
+      "capacity": 50,
+      "enrolled_count": 26,
+      "category": "전공필수"
+    },
+    {
+      "order": 4,
+      "target_year": "3학년",
+      "course_type": "전공필수",
+      "course_code": 5111016,
+      "course_name": "객체지향 설계",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "홍장의",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-104(21-104)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "S4-1-206(21-206)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 1,
+      "lab_times": 0.5,
+      "pre_enrollment_count": 76,
+      "capacity": 45,
+      "enrolled_count": 43,
+      "category": "전공필수"
+    },
+    {
+      "order": 5,
+      "target_year": "3학년",
+      "course_type": "전공필수",
+      "course_code": 5111016,
+      "course_name": "객체지향 설계",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이종연",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-106(21-106)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "S4-1-106(21-106)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 1,
+      "lab_times": 0.5,
+      "pre_enrollment_count": 5,
+      "capacity": 80,
+      "enrolled_count": 36,
+      "category": "전공필수"
+    },
+    {
+      "order": 6,
+      "target_year": "3학년",
+      "course_type": "전공필수",
+      "course_code": 5111016,
+      "course_name": "객체지향 설계",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "홍장의",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S4-1-103(21-103)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "S4-1-206(21-206)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 1,
+      "lab_times": 0.5,
+      "pre_enrollment_count": 27,
+      "capacity": 45,
+      "enrolled_count": 45,
+      "category": "전공필수"
+    },
+    {
+      "order": 7,
+      "target_year": "3학년",
+      "course_type": "전공선택",
+      "course_code": 5111023,
+      "course_name": "컴파일러",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이재성",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "S4-1-104(21-104)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S4-1-104(21-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 1,
+      "lab_times": 0.5,
+      "pre_enrollment_count": 50,
+      "capacity": 50,
+      "enrolled_count": 58,
+      "category": "전공선택"
+    },
+    {
+      "order": 8,
+      "target_year": "3학년",
+      "course_type": "전공선택",
+      "course_code": 5111025,
+      "course_name": "컴퓨터네트워크",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조영복",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S4-1-103(21-103)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 93,
+      "capacity": 50,
+      "enrolled_count": 48,
+      "category": "전공선택"
+    },
+    {
+      "order": 9,
+      "target_year": "3학년",
+      "course_type": "전공선택",
+      "course_code": 5111071,
+      "course_name": "오픈소스전문프로젝트",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "강재구",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "S4-1-204(21-204)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 4,
+      "lab_times": 2.0,
+      "pre_enrollment_count": 54,
+      "capacity": 45,
+      "enrolled_count": 41,
+      "category": "전공선택"
+    },
+    {
+      "order": 10,
+      "target_year": "3학년",
+      "course_type": "전공선택",
+      "course_code": 5111071,
+      "course_name": "오픈소스전문프로젝트",
+      "section": 2,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "황경순",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "S4-1-201(21-201)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 4,
+      "lab_times": 2.0,
+      "pre_enrollment_count": 21,
+      "capacity": 45,
+      "enrolled_count": 36,
+      "category": "전공선택"
+    },
+    {
+      "order": 11,
+      "target_year": "3학년",
+      "course_type": "전공선택",
+      "course_code": 5111087,
+      "course_name": "오픈소스 웹소프트웨어",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "류관희",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-104(21-104)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-206(21-206)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1.0,
+      "pre_enrollment_count": 38,
+      "capacity": 45,
+      "enrolled_count": 51,
+      "category": "전공선택"
+    },
+    {
+      "order": 12,
+      "target_year": "3학년",
+      "course_type": "전공선택",
+      "course_code": 5111087,
+      "course_name": "오픈소스 웹소프트웨어",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": "Y",
+      "instructor_name": "나스리디노프 아지즈",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-103(21-103)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-205(21-205)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1.0,
+      "pre_enrollment_count": 46,
+      "capacity": 45,
+      "enrolled_count": 46,
+      "category": "전공선택"
+    },
+    {
+      "order": 13,
+      "target_year": "3학년",
+      "course_type": "전공선택",
+      "course_code": 5111088,
+      "course_name": "창업기획",
+      "section": 1,
+      "credit": 1,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이재성",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-7-435(50-435)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 2,
+      "lab_times": 1.0,
+      "pre_enrollment_count": 88,
+      "capacity": 100,
+      "enrolled_count": 93,
+      "category": "전공선택"
+    },
+    {
+      "order": 14,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5100012,
+      "course_name": "창업산학초청세미나Ⅰ",
+      "section": 7,
+      "credit": 1,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최경주",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S1-4-111(43-111)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 2,
+      "lab_times": 1.0,
+      "pre_enrollment_count": 61,
+      "capacity": 200,
+      "enrolled_count": 70,
+      "category": "전공선택"
+    },
+    {
+      "order": 15,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5111031,
+      "course_name": "임베디드시스템",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이병훈",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "S4-1-204(21-204)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1.0,
+      "pre_enrollment_count": 35,
+      "capacity": 25,
+      "enrolled_count": 29,
+      "category": "전공선택"
+    },
+    {
+      "order": 16,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5111032,
+      "course_name": "영상처리",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최경주",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01"
+          ],
+          "location": "S4-1-104(21-104)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "S4-1-104(21-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 67,
+      "capacity": 40,
+      "enrolled_count": 40,
+      "category": "전공선택"
+    },
+    {
+      "order": 17,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5111073,
+      "course_name": "빅데이터시스템설계",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김정훈",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-102(21-102)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "S4-1-206(21-206)"
+        }
+      ],
+      "lecture_hours": 2,
+      "lecture_times": 2,
+      "lab_hours": 2,
+      "lab_times": 1.0,
+      "pre_enrollment_count": 69,
+      "capacity": 45,
+      "enrolled_count": 46,
+      "category": "전공선택"
+    },
+    {
+      "order": 18,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5111078,
+      "course_name": "기계학습",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이건명",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06"
+          ],
+          "location": "S4-1-104(21-104)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S4-1-104(21-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 32,
+      "capacity": 60,
+      "enrolled_count": 25,
+      "category": "전공선택"
+    },
+    {
+      "order": 19,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5111078,
+      "course_name": "기계학습",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정지훈",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06"
+          ],
+          "location": "S4-1-103(21-103)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "03",
+            "04"
+          ],
+          "location": "S4-1-102(21-102)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 43,
+      "capacity": 60,
+      "enrolled_count": 57,
+      "category": "전공선택"
+    },
+    {
+      "order": 20,
+      "target_year": "4학년",
+      "course_type": "전공필수",
+      "course_code": 5111090,
+      "course_name": "캡스톤디자인",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최경주",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "S4-1-103(21-103)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 4,
+      "lab_times": 2.0,
+      "pre_enrollment_count": 63,
+      "capacity": 60,
+      "enrolled_count": 63,
+      "category": "전공필수"
+    },
+    {
+      "order": 21,
+      "target_year": "4학년",
+      "course_type": "전공필수",
+      "course_code": 5111090,
+      "course_name": "캡스톤디자인",
+      "section": 2,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이종연",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "S4-1-106(21-106)"
+        }
+      ],
+      "lecture_hours": 0,
+      "lecture_times": 0,
+      "lab_hours": 4,
+      "lab_times": 2.0,
+      "pre_enrollment_count": 43,
+      "capacity": 60,
+      "enrolled_count": 50,
+      "category": "전공필수"
+    },
+    {
+      "order": 22,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5111093,
+      "course_name": "정보·컴퓨터교재연구및지도법",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이상호",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S4-1-101(21-101)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0.0,
+      "pre_enrollment_count": 7,
+      "capacity": 45,
+      "enrolled_count": 4,
+      "category": "전공선택"
+    }
+  ]
+}

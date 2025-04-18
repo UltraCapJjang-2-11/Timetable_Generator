@@ -1,0 +1,722 @@
+{
+  "year": "2023",
+  "term": "1학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934002,
+      "course_name": "미술의이론과감상",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "백다은",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 23,
+      "capacity": 80,
+      "enrolled_count": 46,
+      "category": "진로와취업"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934003,
+      "course_name": "음악의이론과감상",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "노지영",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 62,
+      "capacity": 86,
+      "enrolled_count": 84,
+      "category": "진로와취업"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934003,
+      "course_name": "음악의이론과감상",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "한수정",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-108(56-108)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 51,
+      "capacity": 86,
+      "enrolled_count": 83,
+      "category": "진로와취업"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934004,
+      "course_name": "연극영화의이론과감상",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "조만수",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N16-1-127(58-127)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 71,
+      "capacity": 80,
+      "enrolled_count": 69,
+      "category": "진로와취업"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934004,
+      "course_name": "연극영화의이론과감상",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박인영",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 34,
+      "capacity": 80,
+      "enrolled_count": 78,
+      "category": "진로와취업"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934004,
+      "course_name": "연극영화의이론과감상",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김주연",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N14-204(56-204)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 125,
+      "capacity": 80,
+      "enrolled_count": 77,
+      "category": "진로와취업"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934008,
+      "course_name": "축구의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김상필",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N13-103(59-103)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 8,
+      "capacity": 50,
+      "enrolled_count": 11,
+      "category": "진로와취업"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934009,
+      "course_name": "농구의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이규섭",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N13-103(59-103)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 13,
+      "capacity": 25,
+      "enrolled_count": 16,
+      "category": "진로와취업"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934010,
+      "course_name": "테니스의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김규석",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N13-502(59-502)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 19,
+      "capacity": 50,
+      "enrolled_count": 25,
+      "category": "진로와취업"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934011,
+      "course_name": "탁구의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김세형",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N13-103(59-103)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 33,
+      "capacity": 25,
+      "enrolled_count": 22,
+      "category": "진로와취업"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934011,
+      "course_name": "탁구의이론과실기",
+      "section": 2,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박해원",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "N13-404(59-404)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 25,
+      "capacity": 25,
+      "enrolled_count": 21,
+      "category": "진로와취업"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934012,
+      "course_name": "배드민턴의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이광진",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "N13-404(59-404)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 50,
+      "capacity": 50,
+      "enrolled_count": 47,
+      "category": "진로와취업"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934013,
+      "course_name": "수영의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김광명",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "E8-8-206(51-206)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 25,
+      "capacity": 25,
+      "enrolled_count": 23,
+      "category": "진로와취업"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934014,
+      "course_name": "볼링의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "옥광",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N13-502(59-502)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 21,
+      "capacity": 25,
+      "enrolled_count": 20,
+      "category": "진로와취업"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934014,
+      "course_name": "볼링의이론과실기",
+      "section": 2,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "송주호",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N7-301"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 14,
+      "capacity": 25,
+      "enrolled_count": 18,
+      "category": "진로와취업"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934017,
+      "course_name": "생활속의호신술",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최명",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N7-302"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 24,
+      "capacity": 30,
+      "enrolled_count": 26,
+      "category": "진로와취업"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934018,
+      "course_name": "스쿼시의이론과실기",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김현주",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N13-404(59-404)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 22,
+      "capacity": 25,
+      "enrolled_count": 25,
+      "category": "진로와취업"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934019,
+      "course_name": "골프스윙의 ABC",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최종환",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N7-302"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 14,
+      "capacity": 25,
+      "enrolled_count": 15,
+      "category": "진로와취업"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934020,
+      "course_name": "요가와 필라테스",
+      "section": 1,
+      "credit": 2,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "엄석주",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06",
+            "07"
+          ],
+          "location": "N15-245(57-245)"
+        }
+      ],
+      "lecture_hours": 1,
+      "lecture_times": 1,
+      "lab_hours": 2,
+      "lab_times": 2,
+      "pre_enrollment_count": 25,
+      "capacity": 25,
+      "enrolled_count": 25,
+      "category": "진로와취업"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934006,
+      "course_name": "합창",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "백은경",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "04",
+            "05",
+            "06"
+          ],
+          "location": "S21-4-146(92-146)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 62,
+      "capacity": 70,
+      "enrolled_count": 78,
+      "category": "진로와취업"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934006,
+      "course_name": "합창",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "김선주",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S21-4-146(92-146)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 119,
+      "capacity": 70,
+      "enrolled_count": 75,
+      "category": "진로와취업"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934006,
+      "course_name": "합창",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "최낙기",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S21-4-146(92-146)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 25,
+      "capacity": 70,
+      "enrolled_count": 40,
+      "category": "진로와취업"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 934006,
+      "course_name": "합창",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "이준",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03",
+            "04"
+          ],
+          "location": "S21-4-146(92-146)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 140,
+      "capacity": 70,
+      "enrolled_count": 82,
+      "category": "진로와취업"
+    }
+  ]
+}

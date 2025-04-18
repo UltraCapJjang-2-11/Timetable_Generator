@@ -43,7 +43,7 @@ class CourseSearchView(APIView):
 
         # 2) Service 호출
         service = CourseFilterService()
-        queryset = service.get_final_results(
+        queryset = service.course_search(
             dept_name=dept_name,
             category_name=category_name,
             instructor_name=instructor_name,

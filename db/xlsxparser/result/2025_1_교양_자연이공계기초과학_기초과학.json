@@ -1,0 +1,1380 @@
+{
+  "year": "2025",
+  "term": "1학기",
+  "college": "비분류",
+  "department": "비분류",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941001,
+      "course_name": "수학",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "피영진",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05"
+          ],
+          "location": "S1-2-104(41-104)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 12,
+      "capacity": 40,
+      "enrolled_count": 40,
+      "category": "기초과학"
+    },
+    {
+      "order": 2,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "류미수",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "09"
+          ],
+          "location": "S1-1-427(40-427)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "S1-1-427(40-427)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 7,
+      "capacity": 30,
+      "enrolled_count": 36,
+      "category": "기초과학"
+    },
+    {
+      "order": 3,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 2,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "지운식",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-2-201(41-201)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07"
+          ],
+          "location": "S1-2-201(41-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 30,
+      "enrolled_count": 41,
+      "category": "기초과학"
+    },
+    {
+      "order": 4,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 3,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤상민",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05"
+          ],
+          "location": "S1-2-305(41-305)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-305(41-305)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 30,
+      "enrolled_count": 42,
+      "category": "기초과학"
+    },
+    {
+      "order": 5,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 4,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "고두원",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07"
+          ],
+          "location": "S1-2-104(41-104)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "07"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 30,
+      "enrolled_count": 45,
+      "category": "기초과학"
+    },
+    {
+      "order": 6,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 5,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤재헌",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-2-202(41-202)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "05"
+          ],
+          "location": "S1-2-202(41-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 8,
+      "capacity": 30,
+      "enrolled_count": 44,
+      "category": "기초과학"
+    },
+    {
+      "order": 7,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 6,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "금상호",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "09"
+          ],
+          "location": "E1-1-140(82-140)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E1-2-331(81-331)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 30,
+      "enrolled_count": 42,
+      "category": "기초과학"
+    },
+    {
+      "order": 8,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 7,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최은애",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "S1-2-302(41-302)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "03"
+          ],
+          "location": "S1-2-302(41-302)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 40,
+      "category": "기초과학"
+    },
+    {
+      "order": 9,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 8,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "임효진",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "S1-2-205(41-205)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02"
+          ],
+          "location": "S1-2-205(41-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 40,
+      "category": "기초과학"
+    },
+    {
+      "order": 10,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 9,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "이석종",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-205(41-205)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "03"
+          ],
+          "location": "S1-2-205(41-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 30,
+      "enrolled_count": 33,
+      "category": "기초과학"
+    },
+    {
+      "order": 11,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 10,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "진상돈",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E1-2-306(81-306)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "03"
+          ],
+          "location": "E1-1-136(82-136)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 30,
+      "enrolled_count": 30,
+      "category": "기초과학"
+    },
+    {
+      "order": 12,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 11,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "엄연석",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-104(41-104)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "03"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 30,
+      "enrolled_count": 35,
+      "category": "기초과학"
+    },
+    {
+      "order": 13,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 12,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김겸순",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-306(41-306)"
+        },
+        {
+          "day": "화",
+          "times": [
+            "03"
+          ],
+          "location": "S1-2-306(41-306)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 30,
+      "enrolled_count": 41,
+      "category": "기초과학"
+    },
+    {
+      "order": 14,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 13,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김은희",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "05"
+          ],
+          "location": "S1-2-202(41-202)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-2-202(41-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 38,
+      "category": "기초과학"
+    },
+    {
+      "order": 15,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 14,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김은희",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-2-205(41-205)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "06"
+          ],
+          "location": "S1-2-205(41-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 30,
+      "enrolled_count": 38,
+      "category": "기초과학"
+    },
+    {
+      "order": 16,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 15,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "염성준",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S1-2-205(41-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 9,
+      "capacity": 30,
+      "enrolled_count": 41,
+      "category": "기초과학"
+    },
+    {
+      "order": 17,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 16,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "신재민",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 30,
+      "enrolled_count": 47,
+      "category": "기초과학"
+    },
+    {
+      "order": 18,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 17,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최은애",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "06"
+          ],
+          "location": "S1-2-205(41-205)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "07",
+            "08"
+          ],
+          "location": "S1-2-205(41-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 35,
+      "category": "기초과학"
+    },
+    {
+      "order": 19,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 18,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "임효진",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "S1-2-202(41-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 12,
+      "capacity": 30,
+      "enrolled_count": 41,
+      "category": "기초과학"
+    },
+    {
+      "order": 20,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 19,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "엄연석",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 2,
+      "capacity": 30,
+      "enrolled_count": 45,
+      "category": "기초과학"
+    },
+    {
+      "order": 21,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 20,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "피영진",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "03"
+          ],
+          "location": "S1-2-305(41-305)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-305(41-305)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 34,
+      "category": "기초과학"
+    },
+    {
+      "order": 22,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 21,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최진필",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "03"
+          ],
+          "location": "E8-2-201(45-201)"
+        },
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "E8-2-201(45-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 6,
+      "capacity": 30,
+      "enrolled_count": 33,
+      "category": "기초과학"
+    },
+    {
+      "order": 23,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 22,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최은애",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-302(41-302)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "02"
+          ],
+          "location": "S1-2-302(41-302)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 30,
+      "enrolled_count": 42,
+      "category": "기초과학"
+    },
+    {
+      "order": 24,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 23,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "엄연석",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02"
+          ],
+          "location": "S1-2-104(41-104)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 30,
+      "enrolled_count": 47,
+      "category": "기초과학"
+    },
+    {
+      "order": 25,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 24,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "정태은",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-202(41-202)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "01"
+          ],
+          "location": "S1-2-202(41-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 37,
+      "category": "기초과학"
+    },
+    {
+      "order": 26,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 25,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "염성준",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-301(41-301)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "01"
+          ],
+          "location": "S1-2-301(41-301)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 30,
+      "enrolled_count": 39,
+      "category": "기초과학"
+    },
+    {
+      "order": 27,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 26,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤영호",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-201(41-201)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "05"
+          ],
+          "location": "S1-2-201(41-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 35,
+      "category": "기초과학"
+    },
+    {
+      "order": 28,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 27,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "한유두",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05",
+            "06"
+          ],
+          "location": "S1-2-104(41-104)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "06"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 40,
+      "category": "기초과학"
+    },
+    {
+      "order": 29,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 28,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤상민",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05"
+          ],
+          "location": "S1-2-305(41-305)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-305(41-305)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 30,
+      "enrolled_count": 43,
+      "category": "기초과학"
+    },
+    {
+      "order": 30,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 29,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "염성준",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "05"
+          ],
+          "location": "S1-2-306(41-306)"
+        },
+        {
+          "day": "금",
+          "times": [
+            "02",
+            "03"
+          ],
+          "location": "S1-2-306(41-306)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 30,
+      "enrolled_count": 41,
+      "category": "기초과학"
+    },
+    {
+      "order": 31,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 30,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "박병도",
+      "class_time": [
+        {
+          "day": "수",
+          "times": [
+            "08",
+            "09"
+          ],
+          "location": "E1-2-306(81-306)"
+        },
+        {
+          "day": "목",
+          "times": [
+            "01"
+          ],
+          "location": "E1-2-306(81-306)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 42,
+      "category": "기초과학"
+    },
+    {
+      "order": 32,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 31,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "피영진",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S1-2-201(41-201)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 1,
+      "capacity": 30,
+      "enrolled_count": 39,
+      "category": "기초과학"
+    },
+    {
+      "order": 33,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 32,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "한유두",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S1-2-202(41-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 5,
+      "capacity": 30,
+      "enrolled_count": 40,
+      "category": "기초과학"
+    },
+    {
+      "order": 34,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 33,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "윤상민",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "07",
+            "08",
+            "09"
+          ],
+          "location": "S1-2-205(41-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 10,
+      "capacity": 30,
+      "enrolled_count": 38,
+      "category": "기초과학"
+    },
+    {
+      "order": 35,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 34,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김겸순",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "S1-3-203(42-203)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 30,
+      "enrolled_count": 36,
+      "category": "기초과학"
+    },
+    {
+      "order": 36,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941002,
+      "course_name": "수학I",
+      "section": 35,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "김은희",
+      "class_time": [
+        {
+          "day": "목",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "N14-208(56-208)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 0,
+      "capacity": 30,
+      "enrolled_count": 30,
+      "category": "기초과학"
+    },
+    {
+      "order": 37,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941003,
+      "course_name": "수학II",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "최진필",
+      "class_time": [
+        {
+          "day": "금",
+          "times": [
+            "01",
+            "02",
+            "03"
+          ],
+          "location": "S1-2-104(41-104)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 30,
+      "capacity": 40,
+      "enrolled_count": 40,
+      "category": "기초과학"
+    },
+    {
+      "order": 38,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941004,
+      "course_name": "기초대학수학*",
+      "section": 1,
+      "credit": 0,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "김겸순",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "10",
+            "11",
+            "12"
+          ],
+          "location": "S1-2-202(41-202)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 3,
+      "capacity": 40,
+      "enrolled_count": 11,
+      "category": "기초과학"
+    },
+    {
+      "order": 39,
+      "target_year": "전학년",
+      "course_type": "교양선택",
+      "course_code": 941004,
+      "course_name": "기초대학수학*",
+      "section": 2,
+      "credit": 0,
+      "grade_type": "PassFail",
+      "foreign_course": null,
+      "instructor_name": "한유두",
+      "class_time": [
+        {
+          "day": "월",
+          "times": [
+            "10",
+            "11",
+            "12"
+          ],
+          "location": "S1-2-205(41-205)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 4,
+      "capacity": 40,
+      "enrolled_count": 31,
+      "category": "기초과학"
+    }
+  ]
+}

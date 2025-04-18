@@ -114,8 +114,8 @@ body {
 
 /* 삭제 버튼 스타일 */
 .lecture .remove-btn {
-    background: rgb(255, 255, 255); 
-    color: rgb(0, 0, 0) !important; 
+    background: rgb(255, 255, 255);
+    color: rgb(0, 0, 0) !important;
     border: none;
     font-size: 14px;
     width: 22px;
@@ -134,8 +134,8 @@ body {
 }
 
 .lecture .remove-btn:hover {
-    background: rgb(131, 130, 130); 
-    color: rgb(0, 0, 0) !important; 
+    background: rgb(131, 130, 130);
+    color: rgb(0, 0, 0) !important;
 }
 
 .lecture {

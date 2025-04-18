@@ -1,0 +1,40 @@
+{
+  "year": "2025",
+  "term": "1학기",
+  "college": "전자정보대학",
+  "department": "전자공학부",
+  "major": "비분류",
+  "courses": [
+    {
+      "order": 1,
+      "target_year": "4학년",
+      "course_type": "전공선택",
+      "course_code": 5100005,
+      "course_name": "공업교육론",
+      "section": 1,
+      "credit": 3,
+      "grade_type": "Grade",
+      "foreign_course": null,
+      "instructor_name": "서보석",
+      "class_time": [
+        {
+          "day": "화",
+          "times": [
+            "06",
+            "07",
+            "08"
+          ],
+          "location": "E8-7-333(50-333)"
+        }
+      ],
+      "lecture_hours": 3,
+      "lecture_times": 3,
+      "lab_hours": 0,
+      "lab_times": 0,
+      "pre_enrollment_count": 31,
+      "capacity": 30,
+      "enrolled_count": 31,
+      "category": "전공선택"
+    }
+  ]
+}

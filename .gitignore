@@ -4,3 +4,4 @@ config/settings.py
 **/__pycache__/
 .venv/
 db/target
+userupload

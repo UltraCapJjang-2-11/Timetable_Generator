@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>시간표 관리</title>
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/manage_style.css' %}">
+
+    <!-- ✅아이콘 무료 사이트-->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- ✅ 부트스트랩 CSS 추가 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <!-- ✅ header -->
+    <header>
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}">Home<span></span></a>
+                <a href="{% url 'manage' %}">Manage<span></span></a>
+                <a href="{% url 'mypage' %}">MyPage<span></span></a>
+                <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+                <a href="#">Logout<span></span></a>
+            </div>
+        </nav>
+    </header> 
+    <!-- ✅ end header -->
+
+    <div class="mypage-container">
+        <!-- 시간표 목록 -->
+        <div class="timetable-section">
+            <h2>내 시간표</h2>
+            <div class="timetable-list">
+                <div class="timetable-card" onclick="showTimetable('시간표 1')">시간표 1</div>
+                <div class="timetable-card" onclick="showTimetable('시간표 2')">시간표 2</div>
+                <div class="timetable-card" onclick="showTimetable('시간표 3')">시간표 3</div>
+                <div class="timetable-card" onclick="showTimetable('시간표 4')">시간표 4</div>
+                <a href="{% url 'timetable' %}" class="timetable-add">+</a>
+            </div>
+        </div>
+    </div>
+
+ 
+     <!-- 풀스크린 시간표 컨테이너 -->
+    <div id="timetable-overlay" class="timetable-overlay hidden">
+        <button class="close-btn" onclick="hideTimetable()">×</button>
+        <h2 id="timetable-title"></h2>
+
+        <!-- 버튼 컨테이너 -->
+        <div class="timetable-buttons">
+            <button class="edit-btn" onclick="editTimetable()">수정하기</button>
+            <button class="delete-btn" onclick="deleteTimetable()">삭제하기</button>
+        </div>
+
+        <div class="middle-panel">
+            <div class="table-container">  <!-- 스크롤을 적용할 컨테이너 추가 -->
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>월</th>
+                            <th>화</th>
+                            <th>수</th>
+                            <th>목</th>
+                            <th>금</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentTimetable = ""; // 현재 선택된 시간표 이름 저장
+    
+        function showTimetable(title) {
+            const overlay = document.getElementById("timetable-overlay");
+            const timetableTitle = document.getElementById("timetable-title");
+            const timetableBody = document.querySelector(".timetable tbody");
+    
+            // 현재 선택한 시간표 이름 저장
+            currentTimetable = title;
+    
+            // 제목 변경
+            timetableTitle.textContent = title;
+    
+            // 기존 시간표 데이터 초기화
+            timetableBody.innerHTML = "";
+    
+            // 새로운 시간표 생성
+            for (let hour = 8; hour <= 20; hour++) {
+                const row = document.createElement("tr");
+                const timeCell = document.createElement("td");
+                timeCell.textContent = `${hour}:00`;
+                row.appendChild(timeCell);
+    
+                for (let i = 0; i < 5; i++) {
+                    const cell = document.createElement("td");
+                    cell.classList.add("timetable-cell");
+                    cell.setAttribute("data-hour", hour);
+                    cell.setAttribute("data-day", i);
+                    row.appendChild(cell);
+                }
+    
+                timetableBody.appendChild(row);
+            }
+    
+            // 시간표 오버레이 보이기
+            overlay.classList.remove("hidden");
+            overlay.style.display = "flex";
+        }
+    
+        function hideTimetable() {
+            const overlay = document.getElementById("timetable-overlay");
+            overlay.classList.add("hidden");
+            overlay.style.display = "none";
+        }
+    
+        function editTimetable() {
+            alert(`"${currentTimetable}"을(를) 수정합니다.`);
+            // 실제 수정 페이지로 이동하도록 설정 (예제)
+            window.location.href = "timetable_edit.html";
+        }
+    
+        function deleteTimetable() {
+            const confirmDelete = confirm(`"${currentTimetable}"을(를) 삭제하시겠습니까?`);
+            if (confirmDelete) {
+                alert(`"${currentTimetable}"이(가) 삭제되었습니다.`);
+                hideTimetable(); // 삭제 후 시간표 닫기
+            }
+        }
+    </script>
+    
+    
+
+<!-- ✅ 부트스트랩 JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ script.js 파일 연결 -->
+<script src="{% static 'home/js/mypage_script.js' %}"></script>
+
+</body>
+</html>

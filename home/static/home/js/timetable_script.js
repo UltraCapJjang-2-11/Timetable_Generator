@@ -1,7 +1,60 @@
 // 전역 변수: 강좌 색상 관리 및 색상 팔레트
 var lectureColors = {};
 var colorPalette = ['#f28b82', '#fbbc04', '#fff475', '#ccff90', '#a7ffeb', '#cbf0f8', '#aecbfa', '#d7aefb', '#fdcfe8'];
+function convertDayToIndex(day) {
+  const days = { "월": 0, "화": 1, "수": 2, "목": 3, "금": 4 };
+  return days[day] !== undefined ? days[day] : -1;
+}
 
+window.timetables   = [];
+window.currentIndex = 0;
+function applyTimetableToMiddlePanel() {
+  const timetableCells = document.querySelectorAll(".timetable-cell");
+  timetableCells.forEach(cell => cell.innerHTML = "");
+  const timetableIndexElem = document.getElementById("timetable-index");
+
+  if (window.timetables.length === 0) {
+    timetableIndexElem.textContent = "0 / 0";
+    return;
+  }
+
+  let timetable = window.timetables[window.currentIndex];
+  let currentColors = {};
+  let usedColors = [];
+  timetable.forEach(course => {
+    if (!currentColors[course.course_id]) {
+      let availableColors = colorPalette.filter(c => !usedColors.includes(c));
+      let color = availableColors.length > 0 ? availableColors[0] : colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      currentColors[course.course_id] = color;
+      usedColors.push(color);
+    }
+  });
+
+  timetable.forEach(course => {
+    let courseColor = currentColors[course.course_id];
+    course.schedules.forEach(schedule => {
+      let day = schedule.day;
+      let timesStr = schedule.times;
+      let location = schedule.location;
+      if (!timesStr) {
+        console.warn("No schedule times for course:", course.course_name);
+        return;
+      }
+      let timeSlots = timesStr.split(",").map(str => parseInt(str, 10) + 8);
+      let dayIndex = convertDayToIndex(day);
+      if (dayIndex === -1) return;
+      timeSlots.forEach(slot => {
+        const cell = document.querySelector(`.timetable-cell[data-hour="${slot}"][data-day="${dayIndex}"]`);
+        if (cell) {
+          cell.innerHTML += `<div class="lecture" style="background-color: ${courseColor} !important;">
+                               ${course.course_name}<br>${location}
+                             </div>`;
+        }
+      });
+    });
+  });
+  timetableIndexElem.textContent = `${window.currentIndex + 1} / ${window.timetables.length}`;
+}
 // 강의 고유 색상을 밝게 만드는 함수 (입력된 percent 만큼 밝게)
 function lightenColor(hex, percent) {
   hex = hex.replace(/^#/, '');
@@ -353,60 +406,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // ---------------------------
   // 중간 패널에 시간표를 적용하는 함수 (생성된 시간표)
   // ---------------------------
-  function applyTimetableToMiddlePanel() {
-    const timetableCells = document.querySelectorAll(".timetable-cell");
-    timetableCells.forEach(cell => cell.innerHTML = "");
   
-    if (timetables.length === 0) {
-      timetableIndex.textContent = "0 / 0";
-      return;
-    }
-  
-    let timetable = timetables[currentIndex];
-    let currentColors = {};
-    let usedColors = [];
-    timetable.forEach(course => {
-      if (!currentColors[course.course_id]) {
-        let availableColors = colorPalette.filter(c => !usedColors.includes(c));
-        let color = availableColors.length > 0 ? availableColors[0] : colorPalette[Math.floor(Math.random() * colorPalette.length)];
-        currentColors[course.course_id] = color;
-        usedColors.push(color);
-      }
-    });
-  
-    timetable.forEach(course => {
-      let courseColor = currentColors[course.course_id];
-      course.schedules.forEach(schedule => {
-        let day = schedule.day;
-        let timesStr = schedule.times;
-        let location = schedule.location;
-        if (!timesStr) {
-          console.warn("No schedule times for course:", course.course_name);
-          return;
-        }
-        let timeSlots = timesStr.split(",").map(str => parseInt(str, 10) + 8);
-        let dayIndex = convertDayToIndex(day);
-        if (dayIndex === -1) return;
-        timeSlots.forEach(slot => {
-          const cell = document.querySelector(`.timetable-cell[data-hour="${slot}"][data-day="${dayIndex}"]`);
-          if (cell) {
-            cell.innerHTML += `<div class="lecture" style="background-color: ${courseColor} !important;">
-                                 ${course.course_name}<br>${location}
-                               </div>`;
-          }
-        });
-      });
-    });
-    timetableIndex.textContent = `${currentIndex + 1} / ${timetables.length}`;
-  }
 
   // ---------------------------
   // 요일 인덱스 변환 함수
   // ---------------------------
-  function convertDayToIndex(day) {
-    const days = { "월": 0, "화": 1, "수": 2, "목": 3, "금": 4 };
-    return days[day] !== undefined ? days[day] : -1;
-  }
 
   if (prevButton) {
     prevButton.addEventListener("click", function () {

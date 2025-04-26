@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import *
-
+from . import views
 urlpatterns = [
     path('', index_view, name='index'), # 기본 페이지 : 로그인 세션 확인
     path('login/', CustomLoginView.as_view(), name='login'),
@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('timetable/', timetable_view, name='timetable'),  # 시간표 페이지
     path('generate_timetable_stream/', generate_timetable_stream, name='generate_timetable_stream'),
-
+    path("parse_constraints/", parse_constraints, name="parse_constraints"),
+    path('manage/', views.manage_view, name='manage'),
     path('search_test/', course_serach_test_view, name='search_test'),
 ]

@@ -468,52 +468,8 @@
         const progressOverlay = document.getElementById("progress-overlay");
         const progressText    = document.getElementById("progress-text");
 
-        // 자연어 명령으로 시간표 생성 (AI 채팅)
-        async function generateTimetableFromNL(nlText) {
-        // 1) OpenAI API로 제약조건 파싱
-        const parseRes = await fetch("/parse_constraints/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: nlText })
-        });
-        if (!parseRes.ok) {
-            alert("제약조건 해석에 실패했습니다.");
-            return;
-        }
-        const existing = Array.from(
-            document.querySelectorAll(".course-item.added")
-        ).map(el => el.dataset.courseId);
 
-        const { major_credits, elective_credits, required_courses, free_days } = await parseRes.json();
         
-        const params = new URLSearchParams({total_credits: document.getElementById('total-credits').value,
-        major_credits, elective_credits });
-        existingCourses.forEach(id => params.append("existing_courses[]", id));
-        free_days.forEach(d => params.append("free_days[]", d));
-        required_courses.forEach(c => params.append("required_courses[]", c));
-
-        const evtSource = new EventSource("/generate_timetable_stream/?" + params);
-        progressOverlay.style.display = "block";                     // 이제 정상 작동
-        progressText.textContent   = "시간표 생성 중…";
-
-        evtSource.onmessage = e => {
-        const data = JSON.parse(e.data);
-        if (data.progress === "완료") {
-            window.timetables = data.timetables;
-            window.currentIndex = 0;
-            setTimeout(() => progressOverlay.style.display = "none", 800);
-            window.applyTimetableToMiddlePanel();
-            evtSource.close();
-        } else {
-            progressText.textContent = `처리된 조합: ${data.processed}, 후보: ${data.found}`;
-        }
-        };
-        evtSource.onerror = () => {
-        progressText.textContent = "시간표 생성 중 오류가 발생했습니다.";
-        evtSource.close();
-        setTimeout(() => progressOverlay.style.display = "none", 1200);
-        };
-    }
     </script>
       
 

@@ -25,6 +25,7 @@ import json
 from ortools.sat.python import cp_model
 
 import openai
+# views.py 
 @csrf_exempt
 def parse_constraints(request):
     data = json.loads(request.body)
@@ -32,29 +33,40 @@ def parse_constraints(request):
 
     system_prompt = """
     당신은 시간표 생성용 제약조건을 파싱하는 어시스턴트입니다.
-    입력된 한국어 자연어에서 아래 키를 가진 JSON을 출력하세요.
-      - major_credits: 전공 학점 (정수)
-      - elective_credits: 교양 학점 (정수)
-      - required_courses: 필수 포함 과목명 리스트 (문자열 리스트)
-      - free_days: 공강 요일 리스트 (예: "월","화",...)
-    출력 외 다른 텍스트는 절대 포함하지 마세요.
+    입력된 한국어 자연어에서 아래 키를 가진 JSON만 출력하세요.
+
+    • major_credits: 전공 학점 (정수)
+    • elective_credits: 교양 학점 (정수)
+    • required_courses: 필수 포함 과목명 리스트 (문자열 리스트)
+    • free_days: 공강 요일 리스트 (예: ["월","화",...])
+    • avoid_times: 특정 요일·단일 시각 회피 리스트
+        – 예: "월요일 9시 수업 제외" → {"day":"월","hour":9}
+        "월,목 9시를 공강으로 시간표를 생성해줘"라고 하면 월요일 9시와 목요일 9시만을 공강으로 정해야해. 
+        월,목을 공강으로 인식하면 안 돼. 제대로해.
+    • avoid_time_ranges: 특정 요일·시간대 범위 회피 리스트
+        – “금요일 오전 수업 제외” → {"days":["금"],"start_hour":9,"end_hour":12}
+        – “오후 1시부터 4시 제외” → {"days":["월","화","수","목","금"],"start_hour":13,"end_hour":16}
+    • only_time_ranges: 허용할 시간대 리스트 (이 외 시간대는 모두 제외)
+        – 예: "월·수·목 11시 이후만" → {"days":["월","수","목"],"start_hour":11}
+    • exclude_courses: 기존에 생성된 시간표에서 제외할 과목명 리스트
+    — 키 외에는 절대 다른 텍스트를 포함하지 마세요.
     """
 
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
     try:
-        response = client.chat.completions.create(
+        resp = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user",   "content": user_text}
+                {"role":"system", "content": system_prompt},
+                {"role":"user",   "content": user_text}
             ],
             temperature=0.0,
         )
-        parsed = json.loads(response.choices[0].message.content)
+        parsed = json.loads(resp.choices[0].message.content)
         return JsonResponse(parsed)
-
     except Exception as e:
         return JsonResponse({"error": f"파싱 실패: {e}"}, status=500)
+
     
 class CustomLoginView(LoginView):
     template_name = 'home/login.html'
@@ -247,6 +259,65 @@ def extract_missing_required_major_courses(user_dept_id, completed_courses):
     return missing_courses
 
 
+
+def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_ranges):
+    """
+    candidate_data: [{'id', 'schedule':[{'day','times',…},…],…}, …]
+    only_ranges: [{"days":[..], "start_hour":int, "end_hour":int?}, …]
+    avoid_times: [{"day":str,"hour":int}, …]
+    avoid_ranges: [{"days":[..], "start_hour":int, "end_hour":int?}, …]
+    """
+    # 1) only_time_ranges 적용 — 있으면 이 범위 **외** 과목 제거
+    if only_ranges:
+        filtered = []
+        for data in candidate_data:
+            ok = True
+            for sched in data['schedule']:
+                # times: "02,03,04" → [10,11,12]
+                hours = [int(t)+8 for t in sched['times'].split(',')]
+                if not any(
+                    sched['day'] in r['days']
+                    and all(h >= r['start_hour'] and
+                            ('end_hour' not in r or h < r['end_hour'])
+                        for h in hours)
+                    for r in only_ranges
+                ):
+                    ok = False
+                    break
+            if ok:
+                filtered.append(data)
+        candidate_data = filtered
+
+    # 2) avoid_times / avoid_time_ranges 적용 — 걸리면 제거
+    if avoid_times or avoid_ranges:
+        filtered = []
+        for data in candidate_data:
+            bad = False
+            for sched in data['schedule']:
+                hours = [int(t)+8 for t in sched['times'].split(',')]
+                # (1) 단일 시각 회피
+                if any(obj['day']==sched['day'] and h==obj['hour'] 
+                       for obj in avoid_times for h in hours):
+                    bad = True
+                    break
+                # (2) 범위 회피
+                if any(
+                    sched['day'] in r['days']
+                    and any(h >= r['start_hour'] and
+                            ('end_hour' not in r or h < r['end_hour'])
+                        for h in hours)
+                    for r in avoid_ranges
+                ):
+                    bad = True
+                    break
+            if not bad:
+                filtered.append(data)
+        candidate_data = filtered
+
+    return candidate_data
+
+
+
 # ------------------------------------
 # 3. generate_timetable_stream 함수 (교양의 parent_category 조건 추가)
 def generate_timetable_stream(request):
@@ -267,7 +338,7 @@ def generate_timetable_stream(request):
             svc.course_search(year=year, term=term, category_name='교양선택')
         )
         for name in req_names:
-            # 정확 일치를 너무 엄격하게 걸면 놓칠 수 있으니 contains로 바꿔 보세요
+           
             course = major_qs.filter(course_name__icontains=name).first()
             if course:
                 req_ids.append(course.course_id)
@@ -276,6 +347,8 @@ def generate_timetable_stream(request):
         # 1) GET 파라미터 파싱 (공강, 기존 추가 과목, 학점 등)
         free_days = request.GET.getlist('free_days[]')
         existing_ids = request.GET.getlist('existing_courses[]')
+        exclude_names = request.GET.getlist('exclude_courses[]')
+        print("DEBUG: exclude_courses =", exclude_names)
         try:
             pre_added_ids = [int(cid) for cid in existing_ids]
         except ValueError:
@@ -298,12 +371,36 @@ def generate_timetable_stream(request):
         print("DEBUG: target_total =", target_total,
             "target_major =", target_major,
             "target_elective =", target_elective)
+        
+        # 2) 신규: 시간 제약조건 파싱
+        only_ranges  = [json.loads(s) for s in request.GET.getlist('only_time_ranges[]')]
+        avoid_times  = [json.loads(s) for s in request.GET.getlist('avoid_times[]')]
+        avoid_ranges = [json.loads(s) for s in request.GET.getlist('avoid_time_ranges[]')]
+        print("DEBUG: only_time_ranges =", only_ranges)
+        print("DEBUG: avoid_times =", avoid_times)
+        print("DEBUG: avoid_time_ranges =", avoid_ranges)
 
         # 3) 미리 추가된 과목(CP-SAT 모델에 강제로 포함)
         svc = CourseFilterService()
         pre_added_courses = list(Courses.objects.filter(course_id__in=pre_added_ids))
         print("DEBUG: pre_added_courses count =", len(pre_added_courses))
         # 3-3. 학생 정보 및 졸업 기록 로드
+
+        # 사용자가 공강(free_days)을 요청했으면,
+        # 기존에 추가된(pre_added) 과목 중 free_days 요일에 속한 과목은 제외
+        if free_days:
+            filtered = []
+            for course in pre_added_courses:
+                # 해당 과목의 모든 스케줄 중에 free_days에 해당하는 day가 있으면 제거
+                if not any(sch.day in free_days for sch in course.courseschedule_set.all()):
+                    filtered.append(course)
+            dropped = set(pre_added_ids) - set(c.course_id for c in filtered)
+            if dropped:
+                print("DEBUG: dropped pre_added courses on free_days:", dropped)
+            pre_added_courses = filtered
+            # pre_added_ids 도 함께 갱신
+            pre_added_ids = [c.course_id for c in pre_added_courses]
+
         student_id = request.user.id if request.user.is_authenticated else 1
         grad_record = GraduationRecord.objects.filter(user_id=student_id).last()
         try:
@@ -386,6 +483,8 @@ def generate_timetable_stream(request):
             # 교양은 target_year가 전학년이어야
             if get_effective_general_category(course) and course.target_year != "전학년":  # CHANGED
                 continue
+            if any("가상강의실" in (sch.location or "") for sch in course.courseschedule_set.all()):
+                continue
             # 추가 필터: 교양 강좌(구 교양선택)의 경우, 해당 세부 항목의 남은 학점이 0이면 후보에서 제외
             if get_effective_general_category(course):
                 effective_cat = get_effective_general_category(course)
@@ -438,6 +537,45 @@ def generate_timetable_stream(request):
                 data_item['effective_category'] = get_effective_general_category(course)
             candidate_data.append(data_item)
         print("DEBUG: candidate_data count =", len(candidate_data))
+        def in_range(h, start, end=None):
+            return h >= start and (end is None or h < end)
+
+        # only_time_ranges: 허용 범위 외 제거
+        if only_ranges:
+            filtered = []
+            for d in candidate_data:
+                ok = True
+                for sched in d['schedule']:
+                    hours = [int(t)+8 for t in sched['times'].split(',') if t.strip().isdigit()]
+                    if not any(
+                        sched['day'] in r['days']
+                        and all(in_range(h, r['start_hour'], r.get('end_hour')) for h in hours)
+                        for r in only_ranges
+                    ):
+                        ok = False
+                        break
+                if ok: filtered.append(d)
+            candidate_data = filtered
+            print("DEBUG: only_time_ranges 적용 후 count =", len(candidate_data))
+
+        # avoid_times / avoid_time_ranges: 회피 조건 제거
+        if avoid_times or avoid_ranges:
+            filtered = []
+            for d in candidate_data:
+                bad = False
+                for sched in d['schedule']:
+                    hours = [int(t)+8 for t in sched['times'].split(',') if t.strip().isdigit()]
+                    if any(obj['day']==sched['day'] and h==obj['hour'] for obj in avoid_times for h in hours):
+                        bad = True; break
+                    if any(
+                        sched['day'] in r['days']
+                        and any(in_range(h, r['start_hour'], r.get('end_hour')) for h in hours)
+                        for r in avoid_ranges
+                    ):
+                        bad = True; break
+                if not bad: filtered.append(d)
+            candidate_data = filtered
+            print("DEBUG: avoid_times/avoid_time_ranges 적용 후 count =", len(candidate_data))
 
         # ===== 수정된 부분: 전공선택 강좌 중 동일학년 강좌 우선 필터링 =====
         for data in candidate_data:
@@ -467,7 +605,15 @@ def generate_timetable_stream(request):
             else:
                 print("DEBUG: 동일학년 전공선택 강좌가 부족하여 낮은학년 전공선택 과목을 허용합니다.")
         # ===== 수정된 부분 끝 =====
-
+        # --- NEW: exclude_courses 적용 ---
+        if exclude_names:
+            filtered = []
+            for d in candidate_data:
+                # d['course_name'] 안에 제외할 이름이 포함되면 걸러냄
+                if not any(name in d['course_name'] for name in exclude_names):
+                    filtered.append(d)
+            candidate_data = filtered
+            print("DEBUG: after exclude_courses filter:", len(candidate_data))
         # 4. CP‑SAT 모델 구성 (후속 부분은 기존과 동일)
         model = cp_model.CpModel()
         x = {}

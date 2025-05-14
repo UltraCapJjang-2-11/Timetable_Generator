@@ -418,58 +418,209 @@
           const text = input.value.trim();
           if (!text) return;
       
-          // 말풍선 생성
-          const bubble = document.createElement("div");
-          bubble.className = "chat-bubble user";
-          bubble.textContent = text;
-      
-          chatBody.appendChild(bubble);
+          console.log(`사용자 메시지 전송: "${text}"`);
+          
+          // 타임스탬프 생성
+          const timeStamp = document.createElement("div");
+          timeStamp.className = "chat-time";
+          timeStamp.textContent = getCurrentTime();
+          chatBody.appendChild(timeStamp);
+          
+          // 사용자 메시지 버블 생성 및 추가
+          const userBubble = document.createElement("div");
+          userBubble.className = "chat-bubble user";
+          userBubble.textContent = text;
+          chatBody.appendChild(userBubble);
+          
+          // 입력창 비우기
           input.value = "";
-      
+          
+          // 로딩 애니메이션 표시
+          const loaderBubble = document.createElement("div");
+          loaderBubble.className = "chat-bubble bot loading";
+          loaderBubble.innerHTML = "<div class='loading-dots'><span></span><span></span><span></span></div>";
+          chatBody.appendChild(loaderBubble);
+          
           // 스크롤 맨 아래로
           chatBody.scrollTop = chatBody.scrollHeight;
-
-          setTimeout(() => {
-            addBotResponse(text); // 그대로 전달
-          }, 800);
-        }
-
-        function getBotReply(userText) {
-            const lower = userText.toLowerCase();
           
-            if (lower.includes("시간표")) {
-              // 시간표 생성 명령으로 간주
-              generateTimetableFromNL(userText);
-              return "시간표를 생성 중입니다. 잠시만 기다려주세요!";
-            } else if (lower.includes("추천") || lower.includes("과목")) {
-              return "관심 분야나 원하는 공강 요일이 있다면 말씀해주세요 :)";
-            } else if (lower.includes("안녕") || lower.includes("hello")) {
-              return "안녕하세요! Timey에요 :) 무엇을 도와드릴까요?";
-            } else {
-              return "죄송해요, 아직 그건 잘 모르겠어요 \n'시간표', '추천', '안녕' 같은 키워드를 써보실래요?";
+          // Rasa 서버에 메시지 전송
+          sendToRasaAndGetResponse(text, loaderBubble);
+        }
+
+        // 봇 메시지 버블 생성 함수
+        function createBotMessageBubble(text) {
+          // 타임스탬프 생성
+          const timeStamp = document.createElement("div");
+          timeStamp.className = "chat-time";
+          timeStamp.textContent = getCurrentTime();
+          
+          // 봇 메시지 버블 생성
+          const botBubble = document.createElement("div");
+          botBubble.className = "chat-bubble bot";
+          botBubble.textContent = text;
+          
+          // 컨테이너에 시간과 메시지 추가 (실제 DOM에 추가할 수 있는 fragment 사용)
+          const container = document.createDocumentFragment();
+          container.appendChild(timeStamp);
+          container.appendChild(botBubble);
+          
+          return container;
+        }
+
+        // 사용자 메시지 버블 생성 함수 (누락됨)
+        function createUserMessageBubble(text) {
+          // 타임스탬프 생성
+          const timeStamp = document.createElement("div");
+          timeStamp.className = "chat-time";
+          timeStamp.textContent = getCurrentTime();
+          
+          // 사용자 메시지 버블 생성
+          const userBubble = document.createElement("div");
+          userBubble.className = "chat-bubble user";
+          userBubble.textContent = text;
+          
+          // 컨테이너 생성
+          const container = document.createDocumentFragment();
+          container.appendChild(timeStamp);
+          container.appendChild(userBubble);
+          
+          return container;
+        }
+
+        // 로딩 버블 생성 함수 (누락됨)
+        function createLoaderBubble() {
+          const loaderBubble = document.createElement("div");
+          loaderBubble.className = "chat-bubble bot loading";
+          loaderBubble.innerHTML = "<div class='loading-dots'><span></span><span></span><span></span></div>";
+          return loaderBubble;
+        }
+
+        // 사용자 세션 ID 생성 (고유한 대화 식별자)
+        function generateSessionId() {
+          return 'user_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+        const sessionId = generateSessionId();
+
+        // Rasa 서버에 메시지 전송 및 응답 처리
+        async function sendToRasaAndGetResponse(text, loaderBubble) {
+          try {
+            console.log(`Rasa에 메시지 전송: "${text}", 세션 ID: ${sessionId}`);
+            
+            // Django 백엔드 경로를 통해 Rasa에 요청
+            const response = await fetch("/parse_constraints/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+              },
+              body: JSON.stringify({
+                text: text,
+                session_id: sessionId
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP 오류: ${response.status}`);
             }
-        }
-        function addBotResponse(userText) {
-            // 1) 타임스탬프
-            const timeStamp = document.createElement("div");
-            timeStamp.className = "chat-time";
-            timeStamp.textContent = getCurrentTime();
-            chatBody.appendChild(timeStamp);
 
-            // 2) 봇 말풍선
-            const botBubble = document.createElement("div");
-            botBubble.className = "chat-bubble bot";
-            botBubble.textContent = getBotReply(userText);
+            const data = await response.json();
+            
+            // 로딩 버블 제거
+            if (loaderBubble && loaderBubble.parentNode) {
+              loaderBubble.parentNode.removeChild(loaderBubble);
+            }
+            
+            console.log('Rasa 응답:', data);
+
+            // 응답이 비어있는 경우
+            if (data.length === 0) {
+              const botBubble = createBotMessageBubble("응답을 받지 못했어요. 다른 질문을 해보시겠어요?");
+              chatBody.appendChild(botBubble);
+              chatBody.scrollTop = chatBody.scrollHeight;
+              return;
+            }
+
+            // 응답 처리
+            handleRasaResponse(data);
+          } catch (error) {
+            console.error("Rasa 통신 오류:", error);
+            
+            // 로딩 버블 제거
+            if (loaderBubble && loaderBubble.parentNode) {
+              loaderBubble.parentNode.removeChild(loaderBubble);
+            }
+
+            // 오류 메시지 표시
+            const botBubble = createBotMessageBubble("연결 문제가 발생했습니다. 다시 시도해주세요.");
             chatBody.appendChild(botBubble);
-
-            // 3) 스크롤 내리기
             chatBody.scrollTop = chatBody.scrollHeight;
+          }
         }
+
+        // CSRF 토큰 가져오기 함수
+        function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+
+        // Rasa 응답 처리
+        function handleRasaResponse(data) {
+          // 각 응답 메시지 처리
+          data.forEach(message => {
+            if (message.text) {
+              const botBubble = createBotMessageBubble(message.text);
+              chatBody.appendChild(botBubble);
+            }
+            
+            // 시간표 생성 이벤트 처리
+            if (message.custom && message.custom.event_type === "initiate_timetable_generation_sse") {
+              // 기존 시간표 생성 로직 호출
+              handleTimetableGenerationEvent(message.custom);
+            } else if (message.custom && message.custom.payload && message.custom.payload.event_type === "initiate_timetable_generation_sse") {
+              // 페이로드 형식 처리
+              handleTimetableGenerationEvent(message.custom.payload);
+            }
+          });
+          
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // 시간표 생성 이벤트 처리
+        function handleTimetableGenerationEvent(data) {
+          console.log("시간표 생성 이벤트 수신:", data);
+          
+          // 생성된 데이터를 window.constraints에 먼저 저장
+          if (data.major_credits) window.constraints.major_credits = data.major_credits;
+          if (data.elective_credits) window.constraints.elective_credits = data.elective_credits;
+          if (data.required_courses) window.constraints.required_courses = data.required_courses;
+          if (data.free_days) window.constraints.free_days = data.free_days;
+          if (data.avoid_times) window.constraints.avoid_times = data.avoid_times;
+          if (data.avoid_time_ranges) window.constraints.avoid_time_ranges = data.avoid_time_ranges;
+          if (data.only_time_ranges) window.constraints.only_time_ranges = data.only_time_ranges;
+          
+          // 시간표 생성 시작 알림
+          const botBubble = createBotMessageBubble("시간표를 생성 중입니다. 잠시만 기다려주세요...");
+          chatBody.appendChild(botBubble);
+          
+          // 시간표 생성 함수 직접 호출하여 NL 처리하도록 수정
+          generateTimetableFromNL("시간표 생성해줘");
+        }
+
         const progressOverlay = document.getElementById("progress-overlay");
         const progressText    = document.getElementById("progress-text");
-
-
-        
+        const progressFill    = document.getElementById("progress-fill");
+        const progressCount   = document.getElementById("progress-count");
     </script>
       
 

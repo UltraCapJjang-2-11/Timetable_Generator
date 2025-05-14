@@ -7,4 +7,4 @@ config/settings.py
 db/target
 .rasa/
 user_uploads/
-*.yml
+venv310/

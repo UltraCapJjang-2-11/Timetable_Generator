@@ -1,0 +1,91 @@
+# tests/test_stories.yml
+version: "3.1"
+
+stories:
+- story: 인사 후 기분 좋음 경로 1
+  steps:
+  - user: |
+      안녕
+    intent: greet
+  - action: utter_greet
+  - user: |
+      정말 좋아요
+    intent: mood_great
+  - action: utter_happy
+
+- story: 인사 후 기분 좋음 경로 2 (작별까지)
+  steps:
+  - user: |
+      안녕하세요
+    intent: greet
+  - action: utter_greet
+  - user: |
+      기분 최고예요
+    intent: mood_great
+  - action: utter_happy
+  - user: |
+      잘 가요
+    intent: goodbye
+  - action: utter_goodbye
+
+- story: 기분 우울 경로 1 (도움받고 긍정)
+  steps:
+  - user: |
+      안녕
+    intent: greet
+  - action: utter_greet
+  - user: |
+      우울해요
+    intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - user: |
+      네
+    intent: affirm
+  - action: utter_happy
+
+- story: 기분 우울 경로 2 (도움받고 부정)
+  steps:
+  - user: |
+      안녕하세요
+    intent: greet
+  - action: utter_greet
+  - user: |
+      속상해요
+    intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - user: |
+      아니요
+    intent: deny
+  - action: utter_goodbye
+
+- story: 작별 인사만
+  steps:
+  - user: |
+      바이
+    intent: goodbye
+  - action: utter_goodbye
+
+- story: 봇 여부 확인
+  steps:
+  - user: |
+      이거 봇인가요?
+    intent: bot_challenge
+  - action: utter_iamabot
+
+- story: 기본 시간표 생성 요청
+  steps:
+  - user: |
+      전공 9학점, 교양 9학점으로 시간표 생성해줘
+    intent: generate_timetable
+  - action: action_extract_constraints
+  - action: utter_ask_generate_timetable
+
+- story: 공강과 필수 과목 포함 요청
+  steps:
+  - user: |
+      공강은 화, 목이고 필수 과목으로 알고리즘 포함해줘
+    intent: generate_timetable
+  - action: action_extract_constraints
+  - action: utter_ask_generate_timetable

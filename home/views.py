@@ -25,49 +25,198 @@ import json
 from ortools.sat.python import cp_model
 
 import openai
+import re
+import requests
+
+# Rasa 서버 URL 설정
+RASA_MODEL_ENDPOINT = "http://localhost:5006/model/parse"  # Rasa NLU 서버 URL
+RASA_WEBHOOK_ENDPOINT = "http://localhost:5006/webhooks/rest/webhook"  # Rasa 대화 서버 URL
+
 # views.py 
 @csrf_exempt
 def parse_constraints(request):
     data = json.loads(request.body)
     user_text = data.get("text", "")
+    session_id = data.get("session_id", "default_user")
 
-    system_prompt = """
-    당신은 시간표 생성용 제약조건을 파싱하는 어시스턴트입니다.
-    입력된 한국어 자연어에서 아래 키를 가진 JSON만 출력하세요.
-
-    • major_credits: 전공 학점 (정수)
-    • elective_credits: 교양 학점 (정수)
-    • required_courses: 필수 포함 과목명 리스트 (문자열 리스트)
-    • free_days: 공강 요일 리스트 (예: ["월","화",...])
-    • avoid_times: 특정 요일·단일 시각 회피 리스트
-        – 예: "월요일 9시 수업 제외" → {"day":"월","hour":9}
-        "월,목 9시를 공강으로 시간표를 생성해줘"라고 하면 월요일 9시와 목요일 9시만을 공강으로 정해야해. 
-        월,목을 공강으로 인식하면 안 돼. 제대로해.
-    • avoid_time_ranges: 특정 요일·시간대 범위 회피 리스트
-        – “금요일 오전 수업 제외” → {"days":["금"],"start_hour":9,"end_hour":12}
-        – “오후 1시부터 4시 제외” → {"days":["월","화","수","목","금"],"start_hour":13,"end_hour":16}
-    • only_time_ranges: 허용할 시간대 리스트 (이 외 시간대는 모두 제외)
-        – 예: "월·수·목 11시 이후만" → {"days":["월","수","목"],"start_hour":11}
-    • exclude_courses: 기존에 생성된 시간표에서 제외할 과목명 리스트
-    — 키 외에는 절대 다른 텍스트를 포함하지 마세요.
+    # 1) 직접 Rasa 서버의 웹훅에 요청보내기
+    try:
+        rasa_response = requests.post(
+            RASA_WEBHOOK_ENDPOINT,
+            json={
+                "sender": session_id,
+                "message": user_text
+            }
+        )
+        
+        if rasa_response.status_code != 200:
+            return JsonResponse({"error": f"Rasa 서버 응답 오류: {rasa_response.status_code}"}, status=500)
+        
+        # Rasa 응답 반환 (웹훅 형식)
+        return JsonResponse(rasa_response.json(), safe=False)
+        
+    except Exception as e:
+        return JsonResponse({"error": f"Rasa 서버 연결 오류: {str(e)}"}, status=500)
+    
+    # 2) 또는 model/parse 엔드포인트 이용 (NLU만)
+    """
+    try:
+        rasa_response = requests.post(
+            RASA_MODEL_ENDPOINT,
+            json={"text": user_text}
+        )
+        
+        if rasa_response.status_code != 200:
+            return JsonResponse({"error": f"Rasa 서버 응답 오류: {rasa_response.status_code}"}, status=500)
+        
+        # Rasa NLU 응답에서 필요한 정보 추출
+        rasa_data = rasa_response.json()
+        intent = rasa_data.get("intent", {}).get("name", "")
+        entities = rasa_data.get("entities", [])
+        
+        # 엔티티 매핑 및 처리
+        constraints = {}
+        
+        for entity in entities:
+            entity_type = entity["entity"]
+            value = entity["value"]
+            
+            if entity_type == "major_credits_entity":
+                value_num = re.findall(r'\d+', value)
+                if value_num:
+                    constraints["major_credits"] = int(value_num[0])
+            
+            elif entity_type == "elective_credits_entity":
+                value_num = re.findall(r'\d+', value)
+                if value_num:
+                    constraints["elective_credits"] = int(value_num[0])
+            
+            elif entity_type == "course_name_entity":
+                if "required_courses" not in constraints:
+                    constraints["required_courses"] = []
+                constraints["required_courses"].append(value)
+            
+            elif entity_type in ["free_day_entity", "free_day_keyword_entity"]:
+                if "free_days" not in constraints:
+                    constraints["free_days"] = []
+                
+                # 한글 요일을 약자로 변환
+                day_mapping = {"월요일": "월", "화요일": "화", "수요일": "수", "목요일": "목", "금요일": "금"}
+                day = day_mapping.get(value, value)
+                if day in ["월", "화", "수", "목", "금"] and day not in constraints["free_days"]:
+                    constraints["free_days"].append(day)
+        
+        return JsonResponse(constraints)
+        
+    except Exception as e:
+        return JsonResponse({"error": f"Rasa 서버 연결 오류: {str(e)}"}, status=500)
     """
 
-    client = OpenAI(api_key=settings.OPENAI_API_KEY)
-    try:
-        resp = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role":"system", "content": system_prompt},
-                {"role":"user",   "content": user_text}
-            ],
-            temperature=0.0,
-        )
-        parsed = json.loads(resp.choices[0].message.content)
-        return JsonResponse(parsed)
-    except Exception as e:
-        return JsonResponse({"error": f"파싱 실패: {e}"}, status=500)
-
+def extract_constraints_from_rasa_response(rasa_response):
+    """Rasa NLU 응답에서 시간표 제약조건을 추출합니다."""
+    constraints = {
+        "major_credits": None,
+        "elective_credits": None,
+        "required_courses": [],
+        "free_days": [],
+        "avoid_times": [],
+        "avoid_time_ranges": [],
+        "only_time_ranges": [],
+        "exclude_courses": []
+    }
     
+    # 1. 엔티티 처리
+    entities = rasa_response.get("entities", [])
+    for entity in entities:
+        entity_type = entity["entity"]
+        value = entity["value"]
+        
+        if entity_type == "major_credits_entity":
+            constraints["major_credits"] = extract_number(value)
+        
+        elif entity_type == "elective_credits_entity":
+            constraints["elective_credits"] = extract_number(value)
+        
+        elif entity_type == "course_name_entity":
+            # 2. 인텐트에 따라 처리 방식 결정
+            intent = rasa_response.get("intent", {}).get("name", "")
+            if intent == "modify_timetable":
+                # 수정 요청일 경우: 과목 제외 목록에 추가
+                if value not in constraints["exclude_courses"]:
+                    constraints["exclude_courses"].append(value)
+            else:
+                # 일반 요청: 필수 과목 목록에 추가
+                if value not in constraints["required_courses"]:
+                    constraints["required_courses"].append(value)
+        
+        elif entity_type == "free_day_entity":
+            day = get_korean_day_abbr(value)
+            if day and day not in constraints["free_days"]:
+                constraints["free_days"].append(day)
+        
+        elif entity_type == "free_day_keyword_entity":
+            day = get_korean_day_abbr(value)
+            if day and day not in constraints["free_days"]:
+                constraints["free_days"].append(day)
+        
+        elif entity_type == "time_entity":
+            # 시간 회피 처리 (예: "월요일 9시 피해줘")
+            # 필요한 추가 컨텍스트 분석이 있다면 여기에 구현
+            hour = extract_number(value)
+            
+            # 직전 엔티티가 요일인지 확인하는 로직이 필요할 수 있음
+            # 간소화된 구현: 마지막으로 언급된 요일에 적용
+            if hour is not None and constraints["free_days"]:
+                last_day = constraints["free_days"][-1]
+                constraints["avoid_times"].append({"day": last_day, "hour": hour})
+        
+        elif entity_type == "time_range_entity":
+            # 시간대 회피 처리 (예: "오후 수업 피해줘")
+            time_range = parse_time_range(value)
+            if time_range:
+                # 모든 요일 또는 특정 요일에 적용
+                days = constraints["free_days"] if constraints["free_days"] else ["월", "화", "수", "목", "금"]
+                time_range["days"] = days
+                constraints["avoid_time_ranges"].append(time_range)
+
+    return constraints
+
+
+def extract_number(text):
+    """텍스트에서 숫자를 추출합니다."""
+    if not text:
+        return None
+    
+    # 숫자 추출 정규식
+    numbers = re.findall(r'\d+', text)
+    if numbers:
+        return int(numbers[0])
+    return None
+
+
+def get_korean_day_abbr(day_text):
+    """한글 요일 전체 이름을 약자로 변환합니다."""
+    day_text = str(day_text).strip().lower()
+    mapping = {
+        "월요일": "월", "화요일": "화", "수요일": "수", "목요일": "목", "금요일": "금",
+        "월": "월", "화": "화", "수": "수", "목": "목", "금": "금",
+        "월공강": "월", "화공강": "화", "수공강": "수", "목공강": "목", "금공강": "금",
+    }
+    
+    for key, value in mapping.items():
+        if key in day_text:
+            return value
+    return day_text
+
+
+def parse_time_range(time_text):
+    """시간대 텍스트를 시간 범위로 변환합니다."""
+    if "오전" in time_text:
+        return {"start_hour": 9, "end_hour": 12}
+    elif "오후" in time_text:
+        return {"start_hour": 13, "end_hour": 18}
+    return None
+
 class CustomLoginView(LoginView):
     template_name = 'home/login.html'
     authentication_form = AuthenticationForm

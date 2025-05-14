@@ -1,0 +1,214 @@
+# nlu.yml
+version: "3.1"
+
+nlu:
+- intent: greet # 인사
+  examples: |
+    - 안녕
+    - 안녕하세요
+    - 하이
+    - ㅎㅇ
+    - 좋은 아침입니다
+    - 만나서 반가워요
+
+- intent: goodbye # 작별
+  examples: |
+    - 잘가
+    - 안녕히가세요
+    - 다음에 봐요
+    - 바이
+    - ㅂㅂ
+
+- intent: affirm # 긍정
+  examples: |
+    - 네
+    - 응
+    - 맞아
+    - 좋아요
+    - 물론이죠
+
+- intent: deny # 부정
+  examples: |
+    - 아니요
+    - 아니
+    - 싫어요
+    - 별로예요
+
+- intent: mood_great # 기분 좋음
+  examples: |
+    - 기분 최고예요
+    - 너무 좋아요
+    - 완벽해요
+
+- intent: mood_unhappy # 기분 안좋음
+  examples: |
+    - 슬퍼요
+    - 기분이 안 좋아요
+    - 우울해요
+
+- intent: bot_challenge # 봇인지 질문
+  examples: |
+    - 너 로봇이야?
+    - 혹시 봇인가요?
+    - 사람이에요?
+
+- intent: request_timetable # 시간표 생성 요청
+  examples: |
+    - 시간표 만들어줘
+    - 시간표 짜줘
+    - 이번 학기 시간표 추천해줄래?
+    - [컴퓨터공학과](department) 전공 [9학점](major_credits_entity) 듣고 교양은 [6학점](elective_credits_entity) 듣고싶어
+    - [소프트웨어학부](department) 시간표 짜주는데, [자료구조](course_name_entity)랑 [운영체제](course_name_entity)는 꼭 넣고, [수요일](free_day_entity)은 공강으로 해줘
+    - 전공 [12학점](major_credits_entity) 교양 [6학점](elective_credits_entity) 채워서 시간표 만들어줘. [금공강](free_day_keyword_entity)이면 좋겠어.
+    - [월요일](free_day_entity) 비워주고 [알고리즘](course_name_entity) 포함해서 시간표 짜줘
+    - [수업시간](course_name_entity) 찾아줘
+    - 전공 [15학점](major_credits_entity) 교양 [3학점](elective_credits_entity) 시간표 생성해줘
+    - [데이터베이스](course_name_entity)와 [인공지능](course_name_entity) 과목을 포함한 시간표를 만들어줘
+    - [월요일](free_day_entity) [9시](time_entity)는 피해서 시간표 짜줘
+    - [화요일](free_day_entity) [오후](time_range_entity) 수업은 빼고 시간표 만들어줘
+    - [금요일](free_day_entity) 공강으로 전공 [9학점](major_credits_entity) 시간표 만들어줘
+    - [자료구조](course_name_entity) 대신 [알고리즘](course_name_entity) 넣어서 시간표 다시 짜줘
+    - 이 시간표에서 [확률과통계](course_name_entity) 빼고 다른 과목으로 바꿔줘
+    - 전공 [9학점](major_credits_entity) [화공강](free_day_keyword_entity) 시간표 추천
+    - [월](free_day_entity) [수](free_day_entity) 공강인 시간표 만들어줘
+    - [디자인패턴](course_name_entity)과 [컴퓨터구조](course_name_entity) 포함해서 전공 [12학점](major_credits_entity) 시간표
+
+- intent: inform_major_credits # 전공 학점 알림
+  examples: |
+    - 전공은 [9학점](major_credits_entity)이요
+    - 전공 [12학점](major_credits_entity) 들을거야
+    - 전공 [15학점](major_credits_entity)
+    - 전공은 [6학점](major_credits_entity) 정도
+    - [3학점](major_credits_entity) 전공
+    - 전공을 [18학점](major_credits_entity) 들을래
+    - 전공 [9학점](major_credits_entity)
+    - 전공 [9학점](major_credits_entity)으로 해주세요
+    - 전공은 [9학점](major_credits_entity)으로
+    - 전공 [9학점](major_credits_entity)으로 해줘
+    - 전공 [12학점](major_credits_entity)
+    - 전공 [6학점](major_credits_entity)
+    - 전공 [15학점](major_credits_entity)
+    - 전공으로 [9학점](major_credits_entity)
+    - 전공 학점은 [9학점](major_credits_entity)
+    - 전공 학점 [9학점](major_credits_entity)
+    - 전공 학점을 [9학점](major_credits_entity)으로 할게
+    - 전공 [9](major_credits_entity)학점
+    - 전공학점 [9학점](major_credits_entity)
+    - 전공학점 [9](major_credits_entity)
+    - 전공 [9](major_credits_entity)
+    - 전공은 [9](major_credits_entity)
+    - 전공으로는 [9학점](major_credits_entity)
+    - 전공 [9학점](major_credits_entity)이요
+    - 전공은 [9학점](major_credits_entity) 들을게요
+    - 전공 학점으로 [9학점](major_credits_entity)
+    - 전공으로 [9](major_credits_entity) 들을게요
+    - [9학점](major_credits_entity) 전공
+    - [9](major_credits_entity)
+    - [9](major_credits_entity)학점
+
+- intent: inform_elective_credits # 교양 학점 알림
+  examples: |
+    - 교양은 [6학점](elective_credits_entity)으로 할게
+    - 교양 [3학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [12학점](elective_credits_entity) 듣고 싶어
+    - [6학점](elective_credits_entity) 교양
+    - 교양을 [3학점](elective_credits_entity)만
+    - 교양 [9학점](elective_credits_entity)
+    - 교양 [9학점](elective_credits_entity)으로 해주세요
+    - 교양은 [9학점](elective_credits_entity)으로
+    - 교양 [9학점](elective_credits_entity)으로 해줘
+    - 교양 [12학점](elective_credits_entity)
+    - 교양 [6학점](elective_credits_entity)
+    - 교양으로 [9학점](elective_credits_entity)
+    - 교양 학점은 [9학점](elective_credits_entity)
+    - 교양 학점 [9학점](elective_credits_entity)
+    - 교양 [9](elective_credits_entity)학점
+    - 교양학점 [9학점](elective_credits_entity)
+    - 교양학점 [9](elective_credits_entity)
+    - 교양 [9](elective_credits_entity)
+    - 교양은 [9](elective_credits_entity)
+    - 교양으로는 [9학점](elective_credits_entity)
+    - 교양 [9학점](elective_credits_entity)이요
+    - 교양은 [9학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [9학점](elective_credits_entity)
+    - 교양으로 [9](elective_credits_entity) 들을게요
+    - [9학점](elective_credits_entity) 교양
+    - [6](elective_credits_entity)
+    - [6](elective_credits_entity)학점
+    - [6학점](elective_credits_entity)
+    - [6학점](elective_credits_entity) 들을래
+    - [6](elective_credits_entity) 들을래
+    - 교양 [6](elective_credits_entity) 들을래
+    - 교양은 [6](elective_credits_entity) 들을래
+    - 교양으로 [6](elective_credits_entity) 들을래
+    - [6학점](elective_credits_entity) 들을래요
+    - 교양으로 [6학점](elective_credits_entity) 할게
+    - 교양 [6학점](elective_credits_entity) 듣고 싶어
+    - 교양 [6](elective_credits_entity) 듣고 싶어
+    - 교양은 [6학점](elective_credits_entity)이요
+    - 교양 [6학점](elective_credits_entity)으로 할게요
+
+- intent: inform_required_course # 필수 과목 알림
+  examples: |
+    - [자료구조](course_name_entity) 꼭 들어야해
+    - [객체지향프로그래밍](course_name_entity)은 필수야
+    - [데이터베이스](course_name_entity) 포함해줘
+    - [알고리즘](course_name_entity) 넣어줘
+    - [인공지능](course_name_entity) 과목이 꼭 필요해
+    - [운영체제](course_name_entity)와 [컴퓨터구조](course_name_entity) 과목은 필수
+    - [확률과통계](course_name_entity) 빼고 다 상관없어
+    - [웹프로그래밍](course_name_entity) 수업 꼭 넣어줘
+
+- intent: inform_free_day # 공강 요일 알림
+  examples: |
+    - [수요일](free_day_entity)은 비워줘
+    - [월요일](free_day_entity) 공강하고 싶어
+    - [금공강](free_day_keyword_entity) 만들어줘
+    - [화요일](free_day_entity)은 수업 없었으면 좋겠어
+    - [목요일](free_day_entity) 비워줘
+    - [월](free_day_entity)과 [수](free_day_entity)는 공강으로
+    - [금요일](free_day_entity) 수업 없게 해줘
+
+- intent: inform_avoid_time # 특정 시간 회피
+  examples: |
+    - [월요일](free_day_entity) [9시](time_entity) 수업 피해줘
+    - [수요일](free_day_entity) [오전](time_range_entity)에는 수업 없게 해줘
+    - [화](free_day_entity) [목](free_day_entity) [9시](time_entity) 피해서 짜줘
+    - [금요일](free_day_entity) [오후](time_range_entity)는 비워줘
+    - [월요일](free_day_entity) [1교시](time_entity) 수업 빼고
+    - [오전](time_range_entity) 수업 피해서 시간표 만들어줘
+
+- intent: modify_timetable # 시간표 수정 요청
+  examples: |
+    - 이 시간표에서 [데이터베이스](course_name_entity) 빼줘
+    - [자료구조](course_name_entity) 대신 [알고리즘](course_name_entity) 넣어줘
+    - [컴퓨터구조](course_name_entity) 과목을 다른 걸로 바꿔줘
+    - 다른 시간표 보여줘
+    - 시간표 다시 생성해줘
+    - 다른 조합으로 시간표 만들어줘
+    - 이 시간표 말고 다른거 보여줘
+
+# 정규식 패턴 추가
+- regex: credits_regex
+  examples: |
+    - \d+학점
+    - \d+
+    - 학점\d+
+    - \d+점
+
+# 엔티티 동의어 사용
+- synonym: 교양
+  examples: |
+    - 교양
+    - 교양학점
+    - 교양과목
+    - 교양 과목
+    - 교양 수업
+
+- synonym: 전공
+  examples: |
+    - 전공
+    - 전공학점
+    - 전공과목
+    - 전공 과목
+    - 전공 수업

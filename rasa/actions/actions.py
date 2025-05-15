@@ -334,13 +334,23 @@ class ActionHandleTimetableRequest(Action):
             edu_part = latest_message[max(0, edu_idx-10):min(len(latest_message), edu_idx+15)]
             logger.debug(f"교양 주변 텍스트: '{edu_part}'")
             
-            edu_numbers = re.findall(r'\d+', edu_part)
-            if edu_numbers:
-                edu_value = int(edu_numbers[0])
-                if edu_value <= 30:  # 합리적인 학점 범위
-                    logger.debug(f"교양 주변에서 숫자 추출: {edu_value}")
-                    constraints["elective_credits"] = edu_value
-                    events.append(SlotSet("elective_credits_slot", str(edu_value)))
+            # 정확한 패턴 매칭 먼저 시도 ("교양 6학점" 형식)
+            elective_match = re.search(r'교양\s*(\d+)\s*학점', edu_part)
+            if elective_match:
+                edu_value = int(elective_match.group(1))
+                logger.info(f"교양 패턴에서 정확히 매칭된 학점: {edu_value}")
+                constraints["elective_credits"] = edu_value
+                events.append(SlotSet("elective_credits_slot", str(edu_value)))
+            else:
+                # 일반적인 숫자 추출 시도
+                edu_numbers = re.findall(r'\d+', edu_part)
+                if edu_numbers:
+                    # 교양과 가장 가까운 숫자를 선택 (첫 번째 숫자)
+                    edu_value = int(edu_numbers[0])
+                    if edu_value <= 30:  # 합리적인 학점 범위
+                        logger.debug(f"교양 주변에서 숫자 추출: {edu_value}")
+                        constraints["elective_credits"] = edu_value
+                        events.append(SlotSet("elective_credits_slot", str(edu_value)))
         
         # 전공 학점 직접 추출 시도
         if "전공" in latest_message and constraints["major_credits"] is None:
@@ -348,13 +358,23 @@ class ActionHandleTimetableRequest(Action):
             major_part = latest_message[max(0, major_idx-10):min(len(latest_message), major_idx+15)]
             logger.debug(f"전공 주변 텍스트: '{major_part}'")
             
-            major_numbers = re.findall(r'\d+', major_part)
-            if major_numbers:
-                major_value = int(major_numbers[0])
-                if major_value <= 30:  # 합리적인 학점 범위
-                    logger.debug(f"전공 주변에서 숫자 추출: {major_value}")
-                    constraints["major_credits"] = major_value
-                    events.append(SlotSet("major_credits_slot", str(major_value)))
+            # 정확한 패턴 매칭 먼저 시도 ("전공 9학점" 형식)
+            major_match = re.search(r'전공\s*(\d+)\s*학점', major_part)
+            if major_match:
+                major_value = int(major_match.group(1))
+                logger.info(f"전공 패턴에서 정확히 매칭된 학점: {major_value}")
+                constraints["major_credits"] = major_value
+                events.append(SlotSet("major_credits_slot", str(major_value)))
+            else:
+                # 일반적인 숫자 추출 시도
+                major_numbers = re.findall(r'\d+', major_part)
+                if major_numbers:
+                    # 전공과 가장 가까운 숫자를 선택 (첫 번째 숫자)
+                    major_value = int(major_numbers[0])
+                    if major_value <= 30:  # 합리적인 학점 범위
+                        logger.debug(f"전공 주변에서 숫자 추출: {major_value}")
+                        constraints["major_credits"] = major_value
+                        events.append(SlotSet("major_credits_slot", str(major_value)))
         
         # 5. 엔티티 처리
         entities = tracker.latest_message.get('entities', [])

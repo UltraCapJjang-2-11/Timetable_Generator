@@ -23,27 +23,45 @@ window.currentTimetableCourseIds = []; // Store IDs of the last displayed timeta
 
 // Modified: Accepts an optional array of course IDs to use for the 'existing_courses' parameter.
 // If not provided, defaults to the global window.existingCourses (manually added).
-function buildParamsFromConstraints(idsToUse = window.existingCourses) {
-  console.log("[buildParamsFromConstraints] Received idsToUse:", JSON.stringify(idsToUse)); // Log received IDs
-  const c = window.constraints;
-  const total = c.major_credits + c.elective_credits;
-  const params = new URLSearchParams({
-    total_credits: total,
-    major_credits: c.major_credits,
-    elective_credits: c.elective_credits
-  });
-  c.free_days        .forEach(d => params.append("free_days[]", d));
-  c.required_courses .forEach(r => params.append("required_courses[]", r));
-  c.exclude_courses  .forEach(e => params.append("exclude_courses[]", e));
-  c.avoid_times      .forEach(o => params.append("avoid_times[]",        JSON.stringify(o)));
-  c.avoid_time_ranges.forEach(o => params.append("avoid_time_ranges[]", JSON.stringify(o)));
-  c.only_time_ranges .forEach(o => params.append("only_time_ranges[]",  JSON.stringify(o)));
-
-  // Use the provided idsToUse array for the 'existing_courses' parameter
+function buildParamsFromConstraints(idsToUse) {
+  console.log("[buildParamsFromConstraints] Received idsToUse:", JSON.stringify(idsToUse));
+  
+  // 초기화: 파라미터 객체 생성
+  let params = new URLSearchParams();
+  
+  // 학점 정보
+  let totalCredits = 0;
+  let majorCredits = window.constraints.major_credits || 0;
+  let electiveCredits = window.constraints.elective_credits || 0;
+  totalCredits = majorCredits + electiveCredits;
+  
+  params.append("total_credits", totalCredits);
+  params.append("major_credits", majorCredits);
+  params.append("elective_credits", electiveCredits);
+  
+  // 기존 등록된 과목 처리
   console.log("[buildParamsFromConstraints] Processing idsToUse for existing_courses[]:", JSON.stringify(idsToUse));
-  (idsToUse || []).forEach(id =>
-    params.append("existing_courses[]", String(id)) // Ensure it's string
-  );
+  let existingCoursesToUse = idsToUse || window.existingCourses;
+  existingCoursesToUse.forEach(id => {
+    params.append("existing_courses[]", id);
+  });
+  
+  // 공강 요일 처리
+  if (window.constraints.free_days && window.constraints.free_days.length > 0) {
+    window.constraints.free_days.forEach(day => {
+      params.append("free_days[]", day);
+    });
+  }
+  
+  // 필수 과목 처리
+  if (window.constraints.required_courses && window.constraints.required_courses.length > 0) {
+    window.constraints.required_courses.forEach(course => {
+      params.append("required_courses[]", course);
+    });
+  }
+  
+  console.log("최종 URL 파라미터:", params.toString());
+  
   return params;
 }
 window.timetables   = [];

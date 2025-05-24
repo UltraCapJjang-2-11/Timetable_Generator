@@ -75,26 +75,97 @@ nlu:
 
 - intent: inform_major_credits # 전공 학점 알림
   examples: |
-    - 전공은 [9학점](major_credits_entity)이요
-    - 전공 [12학점](major_credits_entity) 들을거야
-    - 전공 [15학점](major_credits_entity)
-    - 전공은 [6학점](major_credits_entity) 정도
+    - 전공은 [2학점](major_credits_entity)이요
+    - 전공 [2학점](major_credits_entity) 들을거야
+    - 전공 [2학점](major_credits_entity)
+    - 전공은 [2학점](major_credits_entity) 정도
+    - [2학점](major_credits_entity) 전공
+    - 전공을 [2학점](major_credits_entity) 들을래
+    - 전공 [2](major_credits_entity)
+    - 전공은 [2](major_credits_entity)
+    - [2](major_credits_entity)
+    - [2](major_credits_entity)학점
+    - 전공은 [3학점](major_credits_entity)이요
+    - 전공 [3학점](major_credits_entity) 들을거야
+    - 전공 [3학점](major_credits_entity)
+    - 전공은 [3학점](major_credits_entity) 정도
     - [3학점](major_credits_entity) 전공
-    - 전공을 [18학점](major_credits_entity) 들을래
+    - 전공을 [3학점](major_credits_entity) 들을래
+    - 전공 [3](major_credits_entity)
+    - 전공은 [3](major_credits_entity)
+    - [3](major_credits_entity)
+    - [3](major_credits_entity)학점
+    - 전공으로 [3학점](major_credits_entity) 할게
+    - 전공은 [4학점](major_credits_entity)이요
+    - 전공 [4학점](major_credits_entity) 들을거야
+    - 전공 [4학점](major_credits_entity)
+    - 전공은 [4학점](major_credits_entity) 정도
+    - [4학점](major_credits_entity) 전공
+    - 전공을 [4학점](major_credits_entity) 들을래
+    - 전공 [4](major_credits_entity)
+    - 전공은 [4](major_credits_entity)
+    - [4](major_credits_entity)
+    - [4](major_credits_entity)학점
+    - 전공으로 [4학점](major_credits_entity) 듣고 싶어
+    - 전공 학점 [4학점](major_credits_entity)
+    - 전공은 [5학점](major_credits_entity)이요
+    - 전공 [5학점](major_credits_entity) 들을거야
+    - 전공 [5학점](major_credits_entity)
+    - 전공은 [5학점](major_credits_entity) 정도
+    - [5학점](major_credits_entity) 전공
+    - 전공을 [5학점](major_credits_entity) 들을래
+    - 전공 [5](major_credits_entity)
+    - 전공은 [5](major_credits_entity)
+    - [5](major_credits_entity)
+    - [5](major_credits_entity)학점
+    - 전공으로 [5학점](major_credits_entity) 선택할게
+    - 전공 학점으로 [5학점](major_credits_entity)
+    - 전공은 [6학점](major_credits_entity)이요
+    - 전공 [6학점](major_credits_entity) 들을거야
+    - 전공 [6학점](major_credits_entity)
+    - 전공은 [6학점](major_credits_entity) 정도
+    - [6학점](major_credits_entity) 전공
+    - 전공을 [6학점](major_credits_entity) 들을래
+    - 전공 [6](major_credits_entity)
+    - 전공은 [6](major_credits_entity)
+    - [6](major_credits_entity)
+    - [6](major_credits_entity)학점
+    - 전공으로는 [6학점](major_credits_entity)
+    - 전공 학점은 [6학점](major_credits_entity)
+    - 전공은 [7학점](major_credits_entity)이요
+    - 전공 [7학점](major_credits_entity) 들을거야
+    - 전공 [7학점](major_credits_entity)
+    - 전공은 [7학점](major_credits_entity) 정도
+    - [7학점](major_credits_entity) 전공
+    - 전공을 [7학점](major_credits_entity) 들을래
+    - 전공 [7](major_credits_entity)
+    - 전공은 [7](major_credits_entity)
+    - [7](major_credits_entity)
+    - [7](major_credits_entity)학점
+    - 전공으로 [7학점](major_credits_entity) 들을게요
+    - 전공학점 [7학점](major_credits_entity)
+    - 전공은 [8학점](major_credits_entity)이요
+    - 전공 [8학점](major_credits_entity) 들을거야
+    - 전공 [8학점](major_credits_entity)
+    - 전공은 [8학점](major_credits_entity) 정도
+    - [8학점](major_credits_entity) 전공
+    - 전공을 [8학점](major_credits_entity) 들을래
+    - 전공 [8](major_credits_entity)
+    - 전공은 [8](major_credits_entity)
+    - [8](major_credits_entity)
+    - [8](major_credits_entity)학점
+    - 전공으로는 [8학점](major_credits_entity)
+    - 전공으로 [8](major_credits_entity) 들을게요
+    - 전공은 [9학점](major_credits_entity)이요
+    - 전공 [9학점](major_credits_entity) 들을거야
+    - 전공 [9학점](major_credits_entity)
+    - 전공은 [9학점](major_credits_entity) 정도
+    - [9학점](major_credits_entity) 전공
+    - 전공을 [9학점](major_credits_entity) 들을래
     - 전공 [9학점](major_credits_entity)
     - 전공 [9학점](major_credits_entity)으로 해주세요
     - 전공은 [9학점](major_credits_entity)으로
     - 전공 [9학점](major_credits_entity)으로 해줘
-    - 전공 [12학점](major_credits_entity)
-    - 전공 [6학점](major_credits_entity)
-    - 전공 [15학점](major_credits_entity)
-    - 전공으로 [9학점](major_credits_entity)
-    - 전공 학점은 [9학점](major_credits_entity)
-    - 전공 학점 [9학점](major_credits_entity)
-    - 전공 학점을 [9학점](major_credits_entity)으로 할게
-    - 전공 [9](major_credits_entity)학점
-    - 전공학점 [9학점](major_credits_entity)
-    - 전공학점 [9](major_credits_entity)
     - 전공 [9](major_credits_entity)
     - 전공은 [9](major_credits_entity)
     - 전공으로는 [9학점](major_credits_entity)
@@ -102,23 +173,297 @@ nlu:
     - 전공은 [9학점](major_credits_entity) 들을게요
     - 전공 학점으로 [9학점](major_credits_entity)
     - 전공으로 [9](major_credits_entity) 들을게요
-    - [9학점](major_credits_entity) 전공
     - [9](major_credits_entity)
     - [9](major_credits_entity)학점
+    - 전공학점 [9학점](major_credits_entity)
+    - 전공은 [10학점](major_credits_entity)이요
+    - 전공 [10학점](major_credits_entity) 들을거야
+    - 전공 [10학점](major_credits_entity)
+    - 전공은 [10학점](major_credits_entity) 정도
+    - [10학점](major_credits_entity) 전공
+    - 전공을 [10학점](major_credits_entity) 들을래
+    - 전공 [10학점](major_credits_entity)으로 해주세요
+    - 전공 [10](major_credits_entity)
+    - 전공은 [10](major_credits_entity)
+    - [10](major_credits_entity)
+    - [10](major_credits_entity)학점
+    - 전공학점 [10학점](major_credits_entity)
+    - 전공으로 [10학점](major_credits_entity) 할게
+    - 전공은 [11학점](major_credits_entity)이요
+    - 전공 [11학점](major_credits_entity) 들을거야
+    - 전공 [11학점](major_credits_entity)
+    - 전공은 [11학점](major_credits_entity) 정도
+    - [11학점](major_credits_entity) 전공
+    - 전공을 [11학점](major_credits_entity) 들을래
+    - 전공은 [11학점](major_credits_entity)으로
+    - 전공 [11](major_credits_entity)
+    - 전공은 [11](major_credits_entity)
+    - [11](major_credits_entity)
+    - [11](major_credits_entity)학점
+    - 전공으로 [11학점](major_credits_entity) 선택
+    - 전공학점은 [11학점](major_credits_entity)
+    - 전공은 [12학점](major_credits_entity)이요
+    - 전공 [12학점](major_credits_entity) 들을거야
+    - 전공 [12학점](major_credits_entity)
+    - 전공은 [12학점](major_credits_entity) 정도
+    - [12학점](major_credits_entity) 전공
+    - 전공을 [12학점](major_credits_entity) 들을래
+    - 전공 [12학점](major_credits_entity)
+    - 전공 [12](major_credits_entity)
+    - 전공은 [12](major_credits_entity)
+    - [12](major_credits_entity)
+    - [12](major_credits_entity)학점
+    - 전공으로 [12학점](major_credits_entity) 들을게
+    - 전공 학점 [12학점](major_credits_entity)
+    - 전공은 [13학점](major_credits_entity)이요
+    - 전공 [13학점](major_credits_entity) 들을거야
+    - 전공 [13학점](major_credits_entity)
+    - 전공은 [13학점](major_credits_entity) 정도
+    - [13학점](major_credits_entity) 전공
+    - 전공을 [13학점](major_credits_entity) 들을래
+    - 전공 [13학점](major_credits_entity)
+    - 전공 [13](major_credits_entity)
+    - 전공은 [13](major_credits_entity)
+    - [13](major_credits_entity)
+    - [13](major_credits_entity)학점
+    - 전공으로는 [13학점](major_credits_entity)
+    - 전공학점 [13학점](major_credits_entity)
+    - 전공은 [14학점](major_credits_entity)이요
+    - 전공 [14학점](major_credits_entity) 들을거야
+    - 전공 [14학점](major_credits_entity)
+    - 전공은 [14학점](major_credits_entity) 정도
+    - [14학점](major_credits_entity) 전공
+    - 전공을 [14학점](major_credits_entity) 들을래
+    - 전공으로 [14학점](major_credits_entity)
+    - 전공 [14](major_credits_entity)
+    - 전공은 [14](major_credits_entity)
+    - [14](major_credits_entity)
+    - [14](major_credits_entity)학점
+    - 전공 학점은 [14학점](major_credits_entity)
+    - 전공으로 [14학점](major_credits_entity) 할게요
+    - 전공은 [15학점](major_credits_entity)이요
+    - 전공 [15학점](major_credits_entity) 들을거야
+    - 전공 [15학점](major_credits_entity)
+    - 전공은 [15학점](major_credits_entity) 정도
+    - [15학점](major_credits_entity) 전공
+    - 전공을 [15학점](major_credits_entity) 들을래
+    - 전공 [15학점](major_credits_entity)
+    - 전공 [15](major_credits_entity)
+    - 전공은 [15](major_credits_entity)
+    - [15](major_credits_entity)
+    - [15](major_credits_entity)학점
+    - 전공으로 [15학점](major_credits_entity) 들을게
+    - 전공학점을 [15학점](major_credits_entity)으로 할게
+    - 전공은 [16학점](major_credits_entity)이요
+    - 전공 [16학점](major_credits_entity) 들을거야
+    - 전공 [16학점](major_credits_entity)
+    - 전공은 [16학점](major_credits_entity) 정도
+    - [16학점](major_credits_entity) 전공
+    - 전공을 [16학점](major_credits_entity) 들을래
+    - 전공 학점은 [16학점](major_credits_entity)
+    - 전공 [16](major_credits_entity)
+    - 전공은 [16](major_credits_entity)
+    - [16](major_credits_entity)
+    - [16](major_credits_entity)학점
+    - 전공으로는 [16학점](major_credits_entity)
+    - 전공 [16학점](major_credits_entity) 듣고 싶어
+    - 전공은 [17학점](major_credits_entity)이요
+    - 전공 [17학점](major_credits_entity) 들을거야
+    - 전공 [17학점](major_credits_entity)
+    - 전공은 [17학점](major_credits_entity) 정도
+    - [17학점](major_credits_entity) 전공
+    - 전공을 [17학점](major_credits_entity) 들을래
+    - 전공 학점을 [17학점](major_credits_entity)으로 할게
+    - 전공 [17](major_credits_entity)
+    - 전공은 [17](major_credits_entity)
+    - [17](major_credits_entity)
+    - [17](major_credits_entity)학점
+    - 전공학점 [17학점](major_credits_entity)
+    - 전공으로 [17학점](major_credits_entity) 선택할게
+    - 전공은 [18학점](major_credits_entity)이요
+    - 전공 [18학점](major_credits_entity) 들을거야
+    - 전공 [18학점](major_credits_entity)
+    - 전공은 [18학점](major_credits_entity) 정도
+    - [18학점](major_credits_entity) 전공
+    - 전공을 [18학점](major_credits_entity) 들을래
+    - 전공 [18](major_credits_entity)학점
+    - 전공학점 [18학점](major_credits_entity)
+    - 전공학점 [18](major_credits_entity)
+    - 전공 [18](major_credits_entity)
+    - 전공은 [18](major_credits_entity)
+    - [18](major_credits_entity)
+    - [18](major_credits_entity)학점
+    - 전공으로 [18학점](major_credits_entity) 할게요
+    - 전공 학점은 [18학점](major_credits_entity)
 
 - intent: inform_elective_credits # 교양 학점 알림
   examples: |
-    - 교양은 [6학점](elective_credits_entity)으로 할게
+    - 교양은 [2학점](elective_credits_entity)으로 할게
+    - 교양 [2학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [2학점](elective_credits_entity) 듣고 싶어
+    - [2학점](elective_credits_entity) 교양
+    - 교양을 [2학점](elective_credits_entity)만
+    - 교양 [2학점](elective_credits_entity)
+    - 교양 [2학점](elective_credits_entity)으로 해주세요
+    - 교양은 [2학점](elective_credits_entity)으로
+    - 교양 [2학점](elective_credits_entity)으로 해줘
+    - 교양으로 [2학점](elective_credits_entity)
+    - 교양 학점은 [2학점](elective_credits_entity)
+    - 교양 학점 [2학점](elective_credits_entity)
+    - 교양 [2](elective_credits_entity)학점
+    - 교양학점 [2학점](elective_credits_entity)
+    - 교양학점 [2](elective_credits_entity)
+    - 교양 [2](elective_credits_entity)
+    - 교양은 [2](elective_credits_entity)
+    - 교양으로는 [2학점](elective_credits_entity)
+    - 교양 [2학점](elective_credits_entity)이요
+    - 교양은 [2학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [2학점](elective_credits_entity)
+    - 교양으로 [2](elective_credits_entity) 들을게요
+    - [2](elective_credits_entity)
+    - [2](elective_credits_entity)학점
+    - 교양은 [3학점](elective_credits_entity)으로 할게
     - 교양 [3학점](elective_credits_entity) 채우고 싶어
-    - 교양으로 [12학점](elective_credits_entity) 듣고 싶어
-    - [6학점](elective_credits_entity) 교양
+    - 교양으로 [3학점](elective_credits_entity) 듣고 싶어
+    - [3학점](elective_credits_entity) 교양
     - 교양을 [3학점](elective_credits_entity)만
+    - 교양 [3학점](elective_credits_entity)
+    - 교양 [3학점](elective_credits_entity)으로 해주세요
+    - 교양은 [3학점](elective_credits_entity)으로
+    - 교양 [3학점](elective_credits_entity)으로 해줘
+    - 교양으로 [3학점](elective_credits_entity)
+    - 교양 학점은 [3학점](elective_credits_entity)
+    - 교양 학점 [3학점](elective_credits_entity)
+    - 교양 [3](elective_credits_entity)학점
+    - 교양학점 [3학점](elective_credits_entity)
+    - 교양학점 [3](elective_credits_entity)
+    - 교양 [3](elective_credits_entity)
+    - 교양은 [3](elective_credits_entity)
+    - 교양으로는 [3학점](elective_credits_entity)
+    - 교양 [3학점](elective_credits_entity)이요
+    - 교양은 [3학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [3학점](elective_credits_entity)
+    - 교양으로 [3](elective_credits_entity) 들을게요
+    - 교양은 [4학점](elective_credits_entity)으로 할게
+    - 교양 [4학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [4학점](elective_credits_entity) 듣고 싶어
+    - [4학점](elective_credits_entity) 교양
+    - 교양을 [4학점](elective_credits_entity)만
+    - 교양 [4학점](elective_credits_entity)
+    - 교양 [4학점](elective_credits_entity)으로 해주세요
+    - 교양은 [4학점](elective_credits_entity)으로
+    - 교양 [4학점](elective_credits_entity)으로 해줘
+    - 교양으로 [4학점](elective_credits_entity)
+    - 교양 학점은 [4학점](elective_credits_entity)
+    - 교양 학점 [4학점](elective_credits_entity)
+    - 교양 [4](elective_credits_entity)학점
+    - 교양학점 [4학점](elective_credits_entity)
+    - 교양학점 [4](elective_credits_entity)
+    - 교양 [4](elective_credits_entity)
+    - 교양은 [4](elective_credits_entity)
+    - 교양으로는 [4학점](elective_credits_entity)
+    - 교양 [4학점](elective_credits_entity)이요
+    - 교양은 [4학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [4학점](elective_credits_entity)
+    - 교양으로 [4](elective_credits_entity) 들을게요
+    - 교양은 [5학점](elective_credits_entity)으로 할게
+    - 교양 [5학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [5학점](elective_credits_entity) 듣고 싶어
+    - [5학점](elective_credits_entity) 교양
+    - 교양을 [5학점](elective_credits_entity)만
+    - 교양 [5학점](elective_credits_entity)
+    - 교양 [5학점](elective_credits_entity)으로 해주세요
+    - 교양은 [5학점](elective_credits_entity)으로
+    - 교양 [5학점](elective_credits_entity)으로 해줘
+    - 교양으로 [5학점](elective_credits_entity)
+    - 교양 학점은 [5학점](elective_credits_entity)
+    - 교양 학점 [5학점](elective_credits_entity)
+    - 교양 [5](elective_credits_entity)학점
+    - 교양학점 [5학점](elective_credits_entity)
+    - 교양학점 [5](elective_credits_entity)
+    - 교양 [5](elective_credits_entity)
+    - 교양은 [5](elective_credits_entity)
+    - 교양으로는 [5학점](elective_credits_entity)
+    - 교양 [5학점](elective_credits_entity)이요
+    - 교양은 [5학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [5학점](elective_credits_entity)
+    - 교양으로 [5](elective_credits_entity) 들을게요
+    - 교양으로 [5학점](elective_credits_entity) 할게
+    - 교양은 [6학점](elective_credits_entity)으로 할게
+    - 교양 [6학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [6학점](elective_credits_entity) 듣고 싶어
+    - [6학점](elective_credits_entity) 교양
+    - 교양을 [6학점](elective_credits_entity)만
+    - 교양 [6학점](elective_credits_entity)
+    - 교양 [6학점](elective_credits_entity)으로 해주세요
+    - 교양은 [6학점](elective_credits_entity)으로
+    - 교양 [6학점](elective_credits_entity)으로 해줘
+    - 교양으로 [6학점](elective_credits_entity)
+    - 교양 학점은 [6학점](elective_credits_entity)
+    - 교양 학점 [6학점](elective_credits_entity)
+    - 교양 [6](elective_credits_entity)학점
+    - 교양학점 [6학점](elective_credits_entity)
+    - 교양학점 [6](elective_credits_entity)
+    - 교양 [6](elective_credits_entity)
+    - 교양은 [6](elective_credits_entity)
+    - 교양으로는 [6학점](elective_credits_entity)
+    - 교양 [6학점](elective_credits_entity)이요
+    - 교양은 [6학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [6학점](elective_credits_entity)
+    - 교양으로 [6](elective_credits_entity) 들을게요
+    - 교양은 [7학점](elective_credits_entity)으로 할게
+    - 교양 [7학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [7학점](elective_credits_entity) 듣고 싶어
+    - [7학점](elective_credits_entity) 교양
+    - 교양을 [7학점](elective_credits_entity)만
+    - 교양 [7학점](elective_credits_entity)
+    - 교양 [7학점](elective_credits_entity)으로 해주세요
+    - 교양은 [7학점](elective_credits_entity)으로
+    - 교양 [7학점](elective_credits_entity)으로 해줘
+    - 교양으로 [7학점](elective_credits_entity)
+    - 교양 학점은 [7학점](elective_credits_entity)
+    - 교양 학점 [7학점](elective_credits_entity)
+    - 교양 [7](elective_credits_entity)학점
+    - 교양학점 [7학점](elective_credits_entity)
+    - 교양학점 [7](elective_credits_entity)
+    - 교양 [7](elective_credits_entity)
+    - 교양은 [7](elective_credits_entity)
+    - 교양으로는 [7학점](elective_credits_entity)
+    - 교양 [7학점](elective_credits_entity)이요
+    - 교양은 [7학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [7학점](elective_credits_entity)
+    - 교양으로 [7](elective_credits_entity) 들을게요
+    - 교양은 [8학점](elective_credits_entity)으로 할게
+    - 교양 [8학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [8학점](elective_credits_entity) 듣고 싶어
+    - [8학점](elective_credits_entity) 교양
+    - 교양을 [8학점](elective_credits_entity)만
+    - 교양 [8학점](elective_credits_entity)
+    - 교양 [8학점](elective_credits_entity)으로 해주세요
+    - 교양은 [8학점](elective_credits_entity)으로
+    - 교양 [8학점](elective_credits_entity)으로 해줘
+    - 교양으로 [8학점](elective_credits_entity)
+    - 교양 학점은 [8학점](elective_credits_entity)
+    - 교양 학점 [8학점](elective_credits_entity)
+    - 교양 [8](elective_credits_entity)학점
+    - 교양학점 [8학점](elective_credits_entity)
+    - 교양학점 [8](elective_credits_entity)
+    - 교양 [8](elective_credits_entity)
+    - 교양은 [8](elective_credits_entity)
+    - 교양으로는 [8학점](elective_credits_entity)
+    - 교양 [8학점](elective_credits_entity)이요
+    - 교양은 [8학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [8학점](elective_credits_entity)
+    - 교양으로 [8](elective_credits_entity) 들을게요
+    - 교양은 [9학점](elective_credits_entity)으로 할게
+    - 교양 [9학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [9학점](elective_credits_entity) 듣고 싶어
+    - [9학점](elective_credits_entity) 교양
+    - 교양을 [9학점](elective_credits_entity)만
     - 교양 [9학점](elective_credits_entity)
     - 교양 [9학점](elective_credits_entity)으로 해주세요
     - 교양은 [9학점](elective_credits_entity)으로
     - 교양 [9학점](elective_credits_entity)으로 해줘
-    - 교양 [12학점](elective_credits_entity)
-    - 교양 [6학점](elective_credits_entity)
     - 교양으로 [9학점](elective_credits_entity)
     - 교양 학점은 [9학점](elective_credits_entity)
     - 교양 학점 [9학점](elective_credits_entity)
@@ -132,21 +477,209 @@ nlu:
     - 교양은 [9학점](elective_credits_entity) 들을게요
     - 교양 학점으로 [9학점](elective_credits_entity)
     - 교양으로 [9](elective_credits_entity) 들을게요
-    - [9학점](elective_credits_entity) 교양
-    - [6](elective_credits_entity)
-    - [6](elective_credits_entity)학점
-    - [6학점](elective_credits_entity)
-    - [6학점](elective_credits_entity) 들을래
-    - [6](elective_credits_entity) 들을래
-    - 교양 [6](elective_credits_entity) 들을래
-    - 교양은 [6](elective_credits_entity) 들을래
-    - 교양으로 [6](elective_credits_entity) 들을래
-    - [6학점](elective_credits_entity) 들을래요
-    - 교양으로 [6학점](elective_credits_entity) 할게
-    - 교양 [6학점](elective_credits_entity) 듣고 싶어
-    - 교양 [6](elective_credits_entity) 듣고 싶어
-    - 교양은 [6학점](elective_credits_entity)이요
-    - 교양 [6학점](elective_credits_entity)으로 할게요
+    - [9학점](elective_credits_entity) 들을래
+    - [10](elective_credits_entity) 들을래
+    - 교양 [9](elective_credits_entity) 들을래
+    - 교양은 [9](elective_credits_entity) 들을래
+    - 교양으로 [9](elective_credits_entity) 들을래
+    - 교양은 [10학점](elective_credits_entity)으로 할게
+    - 교양 [10학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [10학점](elective_credits_entity) 듣고 싶어
+    - [10학점](elective_credits_entity) 교양
+    - 교양을 [10학점](elective_credits_entity)만
+    - 교양 [10학점](elective_credits_entity)
+    - 교양 [10학점](elective_credits_entity)으로 해주세요
+    - 교양은 [10학점](elective_credits_entity)으로
+    - 교양 [10학점](elective_credits_entity)으로 해줘
+    - 교양으로 [10학점](elective_credits_entity)
+    - 교양 학점은 [10학점](elective_credits_entity)
+    - 교양 학점 [10학점](elective_credits_entity)
+    - 교양 [10](elective_credits_entity)학점
+    - 교양학점 [10학점](elective_credits_entity)
+    - 교양학점 [10](elective_credits_entity)
+    - 교양 [10](elective_credits_entity)
+    - 교양은 [10](elective_credits_entity)
+    - 교양으로는 [10학점](elective_credits_entity)
+    - 교양 [10학점](elective_credits_entity)이요
+    - 교양은 [10학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [10학점](elective_credits_entity)
+    - 교양으로 [10](elective_credits_entity) 들을게요
+    - 교양은 [11학점](elective_credits_entity)으로 할게
+    - 교양 [11학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [11학점](elective_credits_entity) 듣고 싶어
+    - [11학점](elective_credits_entity) 교양
+    - 교양을 [11학점](elective_credits_entity)만
+    - 교양 [11학점](elective_credits_entity)
+    - 교양 [11학점](elective_credits_entity)으로 해주세요
+    - 교양은 [11학점](elective_credits_entity)으로
+    - 교양 [11학점](elective_credits_entity)으로 해줘
+    - 교양으로 [11학점](elective_credits_entity)
+    - 교양 학점은 [11학점](elective_credits_entity)
+    - 교양 학점 [11학점](elective_credits_entity)
+    - 교양 [11](elective_credits_entity)학점
+    - 교양학점 [11학점](elective_credits_entity)
+    - 교양학점 [11](elective_credits_entity)
+    - 교양 [11](elective_credits_entity)
+    - 교양은 [11](elective_credits_entity)
+    - 교양으로는 [11학점](elective_credits_entity)
+    - 교양 [11학점](elective_credits_entity)이요
+    - 교양은 [11학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [11학점](elective_credits_entity)
+    - 교양으로 [11](elective_credits_entity) 들을게요
+    - 교양은 [12학점](elective_credits_entity)으로 할게
+    - 교양 [12학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [12학점](elective_credits_entity) 듣고 싶어
+    - [12학점](elective_credits_entity) 교양
+    - 교양을 [12학점](elective_credits_entity)만
+    - 교양 [12학점](elective_credits_entity)
+    - 교양 [12학점](elective_credits_entity)으로 해주세요
+    - 교양은 [12학점](elective_credits_entity)으로
+    - 교양 [12학점](elective_credits_entity)으로 해줘
+    - 교양으로 [12학점](elective_credits_entity)
+    - 교양 학점은 [12학점](elective_credits_entity)
+    - 교양 학점 [12학점](elective_credits_entity)
+    - 교양 [12](elective_credits_entity)학점
+    - 교양학점 [12학점](elective_credits_entity)
+    - 교양학점 [12](elective_credits_entity)
+    - 교양 [12](elective_credits_entity)
+    - 교양은 [12](elective_credits_entity)
+    - 교양으로는 [12학점](elective_credits_entity)
+    - 교양 [12학점](elective_credits_entity)이요
+    - 교양은 [12학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [12학점](elective_credits_entity)
+    - 교양으로 [12](elective_credits_entity) 들을게요
+    - 교양은 [13학점](elective_credits_entity)으로 할게
+    - 교양 [13학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [13학점](elective_credits_entity) 듣고 싶어
+    - [13학점](elective_credits_entity) 교양
+    - 교양을 [13학점](elective_credits_entity)만
+    - 교양 [13학점](elective_credits_entity)
+    - 교양 [13학점](elective_credits_entity)으로 해주세요
+    - 교양은 [13학점](elective_credits_entity)으로
+    - 교양 [13학점](elective_credits_entity)으로 해줘
+    - 교양으로 [13학점](elective_credits_entity)
+    - 교양 학점은 [13학점](elective_credits_entity)
+    - 교양 학점 [13학점](elective_credits_entity)
+    - 교양 [13](elective_credits_entity)학점
+    - 교양학점 [13학점](elective_credits_entity)
+    - 교양학점 [13](elective_credits_entity)
+    - 교양 [13](elective_credits_entity)
+    - 교양은 [13](elective_credits_entity)
+    - 교양으로는 [13학점](elective_credits_entity)
+    - 교양 [13학점](elective_credits_entity)이요
+    - 교양은 [13학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [13학점](elective_credits_entity)
+    - 교양으로 [13](elective_credits_entity) 들을게요
+    - 교양은 [14학점](elective_credits_entity)으로 할게
+    - 교양 [14학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [14학점](elective_credits_entity) 듣고 싶어
+    - [14학점](elective_credits_entity) 교양
+    - 교양을 [14학점](elective_credits_entity)만
+    - 교양 [14학점](elective_credits_entity)
+    - 교양 [14학점](elective_credits_entity)으로 해주세요
+    - 교양은 [14학점](elective_credits_entity)으로
+    - 교양 [14학점](elective_credits_entity)으로 해줘
+    - 교양으로 [14학점](elective_credits_entity)
+    - 교양 학점은 [14학점](elective_credits_entity)
+    - 교양 학점 [14학점](elective_credits_entity)
+    - 교양 [14](elective_credits_entity)학점
+    - 교양학점 [14학점](elective_credits_entity)
+    - 교양학점 [14](elective_credits_entity)
+    - 교양 [14](elective_credits_entity)
+    - 교양은 [14](elective_credits_entity)
+    - 교양으로는 [14학점](elective_credits_entity)
+    - 교양 [14학점](elective_credits_entity)이요
+    - 교양은 [14학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [14학점](elective_credits_entity)
+    - 교양으로 [14](elective_credits_entity) 들을게요
+    - 교양은 [15학점](elective_credits_entity)으로 할게
+    - 교양 [15학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [15학점](elective_credits_entity) 듣고 싶어
+    - [15학점](elective_credits_entity) 교양
+    - 교양을 [15학점](elective_credits_entity)만
+    - 교양 [15학점](elective_credits_entity)
+    - 교양 [15학점](elective_credits_entity)으로 해주세요
+    - 교양은 [15학점](elective_credits_entity)으로
+    - 교양 [15학점](elective_credits_entity)으로 해줘
+    - 교양으로 [15학점](elective_credits_entity)
+    - 교양 학점은 [15학점](elective_credits_entity)
+    - 교양 학점 [15학점](elective_credits_entity)
+    - 교양 [15](elective_credits_entity)학점
+    - 교양학점 [15학점](elective_credits_entity)
+    - 교양학점 [15](elective_credits_entity)
+    - 교양 [15](elective_credits_entity)
+    - 교양은 [15](elective_credits_entity)
+    - 교양으로는 [15학점](elective_credits_entity)
+    - 교양 [15학점](elective_credits_entity)이요
+    - 교양은 [15학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [15학점](elective_credits_entity)
+    - 교양으로 [15](elective_credits_entity) 들을게요
+    - 교양은 [16학점](elective_credits_entity)으로 할게
+    - 교양 [16학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [16학점](elective_credits_entity) 듣고 싶어
+    - [16학점](elective_credits_entity) 교양
+    - 교양을 [16학점](elective_credits_entity)만
+    - 교양 [16학점](elective_credits_entity)
+    - 교양 [16학점](elective_credits_entity)으로 해주세요
+    - 교양은 [16학점](elective_credits_entity)으로
+    - 교양 [16학점](elective_credits_entity)으로 해줘
+    - 교양으로 [16학점](elective_credits_entity)
+    - 교양 학점은 [16학점](elective_credits_entity)
+    - 교양 학점 [16학점](elective_credits_entity)
+    - 교양 [16](elective_credits_entity)학점
+    - 교양학점 [16학점](elective_credits_entity)
+    - 교양학점 [16](elective_credits_entity)
+    - 교양 [16](elective_credits_entity)
+    - 교양은 [16](elective_credits_entity)
+    - 교양으로는 [16학점](elective_credits_entity)
+    - 교양 [16학점](elective_credits_entity)이요
+    - 교양은 [16학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [16학점](elective_credits_entity)
+    - 교양으로 [16](elective_credits_entity) 들을게요
+    - 교양은 [17학점](elective_credits_entity)으로 할게
+    - 교양 [17학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [17학점](elective_credits_entity) 듣고 싶어
+    - [17학점](elective_credits_entity) 교양
+    - 교양을 [17학점](elective_credits_entity)만
+    - 교양 [17학점](elective_credits_entity)
+    - 교양 [17학점](elective_credits_entity)으로 해주세요
+    - 교양은 [17학점](elective_credits_entity)으로
+    - 교양 [17학점](elective_credits_entity)으로 해줘
+    - 교양으로 [17학점](elective_credits_entity)
+    - 교양 학점은 [17학점](elective_credits_entity)
+    - 교양 학점 [17학점](elective_credits_entity)
+    - 교양 [17](elective_credits_entity)학점
+    - 교양학점 [17학점](elective_credits_entity)
+    - 교양학점 [17](elective_credits_entity)
+    - 교양 [17](elective_credits_entity)
+    - 교양은 [17](elective_credits_entity)
+    - 교양으로는 [17학점](elective_credits_entity)
+    - 교양 [17학점](elective_credits_entity)이요
+    - 교양은 [17학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [17학점](elective_credits_entity)
+    - 교양으로 [17](elective_credits_entity) 들을게요
+    - 교양은 [18학점](elective_credits_entity)으로 할게
+    - 교양 [18학점](elective_credits_entity) 채우고 싶어
+    - 교양으로 [18학점](elective_credits_entity) 듣고 싶어
+    - [18학점](elective_credits_entity) 교양
+    - 교양을 [18학점](elective_credits_entity)만
+    - 교양 [18학점](elective_credits_entity)
+    - 교양 [18학점](elective_credits_entity)으로 해주세요
+    - 교양은 [18학점](elective_credits_entity)으로
+    - 교양 [18학점](elective_credits_entity)으로 해줘
+    - 교양으로 [18학점](elective_credits_entity)
+    - 교양 학점은 [18학점](elective_credits_entity)
+    - 교양 학점 [18학점](elective_credits_entity)
+    - 교양 [18](elective_credits_entity)학점
+    - 교양학점 [18학점](elective_credits_entity)
+    - 교양학점 [18](elective_credits_entity)
+    - 교양 [18](elective_credits_entity)
+    - 교양은 [18](elective_credits_entity)
+    - 교양으로는 [18학점](elective_credits_entity)
+    - 교양 [18학점](elective_credits_entity)이요
+    - 교양은 [18학점](elective_credits_entity) 들을게요
+    - 교양 학점으로 [18학점](elective_credits_entity)
+    - 교양으로 [18](elective_credits_entity) 들을게요
 
 - intent: inform_required_course # 필수 과목 알림
   examples: |

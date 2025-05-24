@@ -1,11 +1,11 @@
 # config.yml
 recipe: default.v1
-assistant_id: timetable_assistant_v1 # 고유한 ID로 변경 권장
+assistant_id: timetable_assistant_v1
 
 language: ko # 한국어로 변경
 
 pipeline:
-  # 기본 파이프라인 (필요에 따라 한국어 처리 강화)
+  # 기본 파이프라인
   - name: WhitespaceTokenizer
     intent_tokenization_flag: true
     intent_split_symbol: "+"

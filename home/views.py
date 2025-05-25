@@ -602,6 +602,31 @@ def generate_timetable_stream(request):
 
         candidates = []
         for course in candidate_qs:
+            # ----- 제외할 과목 필터 (과목 코드로 처리) -----
+            if exclude_names:
+                should_exclude = False
+                # 과목 코드로 제외 처리 (더 정확함)
+                course_id_str = str(course.course_id)
+                for exclude_item in exclude_names:
+                    exclude_item_str = str(exclude_item).strip()
+                    # 과목 코드로 정확히 매칭
+                    if course_id_str == exclude_item_str:
+                        should_exclude = True
+                        print(f"DEBUG: 과목 제외됨 (ID 매칭) - '{course.course_name}' (ID: {course.course_id}, 제외 조건: '{exclude_item}')")
+                        break
+                    # 과목명으로도 매칭 (하위 호환성)
+                    elif not exclude_item_str.isdigit():
+                        course_name_lower = course.course_name.lower().strip()
+                        exclude_name_lower = exclude_item_str.lower().strip()
+                        if (course_name_lower == exclude_name_lower or 
+                            exclude_name_lower in course_name_lower or 
+                            course_name_lower in exclude_name_lower):
+                            should_exclude = True
+                            print(f"DEBUG: 과목 제외됨 (이름 매칭) - '{course.course_name}' (제외 조건: '{exclude_item}')")
+                            break
+                if should_exclude:
+                    continue
+            
             # ----- 전공 과목 필터 -----
             if course.category.category_name in ["전공필수", "전공선택"]:
                 if course.target_year != "전학년":  # CHANGED
@@ -758,13 +783,43 @@ def generate_timetable_stream(request):
             else:
                 print("DEBUG: 동일학년 전공선택 강좌가 부족하여 낮은학년 전공선택 과목을 허용합니다.")
         # ===== 수정된 부분 끝 =====
-        # --- NEW: exclude_courses 적용 ---
+        # --- NEW: exclude_courses 적용 (개선된 버전) ---
         if exclude_names:
+            print("DEBUG: Applying exclude_courses filter:", exclude_names)
             filtered = []
             for d in candidate_data:
-                # d['course_name'] 안에 제외할 이름이 포함되면 걸러냄
-                if not any(name in d['course_name'] for name in exclude_names):
+                course_name = d['course_name'].strip()
+                should_exclude = False
+                
+                # 각 제외할 과목명에 대해 정확한 매칭 및 부분 매칭 확인
+                for exclude_name in exclude_names:
+                    exclude_name = exclude_name.strip()
+                    if not exclude_name:
+                        continue
+                    
+                    # 1. 정확한 매칭 (대소문자 무시)
+                    if course_name.lower() == exclude_name.lower():
+                        should_exclude = True
+                        print(f"DEBUG: Exact match exclusion: '{course_name}' == '{exclude_name}'")
+                        break
+                    
+                    # 2. 부분 매칭 (제외할 이름이 과목명에 포함)
+                    if exclude_name.lower() in course_name.lower():
+                        should_exclude = True
+                        print(f"DEBUG: Partial match exclusion: '{exclude_name}' in '{course_name}'")
+                        break
+                    
+                    # 3. 역방향 부분 매칭 (과목명이 제외할 이름에 포함)
+                    if course_name.lower() in exclude_name.lower():
+                        should_exclude = True
+                        print(f"DEBUG: Reverse partial match exclusion: '{course_name}' in '{exclude_name}'")
+                        break
+                
+                if not should_exclude:
                     filtered.append(d)
+                else:
+                    print(f"DEBUG: Excluded course: {course_name}")
+            
             candidate_data = filtered
             print("DEBUG: after exclude_courses filter:", len(candidate_data))
         # 4. CP‑SAT 모델 구성 (후속 부분은 기존과 동일)

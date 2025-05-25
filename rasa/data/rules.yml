@@ -64,6 +64,12 @@ rules:
   - intent: inform_required_course
   - action: utter_ask_major_credits
 
+# 과목 제외 및 재생성 규칙 추가
+- rule: 과목 제외하고 재생성 요청
+  steps:
+  - intent: exclude_course
+  - action: action_exclude_course_and_regenerate
+
 # - rule: Activate timetable_form # Form을 사용할 경우
 #   steps:
 #   - intent: request_timetable

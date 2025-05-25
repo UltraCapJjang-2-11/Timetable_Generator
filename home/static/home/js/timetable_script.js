@@ -15,7 +15,8 @@ window.constraints = {
   avoid_times:      [],
   avoid_time_ranges:[],
   only_time_ranges: [],
-  exclude_courses:  []
+  exclude_courses:  [],
+  is_modification: false
 };
 window.existingCourses = []; // Manually added courses from left panel OR courses to fix for modification
 window.lastGeneratedTimetable = null; // Store the full data of the last displayed timetable
@@ -58,6 +59,19 @@ function buildParamsFromConstraints(idsToUse) {
     window.constraints.required_courses.forEach(course => {
       params.append("required_courses[]", course);
     });
+  }
+  
+  // 제외할 과목 처리 (추가)
+  console.log("[buildParamsFromConstraints] window.constraints.exclude_courses 확인:", window.constraints.exclude_courses);
+  if (window.constraints.exclude_courses && window.constraints.exclude_courses.length > 0) {
+    console.log("[buildParamsFromConstraints] 제외할 과목 처리 시작:", window.constraints.exclude_courses);
+    window.constraints.exclude_courses.forEach(course => {
+      params.append("exclude_courses[]", course);
+      console.log("[buildParamsFromConstraints] 제외할 과목 추가됨:", course);
+    });
+    console.log("[buildParamsFromConstraints] 제외할 과목 추가 완료");
+  } else {
+    console.log("[buildParamsFromConstraints] 제외할 과목이 없거나 비어있음");
   }
   
   console.log("최종 URL 파라미터:", params.toString());
@@ -442,27 +456,32 @@ document.addEventListener("DOMContentLoaded", function () {
       const params = buildParamsFromConstraints();
       const evtSource = new EventSource("/generate_timetable_stream/?" + params.toString());
       
-      evtSource.onmessage = function(event) {
-        let data = JSON.parse(event.data);
-        if (data.progress === "완료") {
-          progressText.textContent = "총 " + data.found + "개의 시간표를 찾았습니다.";
-          window.timetables = data.timetables; // Update global timetables
-          window.currentIndex = 0;
-          
-          console.log("시간표 생성 완료 - window.timetables 설정:", window.timetables);
-          console.log("생성된 시간표 개수:", data.found);
-          
-          setTimeout(() => { progressOverlay.style.display = "none"; }, 1000);
-          applyTimetableToMiddlePanel(); // This will update lastGeneratedTimetable and currentTimetableCourseIds
-          evtSource.close();
-        } else {
-          // Update progress text (assuming backend sends processed/found counts)
-          let progressMsg = "시간표 생성 중...";
-          if (data.processed !== undefined && data.found !== undefined) {
-              progressMsg = `처리된 조합: ${data.processed}, 후보: ${data.found}`;
+      evtSource.onmessage = e => {
+          const data = JSON.parse(e.data);
+          if (data.progress === "완료") {
+              window.timetables   = data.timetables; // Update global timetables
+              window.currentIndex = 0;
+              
+              // 수정 모드 상태는 유지하고, existing_courses만 초기화하지 않음
+              // (다음 수정을 위해 현재 시간표 정보 유지)
+              if (window.constraints.is_modification) {
+                  console.log("수정 모드 완료, 제약조건 유지");
+                  // is_modification 플래그만 초기화
+                  window.constraints.is_modification = false;
+                  // existing_courses는 유지 (다음 수정 시 참조 가능)
+              }
+              
+              setTimeout(() => progressOverlay.style.display = "none", 800);
+              applyTimetableToMiddlePanel(); // Display and store the new state
+              evtSource.close();
+          } else {
+              // Update progress text
+              let progressMsg = "시간표 생성 중...";
+              if (data.processed !== undefined && data.found !== undefined) {
+                  progressMsg = `처리된 조합: ${data.processed}, 후보: ${data.found}`;
+              }
+              progressText.textContent = progressMsg;
           }
-          progressText.textContent = progressMsg;
-        }
       };
       
       evtSource.onerror = function(event) {
@@ -768,50 +787,67 @@ async function generateTimetableFromNL(nlText) {
         avoid_times: [],
         avoid_time_ranges: [],
         only_time_ranges: [],
-        exclude_courses: []
+        exclude_courses: [],
+        is_modification: false
       };
       const major_credits = parsed.major_credits ?? prev.major_credits;
       const elective_credits = parsed.elective_credits ?? prev.elective_credits; // Also update elective credits if parsed
-      const isModification = parsed.exclude_courses && parsed.exclude_courses.length > 0;
+      
+      // 수정 모드 감지 로직 개선
+      const isModification = (parsed.exclude_courses && parsed.exclude_courses.length > 0) || 
+                            window.constraints.is_modification || 
+                            (window.constraints.existing_courses && window.constraints.existing_courses.length > 0);
+      
+      console.log("수정 모드 감지:", {
+        "parsed.exclude_courses": parsed.exclude_courses,
+        "window.constraints.is_modification": window.constraints.is_modification,
+        "window.constraints.existing_courses": window.constraints.existing_courses,
+        "isModification": isModification
+      });
+      
       let idsToPassToBuilder = []; // Variable to hold the IDs to be passed
 
       // 2) Update constraints and determine fixed courses
       if (isModification) {
           console.log("Modification request detected. Excluding:", parsed.exclude_courses);
-          if (!window.lastGeneratedTimetable || window.lastGeneratedTimetable.length === 0) {
+          
+          // window.constraints.existing_courses가 있으면 우선 사용 (Rasa에서 전달된 경우)
+          if (window.constraints.existing_courses && window.constraints.existing_courses.length > 0) {
+              console.log("Using existing_courses from constraints:", window.constraints.existing_courses);
+              idsToPassToBuilder = window.constraints.existing_courses.map(id => String(id));
+          } else if (window.lastGeneratedTimetable && window.lastGeneratedTimetable.length > 0) {
+              // 기존 로직: lastGeneratedTimetable에서 제외할 과목 필터링
+              console.log("Base timetable for modification:", JSON.stringify(window.lastGeneratedTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
+
+              const coursesToExclude = (parsed.exclude_courses || []).map(name => name.toLowerCase());
+              console.log("Courses to exclude (lowercase):", coursesToExclude);
+
+              // Filter the IDs from the last timetable, keeping those NOT excluded
+              const filteredTimetable = window.lastGeneratedTimetable.filter(course => {
+                  if (!course || typeof course.course_name !== 'string') { // Defensive check
+                      console.warn("Skipping course in filter due to missing/invalid name:", course);
+                      return false; // Exclude if name is problematic
+                  }
+                  const courseNameLower = course.course_name.toLowerCase();
+                  const shouldExclude = coursesToExclude.some(exName => courseNameLower.includes(exName));
+                  return !shouldExclude;
+              });
+              console.log("Filtered timetable (courses to keep):", JSON.stringify(filteredTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
+
+              idsToPassToBuilder = filteredTimetable.map(course => String(course.course_id));
+          } else {
               alert("이전 생성된 시간표 정보가 없습니다. 먼저 시간표를 생성해주세요.");
-              console.error("Cannot modify: window.lastGeneratedTimetable is empty or null.");
+              console.error("Cannot modify: no previous timetable information available.");
               reject(new Error("이전 시간표 정보 없음"));
               return;
           }
-          console.log("Base timetable for modification:", JSON.stringify(window.lastGeneratedTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
-
-          const coursesToExclude = parsed.exclude_courses.map(name => name.toLowerCase());
-          console.log("Courses to exclude (lowercase):", coursesToExclude);
-
-          // Filter the IDs from the last timetable, keeping those NOT excluded
-          const filteredTimetable = window.lastGeneratedTimetable.filter(course => {
-              if (!course || typeof course.course_name !== 'string') { // Defensive check
-                  console.warn("Skipping course in filter due to missing/invalid name:", course);
-                  return false; // Exclude if name is problematic
-              }
-              const courseNameLower = course.course_name.toLowerCase();
-              const shouldExclude = coursesToExclude.some(exName => courseNameLower.includes(exName));
-              // console.log(`Checking ${courseNameLower} against ${coursesToExclude}. Exclude: ${shouldExclude}`);
-              return !shouldExclude;
-          });
-          console.log("Filtered timetable (courses to keep):", JSON.stringify(filteredTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
-
-          const fixedCourseIds = filteredTimetable.map(course => String(course.course_id)); // Ensure IDs are strings
-          console.log("Calculated fixedCourseIds for modification:", JSON.stringify(fixedCourseIds));
-
-          idsToPassToBuilder = fixedCourseIds; // Use these IDs for the builder
+          
+          console.log("Fixed course IDs for modification:", JSON.stringify(idsToPassToBuilder));
 
           // Update constraints specifically for modification
-          window.constraints.exclude_courses = parsed.exclude_courses;
+          window.constraints.exclude_courses = parsed.exclude_courses || [];
 
           // Keep other constraints from the parsed NL if provided, otherwise keep previous
-          // Keep other constraints from the parsed NL if provided, otherwise use previous state
           window.constraints.major_credits = parsed.major_credits ?? prev.major_credits;
           window.constraints.elective_credits = parsed.elective_credits ?? prev.elective_credits;
           window.constraints.required_courses = parsed.required_courses ?? prev.required_courses;
@@ -819,9 +855,6 @@ async function generateTimetableFromNL(nlText) {
           window.constraints.avoid_times = parsed.avoid_times ?? prev.avoid_times;
           window.constraints.avoid_time_ranges = parsed.avoid_time_ranges ?? prev.avoid_time_ranges;
           window.constraints.only_time_ranges = parsed.only_time_ranges ?? prev.only_time_ranges;
-
-          // DO NOT assign fixedCourseIds to window.existingCourses here, keep them separate
-          // console.log("Fixed courses for modification (assigned to window.existingCourses):", window.existingCourses); // Removed this confusing assignment
 
       } else {
           console.log("Initial generation request from NL.");
@@ -848,6 +881,13 @@ async function generateTimetableFromNL(nlText) {
 
       // 3) Build query parameters using the updated window.constraints and the determined IDs
       console.log("IDs being passed to buildParamsFromConstraints:", JSON.stringify(idsToPassToBuilder));
+      
+      // 수정 모드에서 제외할 과목 정보를 buildParamsFromConstraints에서 사용할 수 있도록 설정
+      if (isModification && parsed.exclude_courses) {
+          window.constraints.exclude_courses = parsed.exclude_courses;
+          console.log("수정 모드: 제외할 과목 설정됨:", window.constraints.exclude_courses);
+      }
+      
       const paramsObject = buildParamsFromConstraints(idsToPassToBuilder); // Pass the correct IDs
       const paramsString = paramsObject.toString();
       console.log("Generated URL Params Object:", paramsObject);
@@ -869,6 +909,16 @@ async function generateTimetableFromNL(nlText) {
           if (data.progress === "완료") {
               window.timetables   = data.timetables; // Update global timetables
               window.currentIndex = 0;
+              
+              // 수정 모드 상태는 유지하고, existing_courses만 초기화하지 않음
+              // (다음 수정을 위해 현재 시간표 정보 유지)
+              if (window.constraints.is_modification) {
+                  console.log("수정 모드 완료, 제약조건 유지");
+                  // is_modification 플래그만 초기화
+                  window.constraints.is_modification = false;
+                  // existing_courses는 유지 (다음 수정 시 참조 가능)
+              }
+              
               setTimeout(() => progressOverlay.style.display = "none", 800);
               applyTimetableToMiddlePanel(); // Display and store the new state
               evtSource.close();

@@ -8,3 +8,4 @@ db/target
 .rasa/
 user_uploads/
 venv310/
+test_*.py

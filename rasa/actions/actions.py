@@ -444,67 +444,189 @@ class ActionExcludeCourseAndRegenerate(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        # 사용자 메시지에서 제외할 과목 추출
-        latest_message = tracker.latest_message.get('text', '')
-        entities = tracker.latest_message.get('entities', [])
-        
-        exclude_courses = []
-        for entity in entities:
-            if entity["entity"] == "course_name_entity":
-                course_name = entity["value"].strip()
-                if course_name:
-                    exclude_courses.append(course_name)
-        
-        logger.info(f"제외할 과목: {exclude_courses}")
-        
-        if not exclude_courses:
-            dispatcher.utter_message(text="제외할 과목을 찾을 수 없어요. 어떤 과목을 빼고 싶으신가요?")
-            return []
-        
-        # 기존 제약조건 가져오기 (슬롯에서)
-        major_credits_text = tracker.get_slot("major_credits_slot")
-        elective_credits_text = tracker.get_slot("elective_credits_slot")
-        free_days = tracker.get_slot("free_days_slot") or []
-        
-        # 학점 추출
-        major_credits = None
-        elective_credits = None
-        
-        if major_credits_text:
-            major_value = extract_number(major_credits_text)
-            if major_value:
-                major_credits = major_value
+        try:
+            logger.info("=== ActionExcludeCourseAndRegenerate 시작 ===")
+            
+            # 사용자 메시지에서 제외할 과목 추출
+            latest_message = tracker.latest_message.get('text', '')
+            entities = tracker.latest_message.get('entities', [])
+            
+            logger.info(f"사용자 메시지: {latest_message}")
+            logger.info(f"엔티티: {entities}")
+            
+            exclude_courses = []
+            
+            # 1. 엔티티에서 과목명 추출
+            for entity in entities:
+                if entity["entity"] == "course_name_entity":
+                    course_name = entity["value"].strip()
+                    if course_name:
+                        exclude_courses.append(course_name)
+            
+            # 2. 엔티티가 없는 경우 메시지에서 직접 과목명 추출
+            if not exclude_courses:
+                logger.info("엔티티에서 과목명을 찾을 수 없어 메시지에서 직접 추출 시도")
                 
-        if elective_credits_text:
-            elective_value = extract_number(elective_credits_text)
-            if elective_value:
-                elective_credits = elective_value
-        
-        # 공강일 처리
-        processed_free_days = []
-        if free_days:
-            if isinstance(free_days, list):
-                processed_free_days = [get_korean_day_abbr(day) for day in free_days]
-            else:
-                processed_free_days = [get_korean_day_abbr(free_days)]
-        
-        # 제외 과목 메시지
-        exclude_msg = ", ".join(exclude_courses)
-        dispatcher.utter_message(text=f"{exclude_msg}을(를) 제외하고 시간표를 다시 생성합니다.")
-        
-        # 프론트엔드로 재생성 이벤트 전송
-        regenerate_payload = {
-            "event_type": "exclude_and_regenerate_timetable",
-            "major_credits": major_credits,
-            "elective_credits": elective_credits,
-            "free_days": processed_free_days,
-            "exclude_courses": exclude_courses,
-            "keep_existing_courses": True  # 나머지 과목은 유지
-        }
-        
-        logger.info(f"재생성 페이로드: {regenerate_payload}")
-        
-        dispatcher.utter_message(text="웹 화면에서 새로운 시간표를 확인해주세요! ✨")
-        dispatcher.utter_message(json_message=regenerate_payload)
-        
-        return []
+                # 일반적인 과목명 패턴 매칭 (개선된 버전)
+                course_patterns = [
+                    # 1. 구체적인 과목명 먼저 매칭
+                    r'(기초일본어|직업과 사회진출 인문사회계열|직업과 사회진출 자연과학공학계열|ACTION ENGLISH|이산수학|캡스톤 디자인|기계학습|창업산학초청세미나|골프스윙의 ABC|축구의이론과실기|탁구의이론과실기|포토샵 기초와 응용)(?:을|를|과목을|과목를)?',
+                    # 2. 일반적인 한글 과목명 패턴 (조사 제거)
+                    r'([가-힣]+(?:\s+[가-힣]+)*)(?:을|를|과목을|과목를)?\s*(?:빼고|제외하고|말고)',
+                    # 3. 더 넓은 패턴
+                    r'([가-힣]+(?:\s+[가-힣]+)*)\s*(?:과목|수업)?(?:을|를)?\s*(?:빼고|제외하고|말고)'
+                ]
+                
+                for pattern in course_patterns:
+                    matches = re.findall(pattern, latest_message)
+                    for match in matches:
+                        if match and match.strip():
+                            # 조사 제거 및 정리
+                            clean_course_name = match.strip()
+                            # 끝에 붙은 조사들 제거
+                            clean_course_name = re.sub(r'(을|를|과목을|과목를)$', '', clean_course_name).strip()
+                            
+                            if clean_course_name and clean_course_name not in exclude_courses:
+                                exclude_courses.append(clean_course_name)
+                                logger.info(f"패턴 매칭으로 과목명 추출: '{match}' -> '{clean_course_name}'")
+                
+                # 추가 정리: 중복 제거 및 빈 문자열 제거
+                exclude_courses = [course for course in exclude_courses if course and course.strip()]
+                exclude_courses = list(set(exclude_courses))  # 중복 제거
+            
+            logger.info(f"최종 제외할 과목: {exclude_courses}")
+            
+            if not exclude_courses:
+                logger.warning("제외할 과목을 찾을 수 없음")
+                dispatcher.utter_message(text="제외할 과목을 찾을 수 없어요. 어떤 과목을 빼고 싶으신가요?")
+                return []
+            
+            # 기존 제약조건 가져오기 (슬롯에서)
+            major_credits_text = tracker.get_slot("major_credits_slot")
+            elective_credits_text = tracker.get_slot("elective_credits_slot")
+            free_days = tracker.get_slot("free_days_slot") or []
+            
+            logger.info(f"슬롯에서 가져온 정보 - 전공: {major_credits_text}, 교양: {elective_credits_text}, 공강: {free_days}")
+            
+            # 학점 추출
+            major_credits = None
+            elective_credits = None
+            
+            if major_credits_text:
+                major_value = extract_number(major_credits_text)
+                if major_value:
+                    major_credits = major_value
+                    
+            if elective_credits_text:
+                elective_value = extract_number(elective_credits_text)
+                if elective_value:
+                    elective_credits = elective_value
+            
+            # 공강일 처리
+            processed_free_days = []
+            if free_days:
+                if isinstance(free_days, list):
+                    processed_free_days = [get_korean_day_abbr(day) for day in free_days]
+                else:
+                    processed_free_days = [get_korean_day_abbr(free_days)]
+            
+            # 기존 제약조건이 없는 경우 기본값 설정 (최근 대화에서 추출)
+            if major_credits is None or elective_credits is None or not processed_free_days:
+                logger.info("슬롯에서 제약조건을 찾을 수 없어 최근 대화에서 추출 시도")
+                
+                # 최근 봇 메시지에서 학점 정보 및 공강 정보 추출
+                for event in reversed(list(tracker.events)):
+                    if event.get('event') == 'bot' and event.get('text'):
+                        bot_text = event.get('text', '')
+                        
+                        # 학점 정보 추출
+                        if "전공" in bot_text and "교양" in bot_text and "학점" in bot_text:
+                            # "전공 9학점, 교양 5학점 조건으로" 형태에서 추출
+                            major_match = re.search(r'전공\s*(\d+)\s*학점', bot_text)
+                            elective_match = re.search(r'교양\s*(\d+)\s*학점', bot_text)
+                            
+                            if major_match and major_credits is None:
+                                major_credits = int(major_match.group(1))
+                                logger.info(f"봇 메시지에서 전공 학점 추출: {major_credits}")
+                            
+                            if elective_match and elective_credits is None:
+                                elective_credits = int(elective_match.group(1))
+                                logger.info(f"봇 메시지에서 교양 학점 추출: {elective_credits}")
+                        
+                        # 공강 정보 추출 (추가)
+                        if not processed_free_days and "공강" in bot_text:
+                            logger.info(f"봇 메시지에서 공강 정보 검색: '{bot_text}'")
+                            day_patterns = {
+                                r'월요일|월': '월',
+                                r'화요일|화': '화', 
+                                r'수요일|수': '수',
+                                r'목요일|목': '목',
+                                r'금요일|금': '금'
+                            }
+                            for pattern, day_abbr in day_patterns.items():
+                                if re.search(pattern, bot_text):
+                                    if day_abbr not in processed_free_days:
+                                        processed_free_days.append(day_abbr)
+                                        logger.info(f"봇 메시지에서 공강일 추출: {day_abbr}")
+                
+                # 사용자 메시지에서도 공강 정보 추출 시도 (추가)
+                if not processed_free_days:
+                    logger.info("사용자 메시지 히스토리에서 공강 정보 검색")
+                    for event in reversed(list(tracker.events)):
+                        if event.get('event') == 'user' and event.get('text'):
+                            user_text = event.get('text', '')
+                            if "공강" in user_text:
+                                logger.info(f"사용자 메시지에서 공강 정보 검색: '{user_text}'")
+                                day_patterns = {
+                                    r'월요일|월': '월',
+                                    r'화요일|화': '화', 
+                                    r'수요일|수': '수',
+                                    r'목요일|목': '목',
+                                    r'금요일|금': '금'
+                                }
+                                for pattern, day_abbr in day_patterns.items():
+                                    if re.search(pattern, user_text):
+                                        if day_abbr not in processed_free_days:
+                                            processed_free_days.append(day_abbr)
+                                            logger.info(f"사용자 메시지에서 공강일 추출: {day_abbr}")
+                                break  # 첫 번째 공강 메시지만 처리
+            
+            logger.info(f"최종 추출된 공강일: {processed_free_days}")
+            
+            # 여전히 제약조건이 없으면 기본값 사용
+            if major_credits is None:
+                logger.info("전공 학점을 찾을 수 없어 기본값 9학점 사용")
+                major_credits = 9
+            
+            if elective_credits is None:
+                logger.info("교양 학점을 찾을 수 없어 기본값 5학점 사용")
+                elective_credits = 5
+            
+            # 제외 과목 메시지
+            exclude_msg = ", ".join(exclude_courses)
+            dispatcher.utter_message(text=f"{exclude_msg}을(를) 제외하고 새로운 과목으로 교체하여 시간표를 재생성합니다.")
+            
+            # 프론트엔드로 재생성 이벤트 전송
+            regenerate_payload = {
+                "event_type": "exclude_and_regenerate_timetable",
+                "major_credits": major_credits,
+                "elective_credits": elective_credits,
+                "free_days": processed_free_days,
+                "exclude_courses": exclude_courses,
+                "keep_existing_courses": True,  # 나머지 과목은 유지
+                "is_modification": True  # 수정 요청임을 명시
+            }
+            
+            logger.info(f"재생성 페이로드: {regenerate_payload}")
+            
+            dispatcher.utter_message(text="웹 화면에서 수정된 시간표를 확인해주세요! ✨")
+            dispatcher.utter_message(json_message=regenerate_payload)
+            
+            logger.info("=== ActionExcludeCourseAndRegenerate 완료 ===")
+            return []
+            
+        except Exception as e:
+            logger.error(f"ActionExcludeCourseAndRegenerate 오류: {e}")
+            logger.error(f"오류 상세: {str(e)}")
+            dispatcher.utter_message(text="죄송합니다. 과목 제외 처리 중 오류가 발생했습니다. 다시 시도해주세요.")
+            return []

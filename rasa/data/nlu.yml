@@ -227,7 +227,7 @@ nlu:
     - [13](major_credits_entity)
     - [13](major_credits_entity)학점
     - 전공으로는 [13학점](major_credits_entity)
-    - 전공학점 [13학점](major_credits_entity)
+    - 교양 학점 [13학점](major_credits_entity)
     - 전공은 [14학점](major_credits_entity)이요
     - 전공 [14학점](major_credits_entity) 들을거야
     - 전공 [14학점](major_credits_entity)
@@ -781,3 +781,75 @@ nlu:
     - 이 시간표에서 [웹프로그래밍](course_name_entity) 빼줘
     - [모바일프로그래밍](course_name_entity) 제외하고 다시
     - [캡스톤디자인](course_name_entity) 빼고 다른 걸로 채워줘
+    - [직업과 사회진출](course_name_entity) 제외하고 다시 생성해줘
+    - [인문사회계열](course_name_entity) 빼고 다른 교양으로
+    - [교양영어](course_name_entity) 말고 다른 과목으로 바꿔줘
+    - [체육](course_name_entity) 제외하고 시간표 재생성
+    - [미적분학](course_name_entity) 빼고 다른 수학 과목으로
+    - [물리학](course_name_entity) 제외하고 다시 만들어줘
+    - [화학](course_name_entity) 빼고 다른 과학 과목으로
+    - [경제학원론](course_name_entity) 말고 다른 교양으로
+    - [심리학개론](course_name_entity) 제외하고 재생성해줘
+    - [철학개론](course_name_entity) 빼고 다른 인문학으로
+    - [사회학개론](course_name_entity) 제외하고 다시
+    - [문학개론](course_name_entity) 빼고 다른 문학 과목으로
+    - [역사학개론](course_name_entity) 말고 다른 역사 과목으로
+    - [정치학개론](course_name_entity) 제외하고 다시 생성
+    - [법학개론](course_name_entity) 빼고 다른 법학 과목으로
+    - [회계원리](course_name_entity) 제외하고 다른 경영 과목으로
+    - [마케팅원론](course_name_entity) 빼고 다시 만들어줘
+    - [기초일본어](course_name_entity) 빼고 다시 생성해줘
+    - [기초일본어](course_name_entity) 제외하고 다시 만들어줘
+    - [기초일본어](course_name_entity) 말고 다른 과목으로
+    - [직업과 사회진출 인문사회계열](course_name_entity) 제외하고 다시 생성해줘
+    - [직업과 사회진출 인문사회계열](course_name_entity) 빼고 다시 만들어줘
+    - [직업과 사회진출 자연과학공학계열](course_name_entity) 제외하고 다시
+    - [ACTION ENGLISH(영어Ⅱ)](course_name_entity) 빼고 다른 영어로
+    - [이산수학](course_name_entity) 제외하고 다른 수학으로
+    - [캡스톤 디자인](course_name_entity) 빼고 다른 전공으로
+    - [기계학습](course_name_entity) 제외하고 다른 AI 과목으로
+    - [창업산학초청세미나Ⅰ](course_name_entity) 빼고 다시
+    - [골프스윙의 ABC](course_name_entity) 제외하고 다른 체육으로
+    - [축구의이론과실기](course_name_entity) 빼고 다른 운동으로
+    - [탁구의이론과실기](course_name_entity) 제외하고 다시
+    - [포토샵 기초와 응용](course_name_entity) 빼고 다른 컴활로
+    - [기초일본어](course_name_entity) 빼고 다시 생성해줘
+    - [기초일본어](course_name_entity) 제외하고 다시 만들어줘
+    - [기초일본어](course_name_entity) 말고 다른 과목으로
+    - [기초일본어](course_name_entity) 빼고 다시 만들어줘
+    - [기초일본어](course_name_entity)를 제외하고 다시 생성해줘
+    - [기초일본어](course_name_entity) 과목을 제외하고 다시 생성해줘
+    - [기초일본어](course_name_entity) 빼고 시간표 다시 짜줘
+    - [기초일본어](course_name_entity) 제외하고 시간표 재생성
+    - [기초일본어](course_name_entity) 말고 다른 교양으로
+    - [기초일본어](course_name_entity) 대신 다른 과목으로
+    - [기초일본어](course_name_entity) 없이 시간표 만들어줘
+    - [기초일본어](course_name_entity) 안 들을게 다시 만들어줘
+    - 기초일본어를 제외하고 다시 생성해줘
+    - 기초일본어 빼고 다시 생성해줘
+    - 기초일본어 제외하고 다시 만들어줘
+    - 기초일본어 빼고 다시 만들어줘
+    - 직업과 사회진출 인문사회계열 제외하고 다시 생성해줘
+    - 직업과 사회진출 인문사회계열 빼고 다시 만들어줘
+    - 직업과 사회진출 자연과학공학계열 제외하고 다시
+    - ACTION ENGLISH 빼고 다른 영어로
+    - 이산수학 제외하고 다른 수학으로
+    - 캡스톤 디자인 빼고 다른 전공으로
+    - 기계학습 제외하고 다른 AI 과목으로
+    - 창업산학초청세미나 빼고 다시
+    - 골프스윙의 ABC 제외하고 다른 체육으로
+    - 축구의이론과실기 빼고 다른 운동으로
+    - 탁구의이론과실기 제외하고 다시
+    - 포토샵 기초와 응용 빼고 다른 컴활로
+    - 기초일본어 빼고 다시 생성해줘
+    - 기초일본어 제외하고 다시 만들어줘
+    - 기초일본어 말고 다른 과목으로
+    - 기초일본어 빼고 다시 만들어줘
+    - 기초일본어를 제외하고 다시 생성해줘
+    - 기초일본어 과목을 제외하고 다시 생성해줘
+    - 기초일본어 빼고 시간표 다시 짜줘
+    - 기초일본어 제외하고 시간표 재생성
+    - 기초일본어 말고 다른 교양으로
+    - 기초일본어 대신 다른 과목으로
+    - 기초일본어 없이 시간표 만들어줘
+    - 기초일본어 안 들을게 다시 만들어줘

@@ -27,6 +27,10 @@ from ortools.sat.python import cp_model
 import openai
 import re
 import requests
+from django.utils import timezone
+
+# 새로운 시간표 모델 import
+from .timetable_models import SavedTimetable, SavedTimetableCourse, SavedTimetableSchedule
 
 # Rasa 서버 URL 설정
 RASA_MODEL_ENDPOINT = "http://localhost:5006/model/parse"  # Rasa NLU 서버 URL
@@ -902,5 +906,219 @@ def generate_timetable_stream(request):
         traceback.print_exc()  # 서버 콘솔에 full traceback
         # 클라이언트에서 읽어볼 수 있도록 간단한 JSON으로도 리턴
         return JsonResponse({"error": str(e)}, status=500)
+
 def manage_view(request):
-    return render(request, "home/manage.html")
+    """시간표 관리 페이지 - 새로운 테이블 구조 사용"""
+    # 저장된 시간표 목록을 가져와서 전달
+    user_id = request.user.id if request.user.is_authenticated else 8  # 테스트용으로 8 사용
+    saved_timetables = SavedTimetable.objects.filter(user_id=user_id).order_by('-created_at')
+    
+    print(f"사용자 {user_id}의 저장된 시간표 개수: {saved_timetables.count()}")
+    
+    timetables_data = []
+    for timetable in saved_timetables:
+        courses = []
+        
+        # 시간표의 모든 과목 가져오기
+        for course in timetable.courses.all():
+            course_data = {
+                'course_id': course.course_id,
+                'course_name': course.course_name,
+                'credit': course.credits,
+                'category': course.category,
+                'location': course.location,
+                'schedules': []
+            }
+            
+            # 각 과목의 스케줄 정보 가져오기
+            for schedule in course.schedules.all():
+                course_data['schedules'].append({
+                    'day': schedule.day_of_week,
+                    'times': schedule.time_slots,
+                    'start_time': schedule.start_time,
+                    'end_time': schedule.end_time,
+                    'location': schedule.location
+                })
+            
+            courses.append(course_data)
+        
+        timetables_data.append({
+            'id': timetable.id,
+            'title': timetable.title,
+            'created_at': timetable.created_at.strftime('%Y-%m-%d %H:%M'),
+            'total_credits': timetable.total_credits,
+            'major_credits': timetable.major_credits,
+            'elective_credits': timetable.elective_credits,
+            'courses': courses
+        })
+        
+        print(f"시간표 로드됨: {timetable.title} ({len(courses)}개 과목)")
+    
+    # JSON 문자열로 변환
+    timetables_json = json.dumps(timetables_data, ensure_ascii=False)
+    
+    print(f"JSON 데이터 크기: {len(timetables_json)} 문자")
+    
+    return render(request, "home/manage.html", {
+        'timetables': timetables_data,
+        'timetables_json': timetables_json
+    })
+
+
+@csrf_exempt
+def save_timetable(request):
+    """시간표 저장 API - 새로운 테이블 구조 사용"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST 요청만 허용됩니다.'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        courses = data.get('courses', [])
+        title = data.get('title', '')
+        
+        print(f"시간표 저장 요청 받음: {len(courses)}개 과목")
+        print(f"요청 데이터: {json.dumps(data, ensure_ascii=False, indent=2)}")
+        
+        # 사용자 정보 가져오기
+        user_id = request.user.id if request.user.is_authenticated else 8  # 테스트용으로 8 사용
+        print(f"사용자 ID: {user_id}")
+        
+        # 시간표 제목 자동 생성
+        if not title:
+            count = SavedTimetable.objects.filter(user_id=user_id).count()
+            title = f"2025년 1학기 시간표 #{count + 1}"
+        
+        # 학점 계산
+        total_credits = sum(course.get('credit', 0) for course in courses)
+        major_credits = sum(course.get('credit', 0) for course in courses 
+                          if course.get('category', '') in ['전공필수', '전공선택'])
+        elective_credits = total_credits - major_credits
+        
+        print(f"계산된 학점 - 총: {total_credits}, 전공: {major_credits}, 교양: {elective_credits}")
+        
+        # 시간표 메인 레코드 생성
+        timetable = SavedTimetable.objects.create(
+            user_id=user_id,
+            title=title,
+            semester_year=2025,
+            semester_term='1학기',
+            total_credits=total_credits,
+            major_credits=major_credits,
+            elective_credits=elective_credits
+        )
+        
+        print(f"시간표 메인 레코드 생성됨: ID {timetable.id}")
+        
+        # 시간표 상세 정보 저장
+        for course_data in courses:
+            course_id = course_data.get('course_id')
+            course_name = course_data.get('course_name', '')
+            credits = course_data.get('credit', 0)
+            category = course_data.get('category', '')
+            schedules = course_data.get('schedules', [])
+            
+            print(f"과목 저장 중: {course_name} ({credits}학점)")
+            print(f"과목 스케줄: {schedules}")
+            
+            # 첫 번째 스케줄의 location을 기본 location으로 사용
+            default_location = ''
+            if schedules and len(schedules) > 0:
+                default_location = schedules[0].get('location', '')
+            
+            # 과목 정보 저장
+            timetable_course = SavedTimetableCourse.objects.create(
+                timetable=timetable,
+                course_id=course_id,
+                course_name=course_name,
+                credits=credits,
+                category=category,
+                location=default_location,
+                user_note=course_data.get('note', ''),
+                custom_color=course_data.get('color', '')
+            )
+            
+            print(f"과목 레코드 생성됨: ID {timetable_course.id}")
+            
+            # 스케줄 정보 저장
+            for schedule in schedules:
+                day = schedule.get('day', '')
+                times = schedule.get('times', '')
+                schedule_location = schedule.get('location', default_location)
+                
+                print(f"스케줄 처리 중: {day} {times} @ {schedule_location}")
+                
+                # 시작/종료 시간 계산 (times가 "02,03,04" 형태라고 가정)
+                if times:
+                    try:
+                        time_slots = times.split(',')
+                        if time_slots:
+                            start_hour = int(time_slots[0]) + 8  # 02 -> 10시
+                            end_hour = int(time_slots[-1]) + 9   # 04 -> 13시
+                            start_time = f"{start_hour:02d}:00"
+                            end_time = f"{end_hour:02d}:00"
+                        else:
+                            start_time = "09:00"
+                            end_time = "10:00"
+                    except (ValueError, IndexError) as e:
+                        print(f"시간 파싱 오류: {e}, times: {times}")
+                        start_time = "09:00"
+                        end_time = "10:00"
+                        times = "01"
+                else:
+                    start_time = "09:00"
+                    end_time = "10:00"
+                    times = "01"
+                
+                schedule_record = SavedTimetableSchedule.objects.create(
+                    timetable_course=timetable_course,
+                    day_of_week=day,
+                    start_time=start_time,
+                    end_time=end_time,
+                    time_slots=times,
+                    location=schedule_location
+                )
+                
+                print(f"스케줄 저장됨: ID {schedule_record.id} - {day} {start_time}-{end_time}")
+        
+        print(f"시간표 저장 완료: {timetable.title}")
+        
+        return JsonResponse({
+            'success': True,
+            'timetable_id': timetable.id,
+            'message': '시간표가 성공적으로 저장되었습니다.'
+        })
+        
+    except Exception as e:
+        print(f"시간표 저장 오류: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': f'시간표 저장 중 오류가 발생했습니다: {str(e)}'}, status=500)
+
+
+@csrf_exempt
+def delete_timetable(request, timetable_id):
+    """시간표 삭제 API - 새로운 테이블 구조 사용"""
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'DELETE 요청만 허용됩니다.'}, status=405)
+    
+    try:
+        user_id = request.user.id if request.user.is_authenticated else 8  # 테스트용으로 8 사용
+        timetable = SavedTimetable.objects.filter(
+            id=timetable_id,
+            user_id=user_id
+        ).first()
+        
+        if not timetable:
+            return JsonResponse({'error': '시간표를 찾을 수 없습니다.'}, status=404)
+        
+        print(f"시간표 삭제: {timetable.title} (ID: {timetable_id})")
+        timetable.delete()  # CASCADE로 관련 데이터도 자동 삭제됨
+        
+        return JsonResponse({
+            'success': True,
+            'message': '시간표가 성공적으로 삭제되었습니다.'
+        })
+        
+    except Exception as e:
+        print(f"시간표 삭제 오류: {str(e)}")
+        return JsonResponse({'error': f'시간표 삭제 중 오류가 발생했습니다: {str(e)}'}, status=500)

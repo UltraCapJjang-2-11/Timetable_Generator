@@ -16,6 +16,8 @@ intents:
   - inform_free_day
   - inform_avoid_time
   - modify_timetable
+  - save_timetable
+  - exclude_course
 
 entities:
   - department
@@ -121,6 +123,8 @@ responses:
 
 actions:
   - action_handle_timetable_request
+  - action_save_timetable
+  - action_exclude_course_and_regenerate
 
 session_config:
   session_expiration_time: 60  # 세션 만료 시간(분)

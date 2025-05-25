@@ -80,6 +80,9 @@ function applyTimetableToMiddlePanel() {
   // Store the currently displayed timetable data and IDs
   window.lastGeneratedTimetable = window.timetables[window.currentIndex];
   window.currentTimetableCourseIds = window.lastGeneratedTimetable.map(c => String(c.course_id)); // Store as strings
+  
+  console.log("시간표 적용됨 - window.lastGeneratedTimetable 설정:", window.lastGeneratedTimetable);
+  console.log("시간표 과목 수:", window.lastGeneratedTimetable.length);
 
   let timetable = window.lastGeneratedTimetable; // Use the stored one
   let currentColors = {};
@@ -132,6 +135,12 @@ function lightenColor(hex, percent) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM 로드 완료");
+  
+  // 시간표 저장 버튼 확인
+  const saveBtnCheck = document.getElementById("save-timetable-btn");
+  console.log("시간표 저장 버튼 존재 여부:", saveBtnCheck ? "있음" : "없음");
+  
   // ---------------------------
   // 기본 변수 및 DOM 요소 설정
   // ---------------------------
@@ -439,6 +448,10 @@ document.addEventListener("DOMContentLoaded", function () {
           progressText.textContent = "총 " + data.found + "개의 시간표를 찾았습니다.";
           window.timetables = data.timetables; // Update global timetables
           window.currentIndex = 0;
+          
+          console.log("시간표 생성 완료 - window.timetables 설정:", window.timetables);
+          console.log("생성된 시간표 개수:", data.found);
+          
           setTimeout(() => { progressOverlay.style.display = "none"; }, 1000);
           applyTimetableToMiddlePanel(); // This will update lastGeneratedTimetable and currentTimetableCourseIds
           evtSource.close();
@@ -641,166 +654,243 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   
   if (saveTimetableBtn) {
-    saveTimetableBtn.addEventListener("click", function () {
-      let totalCredits = totalCreditsInput.value;
-      let majorCredits = majorCreditsInput.value;
-      let electiveCredits = electiveCreditsInput.value;
-      let selectedDays = [];
-      document.querySelectorAll(".day-options input:checked").forEach(checkbox => {
-          selectedDays.push(checkbox.value);
-      });
-      console.log("현재 시간표 저장:");
-      console.log("총 학점:", totalCredits);
-      console.log("전공 학점:", majorCredits);
-      console.log("교양 학점:", electiveCredits);
-      console.log("공강 요일:", selectedDays);
-      alert("현재 시간표가 저장되었습니다! (나중에 마이페이지와 연동)");
+    saveTimetableBtn.addEventListener("click", async function () {
+      console.log("시간표 저장 버튼 클릭됨");
+      console.log("window.lastGeneratedTimetable:", window.lastGeneratedTimetable);
+      
+      // 현재 표시된 시간표가 있는지 확인
+      if (!window.lastGeneratedTimetable || window.lastGeneratedTimetable.length === 0) {
+        alert("저장할 시간표가 없습니다. 먼저 시간표를 생성해주세요.");
+        return;
+      }
+      
+      console.log("시간표 데이터 검증 통과");
+      
+      // CSRF 토큰 가져오기
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      
+      const csrfToken = getCookie('csrftoken');
+      console.log("CSRF 토큰:", csrfToken);
+      
+      // 저장할 시간표 데이터 준비
+      const timetableData = {
+        courses: window.lastGeneratedTimetable.map(course => ({
+          course_id: course.course_id,
+          course_name: course.course_name,
+          credit: course.credit,
+          category: course.category,
+          schedules: course.schedules,
+          location: course.location,
+          note: '',
+          color: ''
+        })),
+        title: '' // 서버에서 자동 생성
+      };
+      
+      console.log("저장할 시간표 데이터:", timetableData);
+      console.log("첫 번째 과목 상세:", timetableData.courses[0]);
+      if (timetableData.courses[0] && timetableData.courses[0].schedules) {
+        console.log("첫 번째 과목 스케줄:", timetableData.courses[0].schedules);
+      }
+      
+      console.log("서버로 요청 전송 시작...");
+      
+      try {
+        // 서버에 시간표 저장 요청
+        const response = await fetch('/save_timetable/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify(timetableData)
+        });
+        
+        console.log("서버 응답 상태:", response.status);
+        const result = await response.json();
+        console.log("저장 응답:", result);
+        
+        if (response.ok && result.success) {
+          alert("시간표가 성공적으로 저장되었습니다! '내 시간표 관리' 페이지에서 확인할 수 있습니다.");
+        } else {
+          alert("시간표 저장에 실패했습니다: " + (result.error || "알 수 없는 오류"));
+        }
+      } catch (error) {
+        console.error("시간표 저장 오류:", error);
+        console.error("오류 상세:", error.stack);
+        alert("시간표 저장 중 오류가 발생했습니다: " + error.message);
+      }
     });
+  } else {
+    console.error("시간표 저장 버튼을 찾을 수 없습니다!");
   }
 });
 async function generateTimetableFromNL(nlText) {
-  // 1) 자연어 제약조건 파싱
-  const parseRes = await fetch("/parse_constraints/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: nlText })
-  });
-  if (!parseRes.ok) {
-      alert("제약조건 해석에 실패했습니다.");
-      return;
-  }
-  // ← 여기서 JSON을 받고
-  const parsed = await parseRes.json();
-  Object.keys(parsed).forEach(key => {
-    if (parsed[key] !== undefined) window.constraints[key] = parsed[key];
-  });
-  document.getElementById('major-credits').value    = window.constraints.major_credits;
-  document.getElementById('elective-credits').value = window.constraints.elective_credits;
-
-  const prev = window.constraints || {
-    major_credits: Number(document.getElementById('major-credits').value),
-    elective_credits: Number(document.getElementById('elective-credits').value),
-    required_courses: [],
-    free_days: [],
-    avoid_times: [],
-    avoid_time_ranges: [],
-    only_time_ranges: [],
-    exclude_courses: []
-  };
-  const major_credits = parsed.major_credits ?? prev.major_credits;
-  const elective_credits = parsed.elective_credits ?? prev.elective_credits; // Also update elective credits if parsed
-  const isModification = parsed.exclude_courses && parsed.exclude_courses.length > 0;
-  let idsToPassToBuilder = []; // Variable to hold the IDs to be passed
-
-  // 2) Update constraints and determine fixed courses
-  if (isModification) {
-      console.log("Modification request detected. Excluding:", parsed.exclude_courses);
-      if (!window.lastGeneratedTimetable || window.lastGeneratedTimetable.length === 0) {
-          alert("이전 생성된 시간표 정보가 없습니다. 먼저 시간표를 생성해주세요.");
-          console.error("Cannot modify: window.lastGeneratedTimetable is empty or null.");
+  return new Promise(async (resolve, reject) => {
+    try {
+      // 1) 자연어 제약조건 파싱
+      const parseRes = await fetch("/parse_constraints/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: nlText })
+      });
+      if (!parseRes.ok) {
+          alert("제약조건 해석에 실패했습니다.");
+          reject(new Error("제약조건 해석 실패"));
           return;
       }
-      console.log("Base timetable for modification:", JSON.stringify(window.lastGeneratedTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
-
-      const coursesToExclude = parsed.exclude_courses.map(name => name.toLowerCase());
-      console.log("Courses to exclude (lowercase):", coursesToExclude);
-
-      // Filter the IDs from the last timetable, keeping those NOT excluded
-      const filteredTimetable = window.lastGeneratedTimetable.filter(course => {
-          if (!course || typeof course.course_name !== 'string') { // Defensive check
-              console.warn("Skipping course in filter due to missing/invalid name:", course);
-              return false; // Exclude if name is problematic
-          }
-          const courseNameLower = course.course_name.toLowerCase();
-          const shouldExclude = coursesToExclude.some(exName => courseNameLower.includes(exName));
-          // console.log(`Checking ${courseNameLower} against ${coursesToExclude}. Exclude: ${shouldExclude}`);
-          return !shouldExclude;
-      });
-      console.log("Filtered timetable (courses to keep):", JSON.stringify(filteredTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
-
-      const fixedCourseIds = filteredTimetable.map(course => String(course.course_id)); // Ensure IDs are strings
-      console.log("Calculated fixedCourseIds for modification:", JSON.stringify(fixedCourseIds));
-
-      idsToPassToBuilder = fixedCourseIds; // Use these IDs for the builder
-
-      // Update constraints specifically for modification
-      window.constraints.exclude_courses = parsed.exclude_courses;
-
-      // Keep other constraints from the parsed NL if provided, otherwise keep previous
-      // Keep other constraints from the parsed NL if provided, otherwise use previous state
-      window.constraints.major_credits = parsed.major_credits ?? prev.major_credits;
-      window.constraints.elective_credits = parsed.elective_credits ?? prev.elective_credits;
-      window.constraints.required_courses = parsed.required_courses ?? prev.required_courses;
-      window.constraints.free_days = parsed.free_days ?? prev.free_days;
-      window.constraints.avoid_times = parsed.avoid_times ?? prev.avoid_times;
-      window.constraints.avoid_time_ranges = parsed.avoid_time_ranges ?? prev.avoid_time_ranges;
-      window.constraints.only_time_ranges = parsed.only_time_ranges ?? prev.only_time_ranges;
-
-      // DO NOT assign fixedCourseIds to window.existingCourses here, keep them separate
-      // console.log("Fixed courses for modification (assigned to window.existingCourses):", window.existingCourses); // Removed this confusing assignment
-
-  } else {
-      console.log("Initial generation request from NL.");
-      // For initial requests, use manually added courses
-      idsToPassToBuilder = Array.from(
-          document.querySelectorAll(".course-item.added")
-      ).map(el => el.dataset.courseId);
-      console.log("Using manually added courses for initial NL generation:", JSON.stringify(idsToPassToBuilder));
-
-      // Update all constraints from parsed data for initial request
+      // ← 여기서 JSON을 받고
+      const parsed = await parseRes.json();
       Object.keys(parsed).forEach(key => {
-          if (parsed[key] !== undefined) { // Update all keys from parsed data
-              window.constraints[key] = parsed[key];
-          }
+        if (parsed[key] !== undefined) window.constraints[key] = parsed[key];
       });
-       // Ensure exclude is empty if not provided by parser for initial request
-      window.constraints.exclude_courses = parsed.exclude_courses || [];
-
-      // Update UI inputs to reflect parsed constraints
-      document.getElementById('major-credits').value = window.constraints.major_credits;
+      document.getElementById('major-credits').value    = window.constraints.major_credits;
       document.getElementById('elective-credits').value = window.constraints.elective_credits;
-      // TODO: Potentially update free day checkboxes too if needed based on parsed.free_days
-  }
 
-  // 3) Build query parameters using the updated window.constraints and the determined IDs
-  console.log("IDs being passed to buildParamsFromConstraints:", JSON.stringify(idsToPassToBuilder));
-  const paramsObject = buildParamsFromConstraints(idsToPassToBuilder); // Pass the correct IDs
-  const paramsString = paramsObject.toString();
-  console.log("Generated URL Params Object:", paramsObject);
-  console.log("Generated URL Params String:", paramsString); // Log the actual params being sent
+      const prev = window.constraints || {
+        major_credits: Number(document.getElementById('major-credits').value),
+        elective_credits: Number(document.getElementById('elective-credits').value),
+        required_courses: [],
+        free_days: [],
+        avoid_times: [],
+        avoid_time_ranges: [],
+        only_time_ranges: [],
+        exclude_courses: []
+      };
+      const major_credits = parsed.major_credits ?? prev.major_credits;
+      const elective_credits = parsed.elective_credits ?? prev.elective_credits; // Also update elective credits if parsed
+      const isModification = parsed.exclude_courses && parsed.exclude_courses.length > 0;
+      let idsToPassToBuilder = []; // Variable to hold the IDs to be passed
 
-  // 4) SSE로 시간표 생성 스트림 요청
-  // Explicitly decode the URI component for the EventSource URL
-  const eventSourceUrl = "/generate_timetable_stream/?" + decodeURIComponent(paramsString);
-  console.log("EventSource URL:", eventSourceUrl);
-  const evtSource = new EventSource(eventSourceUrl);
-  const progressOverlay = document.getElementById("progress-overlay");
-  const progressText    = document.getElementById("progress-text");
-
-  progressOverlay.style.display = "block";
-  progressText.textContent   = "시간표 생성 중…";
-
-  evtSource.onmessage = e => {
-      const data = JSON.parse(e.data);
-      if (data.progress === "완료") {
-          window.timetables   = data.timetables; // Update global timetables
-          window.currentIndex = 0;
-          setTimeout(() => progressOverlay.style.display = "none", 800);
-          applyTimetableToMiddlePanel(); // Display and store the new state
-          evtSource.close();
-      } else {
-          // Update progress text
-          let progressMsg = "시간표 생성 중...";
-          if (data.processed !== undefined && data.found !== undefined) {
-              progressMsg = `처리된 조합: ${data.processed}, 후보: ${data.found}`;
+      // 2) Update constraints and determine fixed courses
+      if (isModification) {
+          console.log("Modification request detected. Excluding:", parsed.exclude_courses);
+          if (!window.lastGeneratedTimetable || window.lastGeneratedTimetable.length === 0) {
+              alert("이전 생성된 시간표 정보가 없습니다. 먼저 시간표를 생성해주세요.");
+              console.error("Cannot modify: window.lastGeneratedTimetable is empty or null.");
+              reject(new Error("이전 시간표 정보 없음"));
+              return;
           }
-          progressText.textContent = progressMsg;
-      }
-  };
+          console.log("Base timetable for modification:", JSON.stringify(window.lastGeneratedTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
 
-  evtSource.onerror = () => {
-      progressText.textContent = "시간표 생성 중 오류가 발생했습니다.";
-      evtSource.close();
-      setTimeout(() => progressOverlay.style.display = "none", 1200);
-  };
+          const coursesToExclude = parsed.exclude_courses.map(name => name.toLowerCase());
+          console.log("Courses to exclude (lowercase):", coursesToExclude);
+
+          // Filter the IDs from the last timetable, keeping those NOT excluded
+          const filteredTimetable = window.lastGeneratedTimetable.filter(course => {
+              if (!course || typeof course.course_name !== 'string') { // Defensive check
+                  console.warn("Skipping course in filter due to missing/invalid name:", course);
+                  return false; // Exclude if name is problematic
+              }
+              const courseNameLower = course.course_name.toLowerCase();
+              const shouldExclude = coursesToExclude.some(exName => courseNameLower.includes(exName));
+              // console.log(`Checking ${courseNameLower} against ${coursesToExclude}. Exclude: ${shouldExclude}`);
+              return !shouldExclude;
+          });
+          console.log("Filtered timetable (courses to keep):", JSON.stringify(filteredTimetable.map(c => ({id: c.course_id, name: c.course_name}))));
+
+          const fixedCourseIds = filteredTimetable.map(course => String(course.course_id)); // Ensure IDs are strings
+          console.log("Calculated fixedCourseIds for modification:", JSON.stringify(fixedCourseIds));
+
+          idsToPassToBuilder = fixedCourseIds; // Use these IDs for the builder
+
+          // Update constraints specifically for modification
+          window.constraints.exclude_courses = parsed.exclude_courses;
+
+          // Keep other constraints from the parsed NL if provided, otherwise keep previous
+          // Keep other constraints from the parsed NL if provided, otherwise use previous state
+          window.constraints.major_credits = parsed.major_credits ?? prev.major_credits;
+          window.constraints.elective_credits = parsed.elective_credits ?? prev.elective_credits;
+          window.constraints.required_courses = parsed.required_courses ?? prev.required_courses;
+          window.constraints.free_days = parsed.free_days ?? prev.free_days;
+          window.constraints.avoid_times = parsed.avoid_times ?? prev.avoid_times;
+          window.constraints.avoid_time_ranges = parsed.avoid_time_ranges ?? prev.avoid_time_ranges;
+          window.constraints.only_time_ranges = parsed.only_time_ranges ?? prev.only_time_ranges;
+
+          // DO NOT assign fixedCourseIds to window.existingCourses here, keep them separate
+          // console.log("Fixed courses for modification (assigned to window.existingCourses):", window.existingCourses); // Removed this confusing assignment
+
+      } else {
+          console.log("Initial generation request from NL.");
+          // For initial requests, use manually added courses
+          idsToPassToBuilder = Array.from(
+              document.querySelectorAll(".course-item.added")
+          ).map(el => el.dataset.courseId);
+          console.log("Using manually added courses for initial NL generation:", JSON.stringify(idsToPassToBuilder));
+
+          // Update all constraints from parsed data for initial request
+          Object.keys(parsed).forEach(key => {
+              if (parsed[key] !== undefined) { // Update all keys from parsed data
+                  window.constraints[key] = parsed[key];
+              }
+          });
+           // Ensure exclude is empty if not provided by parser for initial request
+          window.constraints.exclude_courses = parsed.exclude_courses || [];
+
+          // Update UI inputs to reflect parsed constraints
+          document.getElementById('major-credits').value = window.constraints.major_credits;
+          document.getElementById('elective-credits').value = window.constraints.elective_credits;
+          // TODO: Potentially update free day checkboxes too if needed based on parsed.free_days
+      }
+
+      // 3) Build query parameters using the updated window.constraints and the determined IDs
+      console.log("IDs being passed to buildParamsFromConstraints:", JSON.stringify(idsToPassToBuilder));
+      const paramsObject = buildParamsFromConstraints(idsToPassToBuilder); // Pass the correct IDs
+      const paramsString = paramsObject.toString();
+      console.log("Generated URL Params Object:", paramsObject);
+      console.log("Generated URL Params String:", paramsString); // Log the actual params being sent
+
+      // 4) SSE로 시간표 생성 스트림 요청
+      // Explicitly decode the URI component for the EventSource URL
+      const eventSourceUrl = "/generate_timetable_stream/?" + decodeURIComponent(paramsString);
+      console.log("EventSource URL:", eventSourceUrl);
+      const evtSource = new EventSource(eventSourceUrl);
+      const progressOverlay = document.getElementById("progress-overlay");
+      const progressText    = document.getElementById("progress-text");
+
+      progressOverlay.style.display = "block";
+      progressText.textContent   = "시간표 생성 중…";
+
+      evtSource.onmessage = e => {
+          const data = JSON.parse(e.data);
+          if (data.progress === "완료") {
+              window.timetables   = data.timetables; // Update global timetables
+              window.currentIndex = 0;
+              setTimeout(() => progressOverlay.style.display = "none", 800);
+              applyTimetableToMiddlePanel(); // Display and store the new state
+              evtSource.close();
+              resolve(); // Promise 완료
+          } else {
+              // Update progress text
+              let progressMsg = "시간표 생성 중...";
+              if (data.processed !== undefined && data.found !== undefined) {
+                  progressMsg = `처리된 조합: ${data.processed}, 후보: ${data.found}`;
+              }
+              progressText.textContent = progressMsg;
+          }
+      };
+
+      evtSource.onerror = () => {
+          progressText.textContent = "시간표 생성 중 오류가 발생했습니다.";
+          evtSource.close();
+          setTimeout(() => progressOverlay.style.display = "none", 1200);
+          reject(new Error("시간표 생성 오류"));
+      };
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

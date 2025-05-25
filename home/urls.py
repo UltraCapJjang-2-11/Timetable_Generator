@@ -17,4 +17,8 @@ urlpatterns = [
     path("parse_constraints/", parse_constraints, name="parse_constraints"),
     path('manage/', views.manage_view, name='manage'),
     path('search_test/', course_serach_test_view, name='search_test'),
+    
+    # 시간표 저장/삭제 API
+    path('save_timetable/', save_timetable, name='save_timetable'),
+    path('delete_timetable/<int:timetable_id>/', delete_timetable, name='delete_timetable'),
 ]

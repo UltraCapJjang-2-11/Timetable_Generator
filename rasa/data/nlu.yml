@@ -745,3 +745,39 @@ nlu:
     - 전공과목
     - 전공 과목
     - 전공 수업
+
+- intent: save_timetable
+  examples: |
+    - 저장해줘
+    - 시간표 저장
+    - 이 시간표 저장해줘
+    - 시간표 저장하고 싶어
+    - 저장할게
+    - 이거 저장해줘
+    - 시간표 저장해주세요
+    - 이 시간표로 저장
+    - 저장하기
+    - 시간표 보관해줘
+    - 이거 저장하고 싶어요
+    - 시간표 저장 부탁해
+    - 이 시간표 괜찮아 저장해줘
+    - 마음에 들어 저장해줘
+    - 좋아 저장해줘
+
+- intent: exclude_course
+  examples: |
+    - [자료구조](course_name_entity) 빼고 다시 만들어줘
+    - [운영체제](course_name_entity) 제외하고 시간표 다시
+    - [알고리즘](course_name_entity) 빼줘
+    - [데이터베이스](course_name_entity) 말고 다른 과목으로
+    - [컴퓨터구조](course_name_entity) 제외해줘
+    - [인공지능](course_name_entity) 빼고 다른 과목 넣어줘
+    - [확률과통계](course_name_entity) 대신 다른 과목으로 바꿔줘
+    - [선형대수](course_name_entity) 제외하고 재생성
+    - [프로그래밍언어론](course_name_entity) 빼고 시간표 다시 짜줘
+    - [소프트웨어공학](course_name_entity) 말고 다른 전공으로
+    - [네트워크](course_name_entity) 제외시켜줘
+    - [컴파일러](course_name_entity) 빼고 다른 과목 추천해줘
+    - 이 시간표에서 [웹프로그래밍](course_name_entity) 빼줘
+    - [모바일프로그래밍](course_name_entity) 제외하고 다시
+    - [캡스톤디자인](course_name_entity) 빼고 다른 걸로 채워줘

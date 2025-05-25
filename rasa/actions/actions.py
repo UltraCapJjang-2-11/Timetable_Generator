@@ -121,6 +121,15 @@ class ActionHandleTimetableRequest(Action):
                 dispatcher.utter_message(text="웹 화면에서 시간표 생성 결과를 확인해주세요! ✨")
                 dispatcher.utter_message(json_message=custom_payload_for_frontend)
                 
+                # 시간표 저장 버튼 추가
+                dispatcher.utter_message(
+                    text="시간표가 마음에 드시나요? 저장하시거나 수정할 수 있어요!",
+                    buttons=[
+                        {"title": "시간표 저장", "payload": "/save_timetable"},
+                        {"title": "다시 생성", "payload": "시간표 다시 만들어줘"}
+                    ]
+                )
+                
                 # 대화 완료 후 슬롯 초기화
                 logger.info("슬롯 초기화 시작")
                 reset_events = [
@@ -404,3 +413,98 @@ class ActionHandleTimetableRequest(Action):
         
         logger.info(f"최종 추출 결과: {constraints}")
         return constraints, events
+
+class ActionSaveTimetable(Action):
+    def name(self) -> Text:
+        return "action_save_timetable"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        logger.info("시간표 저장 액션 실행")
+        
+        # 프론트엔드로 시간표 저장 이벤트 전송
+        save_payload = {
+            "event_type": "save_timetable",
+            "message": "시간표를 저장합니다."
+        }
+        
+        dispatcher.utter_message(text="시간표를 저장했습니다! 저장된 시간표는 '내 시간표 관리' 페이지에서 확인할 수 있어요. 📚")
+        dispatcher.utter_message(json_message=save_payload)
+        
+        return []
+
+
+class ActionExcludeCourseAndRegenerate(Action):
+    def name(self) -> Text:
+        return "action_exclude_course_and_regenerate"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # 사용자 메시지에서 제외할 과목 추출
+        latest_message = tracker.latest_message.get('text', '')
+        entities = tracker.latest_message.get('entities', [])
+        
+        exclude_courses = []
+        for entity in entities:
+            if entity["entity"] == "course_name_entity":
+                course_name = entity["value"].strip()
+                if course_name:
+                    exclude_courses.append(course_name)
+        
+        logger.info(f"제외할 과목: {exclude_courses}")
+        
+        if not exclude_courses:
+            dispatcher.utter_message(text="제외할 과목을 찾을 수 없어요. 어떤 과목을 빼고 싶으신가요?")
+            return []
+        
+        # 기존 제약조건 가져오기 (슬롯에서)
+        major_credits_text = tracker.get_slot("major_credits_slot")
+        elective_credits_text = tracker.get_slot("elective_credits_slot")
+        free_days = tracker.get_slot("free_days_slot") or []
+        
+        # 학점 추출
+        major_credits = None
+        elective_credits = None
+        
+        if major_credits_text:
+            major_value = extract_number(major_credits_text)
+            if major_value:
+                major_credits = major_value
+                
+        if elective_credits_text:
+            elective_value = extract_number(elective_credits_text)
+            if elective_value:
+                elective_credits = elective_value
+        
+        # 공강일 처리
+        processed_free_days = []
+        if free_days:
+            if isinstance(free_days, list):
+                processed_free_days = [get_korean_day_abbr(day) for day in free_days]
+            else:
+                processed_free_days = [get_korean_day_abbr(free_days)]
+        
+        # 제외 과목 메시지
+        exclude_msg = ", ".join(exclude_courses)
+        dispatcher.utter_message(text=f"{exclude_msg}을(를) 제외하고 시간표를 다시 생성합니다.")
+        
+        # 프론트엔드로 재생성 이벤트 전송
+        regenerate_payload = {
+            "event_type": "exclude_and_regenerate_timetable",
+            "major_credits": major_credits,
+            "elective_credits": elective_credits,
+            "free_days": processed_free_days,
+            "exclude_courses": exclude_courses,
+            "keep_existing_courses": True  # 나머지 과목은 유지
+        }
+        
+        logger.info(f"재생성 페이로드: {regenerate_payload}")
+        
+        dispatcher.utter_message(text="웹 화면에서 새로운 시간표를 확인해주세요! ✨")
+        dispatcher.utter_message(json_message=regenerate_payload)
+        
+        return []

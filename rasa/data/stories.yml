@@ -48,4 +48,37 @@ stories:
   - intent: request_timetable
   - action: utter_ask_major_credits
 
+- story: 시간표 생성 후 저장
+  steps:
+  - intent: request_timetable
+    entities:
+    - major_credits_entity: "9학점"
+    - elective_credits_entity: "6학점"
+  - slot_was_set:
+    - major_credits_slot: "9학점"
+    - elective_credits_slot: "6학점"
+  - action: action_handle_timetable_request
+  - intent: save_timetable
+  - action: action_save_timetable
+
+- story: 시간표 생성 후 과목 제외하고 재생성
+  steps:
+  - intent: request_timetable
+    entities:
+    - major_credits_entity: "12학점"
+    - elective_credits_entity: "3학점"
+  - slot_was_set:
+    - major_credits_slot: "12학점"
+    - elective_credits_slot: "3학점"
+  - action: action_handle_timetable_request
+  - intent: exclude_course
+    entities:
+    - course_name_entity: "자료구조"
+  - action: action_exclude_course_and_regenerate
+
+- story: 단순 저장 요청
+  steps:
+  - intent: save_timetable
+  - action: action_save_timetable
+
 # ... 더 많은 시나리오 추가 ...

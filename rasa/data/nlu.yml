@@ -72,6 +72,13 @@ nlu:
     - 전공 [9학점](major_credits_entity) [화공강](free_day_keyword_entity) 시간표 추천
     - [월](free_day_entity) [수](free_day_entity) 공강인 시간표 만들어줘
     - [디자인패턴](course_name_entity)과 [컴퓨터구조](course_name_entity) 포함해서 전공 [12학점](major_credits_entity) 시간표
+    - [월요일](free_day_entity) [10시](time_entity), [화요일](free_day_entity) [10시](time_entity)를 공강으로 전공 [8학점](major_credits_entity) 교양 [6학점](elective_credits_entity) 시간표 생성해줘
+    - [월요일](free_day_entity) [오전](time_range_entity), [금요일](free_day_entity) [오후](time_range_entity), [금요일](free_day_entity) [9시](time_entity)를 공강으로 시간표를 생성해줘
+    - [화요일](free_day_entity) [11시](time_entity) 공강으로 전공 [9학점](major_credits_entity) 시간표 만들어줘
+    - [수요일](free_day_entity) [오전](time_range_entity) 공강으로 교양 [6학점](elective_credits_entity) 시간표 생성
+    - [목요일](free_day_entity) [2교시](time_entity) 공강으로 해서 시간표 짜줘
+    - [금요일](free_day_entity) [오후](time_range_entity) 시간대 공강으로 전공 [12학점](major_credits_entity) 시간표
+    - [월요일](free_day_entity) [9시](time_entity), [수요일](free_day_entity) [1시](time_entity) 공강으로 시간표 만들어줘
 
 - intent: inform_major_credits # 전공 학점 알림
   examples: |
@@ -710,6 +717,22 @@ nlu:
     - [금요일](free_day_entity) [오후](time_range_entity)는 비워줘
     - [월요일](free_day_entity) [1교시](time_entity) 수업 빼고
     - [오전](time_range_entity) 수업 피해서 시간표 만들어줘
+    - [월요일](free_day_entity) [10시](time_entity)를 공강으로 해줘
+    - [화요일](free_day_entity) [10시](time_entity) 공강으로 시간표 생성해줘
+    - [월요일](free_day_entity) [오전](time_range_entity), [금요일](free_day_entity) [오후](time_range_entity), [금요일](free_day_entity) [9시](time_entity)를 공강으로 해줘
+    - [월요일](free_day_entity) [오전](time_range_entity)을 공강으로 해달라
+    - [금요일](free_day_entity) [9시](time_entity)를 공강으로 해달라
+    - [화요일](free_day_entity) [1시](time_entity)부터 [3시](time_entity)까지 공강으로
+    - [수요일](free_day_entity) [2교시](time_entity) 공강으로 해줘
+    - [목요일](free_day_entity) [오후](time_range_entity) 시간대는 공강으로
+    - [월요일](free_day_entity) [9시](time_entity), [화요일](free_day_entity) [10시](time_entity) 공강으로 전공 [8학점](major_credits_entity) 교양 [6학점](elective_credits_entity) 시간표 생성해줘
+    - [월요일](free_day_entity) [오전](time_range_entity), [금요일](free_day_entity) [오후](time_range_entity), [금요일](free_day_entity) [9시](time_entity)를 공강으로 시간표를 생성해줘
+    - [화요일](free_day_entity) [11시](time_entity) 공강으로 해주세요
+    - [수요일](free_day_entity) [3교시](time_entity)는 비워주세요
+    - [목요일](free_day_entity) [오전](time_range_entity) 시간은 수업 없게 해줘
+    - [금요일](free_day_entity) [1시](time_entity)부터 [2시](time_entity)까지는 공강으로
+    - [월요일](free_day_entity) [10시](time_entity), [수요일](free_day_entity) [2시](time_entity) 공강으로 해줘
+    - [화요일](free_day_entity) [오후](time_range_entity), [목요일](free_day_entity) [9시](time_entity) 공강으로 시간표 만들어줘
 
 - intent: modify_timetable # 시간표 수정 요청
   examples: |

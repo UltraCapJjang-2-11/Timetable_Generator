@@ -93,6 +93,35 @@ function buildParamsFromConstraints(idsToUse) {
     console.log("[buildParamsFromConstraints] 제외할 과목이 없거나 비어있음");
   }
   
+  // 특정 시간대 공강 처리 (specific_avoid_times)
+  if (window.constraints.specific_avoid_times && window.constraints.specific_avoid_times.length > 0) {
+    console.log("[buildParamsFromConstraints] 특정 시간 공강 처리:", window.constraints.specific_avoid_times);
+    window.constraints.specific_avoid_times.forEach(timeInfo => {
+      if (timeInfo.day && timeInfo.hour) {
+        params.append("specific_avoid_times[]", JSON.stringify({
+          day: timeInfo.day,
+          hour: timeInfo.hour
+        }));
+        console.log("[buildParamsFromConstraints] 특정 시간 추가:", timeInfo.day, timeInfo.hour);
+      }
+    });
+  }
+  
+  // 특정 시간대 범위 공강 처리 (specific_avoid_time_ranges)
+  if (window.constraints.specific_avoid_time_ranges && window.constraints.specific_avoid_time_ranges.length > 0) {
+    console.log("[buildParamsFromConstraints] 특정 시간 범위 공강 처리:", window.constraints.specific_avoid_time_ranges);
+    window.constraints.specific_avoid_time_ranges.forEach(rangeInfo => {
+      if (rangeInfo.day && rangeInfo.start_hour && rangeInfo.end_hour) {
+        params.append("specific_avoid_time_ranges[]", JSON.stringify({
+          day: rangeInfo.day,
+          start_hour: rangeInfo.start_hour,
+          end_hour: rangeInfo.end_hour
+        }));
+        console.log("[buildParamsFromConstraints] 특정 시간 범위 추가:", rangeInfo.day, rangeInfo.start_hour + "-" + rangeInfo.end_hour);
+      }
+    });
+  }
+  
   console.log("최종 URL 파라미터:", params.toString());
   
   return params;

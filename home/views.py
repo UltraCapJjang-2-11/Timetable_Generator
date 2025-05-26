@@ -421,13 +421,19 @@ def extract_missing_required_major_courses(user_dept_id, completed_courses):
 
 
 
-def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_ranges):
+def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_ranges, specific_avoid_times=None, specific_avoid_time_ranges=None):
     """
     candidate_data: [{'id', 'schedule':[{'day','times',…},…],…}, …]
     only_ranges: [{"days":[..], "start_hour":int, "end_hour":int?}, …]
     avoid_times: [{"day":str,"hour":int}, …]
     avoid_ranges: [{"days":[..], "start_hour":int, "end_hour":int?}, …]
+    specific_avoid_times: [{"day":str,"hour":int}, …] (특정 요일+시간)
+    specific_avoid_time_ranges: [{"day":str,"start_hour":int,"end_hour":int}, …] (특정 요일+시간범위)
     """
+    if specific_avoid_times is None:
+        specific_avoid_times = []
+    if specific_avoid_time_ranges is None:
+        specific_avoid_time_ranges = []
     # 1) only_time_ranges 적용 — 있으면 이 범위 **외** 과목 제거
     if only_ranges:
         filtered = []
@@ -470,6 +476,35 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
                     for r in avoid_ranges
                 ):
                     bad = True
+                    break
+            if not bad:
+                filtered.append(data)
+        candidate_data = filtered
+
+    # 3) specific_avoid_times / specific_avoid_time_ranges 적용 — 특정 요일+시간 회피
+    if specific_avoid_times or specific_avoid_time_ranges:
+        filtered = []
+        for data in candidate_data:
+            bad = False
+            for sched in data['schedule']:
+                hours = [int(t)+8 for t in sched['times'].split(',')]
+                
+                # (1) 특정 요일+시간 회피
+                if any(obj['day']==sched['day'] and h==obj['hour'] 
+                       for obj in specific_avoid_times for h in hours):
+                    bad = True
+                    print(f"DEBUG: 특정 시간 회피로 과목 제외 - {data.get('course_name', 'Unknown')} ({sched['day']}요일 {hours}시)")
+                    break
+                
+                # (2) 특정 요일+시간범위 회피
+                if any(
+                    obj['day']==sched['day']
+                    and any(h >= obj['start_hour'] and h < obj['end_hour']
+                        for h in hours)
+                    for obj in specific_avoid_time_ranges
+                ):
+                    bad = True
+                    print(f"DEBUG: 특정 시간범위 회피로 과목 제외 - {data.get('course_name', 'Unknown')} ({sched['day']}요일 {hours}시)")
                     break
             if not bad:
                 filtered.append(data)
@@ -555,9 +590,16 @@ def generate_timetable_stream(request):
         only_ranges  = [json.loads(s) for s in request.GET.getlist('only_time_ranges[]')]
         avoid_times  = [json.loads(s) for s in request.GET.getlist('avoid_times[]')]
         avoid_ranges = [json.loads(s) for s in request.GET.getlist('avoid_time_ranges[]')]
+        
+        # 특정 시간대 공강 파라미터 추가
+        specific_avoid_times = [json.loads(s) for s in request.GET.getlist('specific_avoid_times[]')]
+        specific_avoid_time_ranges = [json.loads(s) for s in request.GET.getlist('specific_avoid_time_ranges[]')]
+        
         print("DEBUG: only_time_ranges =", only_ranges)
         print("DEBUG: avoid_times =", avoid_times)
         print("DEBUG: avoid_time_ranges =", avoid_ranges)
+        print("DEBUG: specific_avoid_times =", specific_avoid_times)
+        print("DEBUG: specific_avoid_time_ranges =", specific_avoid_time_ranges)
 
         # 3) 미리 추가된 과목(CP-SAT 모델에 강제로 포함)
         svc = CourseFilterService()
@@ -780,6 +822,35 @@ def generate_timetable_stream(request):
                 if not bad: filtered.append(d)
             candidate_data = filtered
             print("DEBUG: avoid_times/avoid_time_ranges 적용 후 count =", len(candidate_data))
+
+        # specific_avoid_times / specific_avoid_time_ranges: 특정 요일+시간 회피 조건 제거
+        if specific_avoid_times or specific_avoid_time_ranges:
+            filtered = []
+            for d in candidate_data:
+                bad = False
+                for sched in d['schedule']:
+                    hours = [int(t)+8 for t in sched['times'].split(',') if t.strip().isdigit()]
+                    
+                    # (1) 특정 요일+시간 회피
+                    if any(obj['day']==sched['day'] and h==obj['hour'] 
+                           for obj in specific_avoid_times for h in hours):
+                        bad = True
+                        print(f"DEBUG: 특정 시간 회피로 과목 제외 - {d.get('course_name', 'Unknown')} ({sched['day']}요일 {hours}시)")
+                        break
+                    
+                    # (2) 특정 요일+시간범위 회피
+                    if any(
+                        obj['day']==sched['day']
+                        and any(h >= obj['start_hour'] and h < obj['end_hour']
+                            for h in hours)
+                        for obj in specific_avoid_time_ranges
+                    ):
+                        bad = True
+                        break
+                if not bad: 
+                    filtered.append(d)
+            candidate_data = filtered
+            print("DEBUG: specific_avoid_times/specific_avoid_time_ranges 적용 후 count =", len(candidate_data))
 
         # ===== 수정된 부분: 전공선택 강좌 중 동일학년 강좌 우선 필터링 =====
         for data in candidate_data:

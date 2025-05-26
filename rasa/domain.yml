@@ -28,6 +28,8 @@ entities:
   - free_day_keyword_entity
   - time_entity
   - time_range_entity
+  - specific_time_entity
+  - specific_time_range_entity
 
 slots:
   major_credits_slot:
@@ -74,6 +76,18 @@ slots:
     mappings:
     - type: from_entity
       entity: department
+  specific_avoid_times_slot:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: specific_time_entity
+  specific_avoid_time_ranges_slot:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: specific_time_range_entity
 
 responses:
   utter_greet:

@@ -1050,6 +1050,12 @@
           if (data.avoid_time_ranges) window.constraints.avoid_time_ranges = data.avoid_time_ranges;
           if (data.only_time_ranges) window.constraints.only_time_ranges = data.only_time_ranges;
           
+          // 특정 시간대 공강 정보 저장 (추가)
+          if (data.specific_avoid_times) window.constraints.specific_avoid_times = data.specific_avoid_times;
+          if (data.specific_avoid_time_ranges) window.constraints.specific_avoid_time_ranges = data.specific_avoid_time_ranges;
+          
+          console.log("window.constraints 업데이트 완료:", window.constraints);
+          
           // 시간표 생성 함수 직접 호출하여 NL 처리하도록 수정
           generateTimetableFromNL("시간표 생성해줘").then(() => {
             // 시간표 생성 완료 후 저장 버튼 표시

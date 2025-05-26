@@ -46,8 +46,177 @@ def parse_time_range(time_text: str) -> Dict[str, Any]:
     if "오전" in time_text:
         return {"start_hour": 9, "end_hour": 12}
     elif "오후" in time_text:
-        return {"start_hour": 13, "end_hour": 18}
+        return {"start_hour": 12, "end_hour": 18}
     return {}
+
+def parse_specific_time(time_text: str) -> Optional[int]:
+    """특정 시간 텍스트를 시간(hour)으로 변환합니다."""
+    time_text = time_text.strip()
+    
+    # 교시 변환 (1교시=9시, 2교시=10시, ...)
+    class_match = re.search(r'(\d+)교시', time_text)
+    if class_match:
+        class_num = int(class_match.group(1))
+        return 8 + class_num  # 1교시는 9시
+    
+    # 시간 추출 (9시, 10시, 1시 등)
+    hour_match = re.search(r'(\d+)시', time_text)
+    if hour_match:
+        hour = int(hour_match.group(1))
+        # 1-8시는 오후로 간주 (13-20시)
+        if 1 <= hour <= 8:
+            return hour + 12
+        # 9-23시는 그대로
+        elif 9 <= hour <= 23:
+            return hour
+    
+    return None
+
+def parse_day_time_combinations(message: str) -> List[Dict[str, Any]]:
+    """메시지에서 요일+시간 조합을 추출합니다."""
+    combinations = []
+    
+    logger.debug(f"요일+시간 조합 파싱 시작: '{message}'")
+    
+    # 요일 변환 매핑
+    day_mapping = {
+        '월요일': '월', '화요일': '화', '수요일': '수', '목요일': '목', '금요일': '금',
+        '월': '월', '화': '화', '수': '수', '목': '목', '금': '금'
+    }
+    
+    # 이미 처리된 위치를 추적하여 중복 매칭 방지
+    processed_positions = set()
+    
+    # 1. 정확한 요일+시간 조합 패턴 매칭 (우선순위 순서로 처리)
+    exact_patterns = [
+        # 요일 + 오전/오후 패턴 (정확한 매칭)
+        r'(월요일|화요일|수요일|목요일|금요일|월|화|수|목|금)\s+(오전|오후)',
+        
+        # 요일 + 구체적 시간 패턴
+        r'(월요일|화요일|수요일|목요일|금요일|월|화|수|목|금)\s+(\d+)시',
+        
+        # 요일 + 교시 패턴
+        r'(월요일|화요일|수요일|목요일|금요일|월|화|수|목|금)\s+(\d+)교시',
+        
+        # 역순 패턴들 (낮은 우선순위)
+        r'(오전|오후)\s+(월요일|화요일|수요일|목요일|금요일|월|화|수|목|금)',
+        r'(\d+)시\s+(월요일|화요일|수요일|목요일|금요일|월|화|수|목|금)',
+        r'(\d+)교시\s+(월요일|화요일|수요일|목요일|금요일|월|화|수|목|금)',
+    ]
+    
+    for pattern in exact_patterns:
+        for match in re.finditer(pattern, message):
+            start_pos, end_pos = match.span()
+            
+            # 이미 처리된 위치와 겹치는지 확인
+            if any(start_pos < p_end and end_pos > p_start for p_start, p_end in processed_positions):
+                continue
+            
+            match_groups = match.groups()
+            logger.debug(f"패턴 '{pattern}' 매칭 결과: {match_groups} at position {start_pos}-{end_pos}")
+            
+            if len(match_groups) == 2:
+                first, second = match_groups
+                
+                # 요일과 시간 구분
+                day_part = None
+                time_part = None
+                
+                if first in day_mapping:
+                    day_part = first
+                    time_part = second
+                elif second in day_mapping:
+                    day_part = second
+                    time_part = first
+                else:
+                    continue
+                
+                day_abbr = day_mapping[day_part]
+                
+                # 시간 타입별 처리
+                if time_part in ['오전', '오후']:
+                    # 오전/오후 처리
+                    if time_part == '오전':
+                        start_h, end_h = 9, 12
+                    else:  # 오후
+                        start_h, end_h = 12, 18
+                    
+                    time_info = {
+                        'day': day_abbr,
+                        'type': 'time_range',
+                        'start_hour': start_h,
+                        'end_hour': end_h
+                    }
+                    
+                    if time_info not in combinations:
+                        combinations.append(time_info)
+                        processed_positions.add((start_pos, end_pos))
+                        logger.debug(f"요일+시간범위 매칭: {day_abbr}요일 {time_part} ({start_h}-{end_h}시)")
+                
+                elif time_part.endswith('시') and time_part[:-1].isdigit():
+                    # 구체적 시간 처리 (예: 10시)
+                    hour_num = int(time_part[:-1])
+                    
+                    # 시간 변환 (1-8시는 오후로 간주)
+                    if 1 <= hour_num <= 8:
+                        hour = hour_num + 12
+                    elif 9 <= hour_num <= 23:
+                        hour = hour_num
+                    else:
+                        continue
+                    
+                    time_info = {
+                        'day': day_abbr,
+                        'type': 'specific_time',
+                        'hour': hour
+                    }
+                    
+                    if time_info not in combinations:
+                        combinations.append(time_info)
+                        processed_positions.add((start_pos, end_pos))
+                        logger.debug(f"요일+구체적시간 매칭: {day_abbr}요일 {hour}시")
+                
+                elif time_part.endswith('교시') and time_part[:-2].isdigit():
+                    # 교시 처리 (예: 1교시)
+                    class_num = int(time_part[:-2])
+                    hour = 8 + class_num  # 1교시=9시
+                    
+                    time_info = {
+                        'day': day_abbr,
+                        'type': 'specific_time',
+                        'hour': hour
+                    }
+                    
+                    if time_info not in combinations:
+                        combinations.append(time_info)
+                        processed_positions.add((start_pos, end_pos))
+                        logger.debug(f"요일+교시 매칭: {day_abbr}요일 {class_num}교시 ({hour}시)")
+                
+                elif time_part.isdigit():
+                    # 숫자만 있는 경우 (시간으로 간주)
+                    hour_num = int(time_part)
+                    
+                    # 시간 변환 (1-8시는 오후로 간주)
+                    if 1 <= hour_num <= 8:
+                        hour = hour_num + 12
+                    elif 9 <= hour_num <= 23:
+                        hour = hour_num
+                    else:
+                        continue
+                    
+                    time_info = {
+                        'day': day_abbr,
+                        'type': 'specific_time',
+                        'hour': hour
+                    }
+                    
+                    if time_info not in combinations:
+                        combinations.append(time_info)
+                        processed_positions.add((start_pos, end_pos))
+                        logger.debug(f"요일+숫자시간 매칭: {day_abbr}요일 {hour}시")
+    
+    logger.debug(f"최종 요일+시간 조합: {combinations}")
+    return combinations
 
 class ActionHandleTimetableRequest(Action):
     def name(self) -> Text:
@@ -93,6 +262,35 @@ class ActionHandleTimetableRequest(Action):
                 days_str = ', '.join([f"{day}요일" for day in extracted_info['free_days']])
                 confirmation_message_parts.append(f"공강요일: {days_str}")
             
+            # 특정 시간대 공강 정보 추가
+            specific_times = []
+            if extracted_info.get("specific_avoid_times"):
+                for time_info in extracted_info["specific_avoid_times"]:
+                    if "day" in time_info:
+                        specific_times.append(f"{time_info['day']}요일 {time_info['hour']}시")
+                    else:
+                        specific_times.append(f"{time_info['hour']}시")
+            
+            if extracted_info.get("specific_avoid_time_ranges"):
+                for range_info in extracted_info["specific_avoid_time_ranges"]:
+                    if "day" in range_info:
+                        if range_info['start_hour'] == 9 and range_info['end_hour'] == 12:
+                            specific_times.append(f"{range_info['day']}요일 오전")
+                        elif range_info['start_hour'] == 12 and range_info['end_hour'] == 18:
+                            specific_times.append(f"{range_info['day']}요일 오후")
+                        else:
+                            specific_times.append(f"{range_info['day']}요일 {range_info['start_hour']}-{range_info['end_hour']}시")
+                    else:
+                        if range_info['start_hour'] == 9 and range_info['end_hour'] == 12:
+                            specific_times.append("오전")
+                        elif range_info['start_hour'] == 12 and range_info['end_hour'] == 18:
+                            specific_times.append("오후")
+                        else:
+                            specific_times.append(f"{range_info['start_hour']}-{range_info['end_hour']}시")
+            
+            if specific_times:
+                confirmation_message_parts.append(f"공강시간: {', '.join(specific_times)}")
+            
             logger.info(f"최종 확인된 정보: {extracted_info}")
             
             # 확인 메시지 출력
@@ -108,6 +306,8 @@ class ActionHandleTimetableRequest(Action):
                     "free_days": extracted_info.get("free_days", []),
                     "avoid_times": extracted_info.get("avoid_times", []),
                     "avoid_time_ranges": extracted_info.get("avoid_time_ranges", []),
+                    "specific_avoid_times": extracted_info.get("specific_avoid_times", []),
+                    "specific_avoid_time_ranges": extracted_info.get("specific_avoid_time_ranges", []),
                     "only_time_ranges": extracted_info.get("only_time_ranges", []),
                     "exclude_courses": extracted_info.get("exclude_courses", []),
                     "existing_courses": []
@@ -195,6 +395,8 @@ class ActionHandleTimetableRequest(Action):
             "free_days": [],
             "avoid_times": [],
             "avoid_time_ranges": [],
+            "specific_avoid_times": [],
+            "specific_avoid_time_ranges": [],
             "only_time_ranges": [],
             "exclude_courses": []
         }
@@ -217,20 +419,22 @@ class ActionHandleTimetableRequest(Action):
             num_value = extract_number(latest_message)
             logger.debug(f"단순 숫자 입력 감지: {num_value}")
             
-            # 이전 봇 메시지 확인하여 전공/교양 구분
+            # 이전 봇 메시지 확인하여 전공/교양 구분 (가장 최근 메시지만 확인)
             for event in reversed(list(tracker.events)):
                 if event.get('event') == 'bot' and event.get('text'):
                     last_bot_text = event.get('text', '')
                     logger.debug(f"최근 봇 메시지: '{last_bot_text}'")
                     
-                    if "교양" in last_bot_text and "학점" in last_bot_text:
+                    # 교양 학점 질문인지 확인 (더 정확한 패턴 매칭)
+                    if "교양" in last_bot_text and "학점" in last_bot_text and "들으실" in last_bot_text:
                         logger.info(f"교양 학점 질문 후 숫자 응답: {num_value}로 교양 학점 설정")
                         constraints["elective_credits"] = num_value
                         events.append(SlotSet("elective_credits_slot", str(num_value)))
                         number_processed = True
                         context_type = "elective"
                         break
-                    elif "전공" in last_bot_text and "학점" in last_bot_text:
+                    # 전공 학점 질문인지 확인 (더 정확한 패턴 매칭)
+                    elif "전공" in last_bot_text and "학점" in last_bot_text and "생각하고" in last_bot_text:
                         logger.info(f"전공 학점 질문 후 숫자 응답: {num_value}로 전공 학점 설정")
                         constraints["major_credits"] = num_value
                         events.append(SlotSet("major_credits_slot", str(num_value)))
@@ -252,23 +456,29 @@ class ActionHandleTimetableRequest(Action):
         if major_credits_text:
             major_value = extract_number(major_credits_text)
             if major_value and constraints["major_credits"] is None:
-                # 교양 학점 컨텍스트에서 전공 슬롯이 현재 입력값과 같으면 무시 (Rasa가 잘못 설정한 경우)
+                # 교양 학점 컨텍스트에서만 전공 슬롯 무시 (전공 컨텍스트에서는 항상 허용)
                 if number_processed and context_type == "elective" and major_value == extract_number(latest_message):
                     logger.info(f"교양 학점 컨텍스트에서 전공 슬롯 값({major_value})이 현재 입력과 같아 무시")
                 else:
                     constraints["major_credits"] = major_value
                     logger.debug(f"슬롯에서 전공 학점: {major_value}")
+                    # 전공 컨텍스트에서는 명시적으로 로그 추가
+                    if number_processed and context_type == "major":
+                        logger.info(f"전공 학점 컨텍스트에서 전공 슬롯 값({major_value}) 정상 설정")
         
         # 교양 슬롯 처리  
         if elective_credits_text:
             elective_value = extract_number(elective_credits_text)
             if elective_value and constraints["elective_credits"] is None:
-                # 전공 학점 컨텍스트에서 교양 슬롯이 현재 입력값과 같으면 무시 (Rasa가 잘못 설정한 경우)
+                # 전공 학점 컨텍스트에서만 교양 슬롯 무시 (교양 컨텍스트에서는 항상 허용)
                 if number_processed and context_type == "major" and elective_value == extract_number(latest_message):
                     logger.info(f"전공 학점 컨텍스트에서 교양 슬롯 값({elective_value})이 현재 입력과 같아 무시")
                 else:
                     constraints["elective_credits"] = elective_value
                     logger.debug(f"슬롯에서 교양 학점: {elective_value}")
+                    # 교양 컨텍스트에서는 명시적으로 로그 추가
+                    if number_processed and context_type == "elective":
+                        logger.info(f"교양 학점 컨텍스트에서 교양 슬롯 값({elective_value}) 정상 설정")
         
         # 필수 과목 및 공강 정보 처리
         if required_courses:
@@ -331,6 +541,28 @@ class ActionHandleTimetableRequest(Action):
                         constraints["free_days"].append(day)
                         events.append(SlotSet("free_days_slot", constraints["free_days"]))
                         logger.info(f"엔티티에서 공강 키워드 추가: {day}, 현재 공강일 목록: {constraints['free_days']}")
+                
+                elif entity_type == "time_entity":
+                    # 특정 시간 처리 (9시, 10시, 1교시 등)
+                    hour = parse_specific_time(value)
+                    if hour:
+                        time_info = {"hour": hour, "text": value}
+                        if time_info not in constraints["specific_avoid_times"]:
+                            constraints["specific_avoid_times"].append(time_info)
+                            logger.info(f"엔티티에서 특정 시간 추가: {hour}시 ({value})")
+                
+                elif entity_type == "time_range_entity":
+                    # 시간 범위 처리 (오전, 오후)
+                    time_range = parse_time_range(value)
+                    if time_range:
+                        range_info = {
+                            "start_hour": time_range["start_hour"],
+                            "end_hour": time_range["end_hour"],
+                            "text": value
+                        }
+                        if range_info not in constraints["specific_avoid_time_ranges"]:
+                            constraints["specific_avoid_time_ranges"].append(range_info)
+                            logger.info(f"엔티티에서 시간 범위 추가: {time_range['start_hour']}-{time_range['end_hour']}시 ({value})")
             
             # 인텐트별 추가 처리 (간단한 fallback - 엔티티로 처리되지 않은 경우에만)
             if latest_intent == "inform_elective_credits" and constraints["elective_credits"] is None:
@@ -348,6 +580,42 @@ class ActionHandleTimetableRequest(Action):
                     logger.debug(f"전공 학점 인텐트에서 직접 추출: {major_value}")
                     constraints["major_credits"] = major_value
                     events.append(SlotSet("major_credits_slot", str(major_value)))
+            
+            # request_timetable 인텐트에서 학점 정보 추출 (복합 요청 처리)
+            if latest_intent == "request_timetable":
+                # 전공 학점 추출
+                if constraints["major_credits"] is None:
+                    major_patterns = [
+                        r'전공\s*(\d+)\s*학점',
+                        r'전공\s*(\d+)',
+                        r'(\d+)\s*학점\s*전공',
+                        r'(\d+)\s*전공'
+                    ]
+                    for pattern in major_patterns:
+                        match = re.search(pattern, latest_message)
+                        if match:
+                            major_value = int(match.group(1))
+                            constraints["major_credits"] = major_value
+                            events.append(SlotSet("major_credits_slot", str(major_value)))
+                            logger.info(f"request_timetable에서 전공 학점 추출: {major_value}")
+                            break
+                
+                # 교양 학점 추출
+                if constraints["elective_credits"] is None:
+                    elective_patterns = [
+                        r'교양\s*(\d+)\s*학점',
+                        r'교양\s*(\d+)',
+                        r'(\d+)\s*학점\s*교양',
+                        r'(\d+)\s*교양'
+                    ]
+                    for pattern in elective_patterns:
+                        match = re.search(pattern, latest_message)
+                        if match:
+                            elective_value = int(match.group(1))
+                            constraints["elective_credits"] = elective_value
+                            events.append(SlotSet("elective_credits_slot", str(elective_value)))
+                            logger.info(f"request_timetable에서 교양 학점 추출: {elective_value}")
+                            break
             
             # 공강 관련 인텐트 처리 (fallback)
             if latest_intent == "inform_free_day" and not constraints["free_days"]:
@@ -367,39 +635,75 @@ class ActionHandleTimetableRequest(Action):
                             events.append(SlotSet("free_days_slot", constraints["free_days"]))
                             logger.info(f"인텐트 fallback으로 공강일 추가: {day_abbr}")
             
-            # request_timetable 인텐트에서 공강 관련 키워드 검색 (추가 fallback)
-            if latest_intent == "request_timetable" and "공강" in latest_message and not constraints["free_days"]:
-                logger.info(f"[DEBUG] request_timetable 인텐트에서 공강 키워드 감지, 메시지: '{latest_message}'")
-                day_patterns = {
-                    r'월요일|월': '월',
-                    r'화요일|화': '화', 
-                    r'수요일|수': '수',
-                    r'목요일|목': '목',
-                    r'금요일|금': '금'
-                }
-                for pattern, day_abbr in day_patterns.items():
-                    if re.search(pattern, latest_message):
-                        if day_abbr not in constraints["free_days"]:
-                            constraints["free_days"].append(day_abbr)
-                            events.append(SlotSet("free_days_slot", constraints["free_days"]))
-                            logger.info(f"request_timetable fallback으로 공강일 추가: {day_abbr}")
+            # 특정 시간대 공강 처리 (요일+시간 조합) - 먼저 처리
+            specific_time_found = False
+            if ("공강" in latest_message or latest_intent in ["inform_avoid_time", "request_timetable"]):
+                logger.info(f"[DEBUG] 특정 시간대 공강 처리 시작, 메시지: '{latest_message}'")
+                day_time_combinations = parse_day_time_combinations(latest_message)
+                
+                for combo in day_time_combinations:
+                    if combo['type'] == 'specific_time':
+                        # 특정 시간 (예: 월요일 10시)
+                        time_info = {
+                            "day": combo['day'],
+                            "hour": combo['hour'],
+                            "text": f"{combo['day']}요일 {combo['hour']}시"
+                        }
+                        if time_info not in constraints["specific_avoid_times"]:
+                            constraints["specific_avoid_times"].append(time_info)
+                            logger.info(f"요일+시간 조합에서 특정 시간 추가: {combo['day']}요일 {combo['hour']}시")
+                            specific_time_found = True
+                    
+                    elif combo['type'] == 'time_range':
+                        # 시간 범위 (예: 월요일 오전)
+                        range_info = {
+                            "day": combo['day'],
+                            "start_hour": combo['start_hour'],
+                            "end_hour": combo['end_hour'],
+                            "text": f"{combo['day']}요일 {combo['start_hour']}-{combo['end_hour']}시"
+                        }
+                        if range_info not in constraints["specific_avoid_time_ranges"]:
+                            constraints["specific_avoid_time_ranges"].append(range_info)
+                            logger.info(f"요일+시간 조합에서 시간 범위 추가: {combo['day']}요일 {combo['start_hour']}-{combo['end_hour']}시")
+                            specific_time_found = True
             
-            # modify_timetable 인텐트에서도 공강 관련 키워드 검색 (추가 fallback)
-            if latest_intent == "modify_timetable" and "공강" in latest_message and not constraints["free_days"]:
-                logger.info(f"[DEBUG] modify_timetable 인텐트에서 공강 키워드 감지, 메시지: '{latest_message}'")
-                day_patterns = {
-                    r'월요일|월': '월',
-                    r'화요일|화': '화', 
-                    r'수요일|수': '수',
-                    r'목요일|목': '목',
-                    r'금요일|금': '금'
-                }
-                for pattern, day_abbr in day_patterns.items():
-                    if re.search(pattern, latest_message):
-                        if day_abbr not in constraints["free_days"]:
-                            constraints["free_days"].append(day_abbr)
-                            events.append(SlotSet("free_days_slot", constraints["free_days"]))
-                            logger.info(f"modify_timetable fallback으로 공강일 추가: {day_abbr}")
+            # 특정 시간대 공강이 없는 경우에만 전체 요일 공강 처리
+            if not specific_time_found:
+                # request_timetable 인텐트에서 공강 관련 키워드 검색 (추가 fallback)
+                if latest_intent == "request_timetable" and "공강" in latest_message and not constraints["free_days"]:
+                    logger.info(f"[DEBUG] request_timetable 인텐트에서 공강 키워드 감지, 메시지: '{latest_message}'")
+                    day_patterns = {
+                        r'월요일|월': '월',
+                        r'화요일|화': '화', 
+                        r'수요일|수': '수',
+                        r'목요일|목': '목',
+                        r'금요일|금': '금'
+                    }
+                    for pattern, day_abbr in day_patterns.items():
+                        if re.search(pattern, latest_message):
+                            if day_abbr not in constraints["free_days"]:
+                                constraints["free_days"].append(day_abbr)
+                                events.append(SlotSet("free_days_slot", constraints["free_days"]))
+                                logger.info(f"request_timetable fallback으로 공강일 추가: {day_abbr}")
+                
+                # modify_timetable 인텐트에서도 공강 관련 키워드 검색 (추가 fallback)
+                if latest_intent == "modify_timetable" and "공강" in latest_message and not constraints["free_days"]:
+                    logger.info(f"[DEBUG] modify_timetable 인텐트에서 공강 키워드 감지, 메시지: '{latest_message}'")
+                    day_patterns = {
+                        r'월요일|월': '월',
+                        r'화요일|화': '화', 
+                        r'수요일|수': '수',
+                        r'목요일|목': '목',
+                        r'금요일|금': '금'
+                    }
+                    for pattern, day_abbr in day_patterns.items():
+                        if re.search(pattern, latest_message):
+                            if day_abbr not in constraints["free_days"]:
+                                constraints["free_days"].append(day_abbr)
+                                events.append(SlotSet("free_days_slot", constraints["free_days"]))
+                                logger.info(f"modify_timetable fallback으로 공강일 추가: {day_abbr}")
+            else:
+                logger.info("특정 시간대 공강이 발견되어 전체 요일 공강 처리 건너뜀")
         else:
             logger.info("단순 숫자 입력이 처리되었으므로 엔티티/인텐트 기반 처리 건너뜀")
         

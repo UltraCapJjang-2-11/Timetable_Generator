@@ -6,10 +6,11 @@ function convertDayToIndex(day) {
   return days[day] !== undefined ? days[day] : -1;
 }
 
-// 채팅·버튼 양쪽에서 누적 관리할 제약조건
+// 채팅·버튼 양쪽에서 누적 관리할 제약조건 (DOM 로드 후 초기화)
 window.constraints = {
-  major_credits:    Number(document.getElementById('major-credits')?.value || 9),
-  elective_credits: Number(document.getElementById('elective-credits')?.value || 9),
+  total_credits:    18,  // 기본값으로 설정, DOM 로드 후 실제 값으로 업데이트
+  major_credits:    9,   // 기본값으로 설정, DOM 로드 후 실제 값으로 업데이트
+  elective_credits: 9,   // 기본값으로 설정, DOM 로드 후 실제 값으로 업데이트
   required_courses: [],
   free_days:        [],
   avoid_times:      [],
@@ -30,15 +31,33 @@ function buildParamsFromConstraints(idsToUse) {
   // 초기화: 파라미터 객체 생성
   let params = new URLSearchParams();
   
-  // 학점 정보
-  let totalCredits = 0;
+  // 학점 정보 - total_credits를 우선적으로 사용하고, 없으면 major + elective로 계산
+  let totalCredits = window.constraints.total_credits || 0;
   let majorCredits = window.constraints.major_credits || 0;
   let electiveCredits = window.constraints.elective_credits || 0;
-  totalCredits = majorCredits + electiveCredits;
+  
+  console.log("[buildParamsFromConstraints] 학점 정보 확인:");
+  console.log("  window.constraints.total_credits:", window.constraints.total_credits);
+  console.log("  window.constraints.major_credits:", window.constraints.major_credits);
+  console.log("  window.constraints.elective_credits:", window.constraints.elective_credits);
+  console.log("  계산된 totalCredits:", totalCredits);
+  console.log("  계산된 majorCredits:", majorCredits);
+  console.log("  계산된 electiveCredits:", electiveCredits);
+  
+  // total_credits가 설정되지 않았으면 major + elective로 계산
+  if (totalCredits === 0) {
+    totalCredits = majorCredits + electiveCredits;
+    console.log("  total_credits가 0이므로 major + elective로 계산:", totalCredits);
+  }
   
   params.append("total_credits", totalCredits);
   params.append("major_credits", majorCredits);
   params.append("elective_credits", electiveCredits);
+  
+  console.log("[buildParamsFromConstraints] 최종 전송 학점:");
+  console.log("  total_credits:", totalCredits);
+  console.log("  major_credits:", majorCredits);
+  console.log("  elective_credits:", electiveCredits);
   
   // 기존 등록된 과목 처리
   console.log("[buildParamsFromConstraints] Processing idsToUse for existing_courses[]:", JSON.stringify(idsToUse));
@@ -150,6 +169,26 @@ function lightenColor(hex, percent) {
 
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM 로드 완료");
+  
+  // DOM 로드 후 실제 입력 필드 값으로 window.constraints 초기화
+  const totalCreditsElem = document.getElementById("total-credits");
+  const majorCreditsElem = document.getElementById("major-credits");
+  const electiveCreditsElem = document.getElementById("elective-credits");
+  
+  if (totalCreditsElem) {
+    window.constraints.total_credits = Number(totalCreditsElem.value) || 18;
+  }
+  if (majorCreditsElem) {
+    window.constraints.major_credits = Number(majorCreditsElem.value) || 9;
+  }
+  if (electiveCreditsElem) {
+    window.constraints.elective_credits = Number(electiveCreditsElem.value) || 9;
+  }
+  
+  console.log("DOM 로드 후 window.constraints 초기화:");
+  console.log("  total_credits:", window.constraints.total_credits);
+  console.log("  major_credits:", window.constraints.major_credits);
+  console.log("  elective_credits:", window.constraints.elective_credits);
   
   // 시간표 저장 버튼 확인
   const saveBtnCheck = document.getElementById("save-timetable-btn");
@@ -447,11 +486,22 @@ document.addEventListener("DOMContentLoaded", function () {
       // window.existingCourses.forEach(id => queryParams.append("existing_courses[]", id)); // Use global
 
       // ① Update constraints from UI inputs
-      window.constraints.major_credits    = Number(totalCreditsInput.value);
+      console.log("[시간표 생성] UI 입력값 확인:");
+      console.log("  totalCreditsInput.value:", totalCreditsInput.value);
+      console.log("  majorCreditsInput.value:", majorCreditsInput.value);
+      console.log("  electiveCreditsInput.value:", electiveCreditsInput.value);
+      
+      window.constraints.total_credits    = Number(totalCreditsInput.value);
+      window.constraints.major_credits    = Number(majorCreditsInput.value);
       window.constraints.elective_credits = Number(electiveCreditsInput.value);
       window.constraints.free_days = Array.from(
         document.querySelectorAll(".day-options input:checked")
       ).map(cb=>cb.value);
+      
+      console.log("[시간표 생성] window.constraints 업데이트 후:");
+      console.log("  window.constraints.total_credits:", window.constraints.total_credits);
+      console.log("  window.constraints.major_credits:", window.constraints.major_credits);
+      console.log("  window.constraints.elective_credits:", window.constraints.elective_credits);
       // SSE 연결
       const params = buildParamsFromConstraints();
       const evtSource = new EventSource("/generate_timetable_stream/?" + params.toString());
@@ -648,6 +698,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (major < 0) major = 0;
       majorCreditsInput.value = major;
     }
+    
+    // window.constraints도 함께 업데이트
+    window.constraints.total_credits = total;
+    window.constraints.major_credits = parseInt(majorCreditsInput.value) || 0;
+    window.constraints.elective_credits = parseInt(electiveCreditsInput.value) || 0;
   }
   
   if (totalCreditsInput) {
@@ -657,18 +712,24 @@ document.addEventListener("DOMContentLoaded", function () {
       if (total > 24) total = 24;
       this.value = total;
       adjustCredits();
+      // window.constraints도 업데이트
+      window.constraints.total_credits = total;
     });
   }
   
   if (majorCreditsInput) {
     majorCreditsInput.addEventListener("input", function () {
       adjustCredits("major");
+      // window.constraints도 업데이트
+      window.constraints.major_credits = parseInt(this.value) || 0;
     });
   }
   
   if (electiveCreditsInput) {
     electiveCreditsInput.addEventListener("input", function () {
       adjustCredits("elective");
+      // window.constraints도 업데이트
+      window.constraints.elective_credits = parseInt(this.value) || 0;
     });
   }
   
@@ -705,19 +766,19 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("CSRF 토큰:", csrfToken);
       
       // 저장할 시간표 데이터 준비
-      const timetableData = {
-        courses: window.lastGeneratedTimetable.map(course => ({
-          course_id: course.course_id,
-          course_name: course.course_name,
-          credit: course.credit,
-          category: course.category,
-          schedules: course.schedules,
-          location: course.location,
-          note: '',
-          color: ''
-        })),
-        title: '' // 서버에서 자동 생성
-      };
+              const timetableData = {
+          courses: window.lastGeneratedTimetable.map(courses => ({
+            course_id: courses.course_id,
+            course_name: courses.course_name,
+            credit: courses.credits,
+            category: courses.category,
+            schedules: courses.schedules,
+            location: courses.location,
+            note: '',
+            color: ''
+          })),
+          title: '' // 서버에서 자동 생성
+        };
       
       console.log("저장할 시간표 데이터:", timetableData);
       console.log("첫 번째 과목 상세:", timetableData.courses[0]);

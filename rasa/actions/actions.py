@@ -118,17 +118,9 @@ class ActionHandleTimetableRequest(Action):
                 
                 # 시간표 생성 메시지 전송
                 dispatcher.utter_message(text=confirmation_text)
-                dispatcher.utter_message(text="웹 화면에서 시간표 생성 결과를 확인해주세요! ✨")
+                dispatcher.utter_message(text="화면에서 시간표 생성 결과를 확인해주세요! ✨")
                 dispatcher.utter_message(json_message=custom_payload_for_frontend)
                 
-                # 시간표 저장 버튼 추가
-                dispatcher.utter_message(
-                    text="시간표가 마음에 드시나요? 저장하시거나 수정할 수 있어요!",
-                    buttons=[
-                        {"title": "시간표 저장", "payload": "/save_timetable"},
-                        {"title": "다시 생성", "payload": "시간표 다시 만들어줘"}
-                    ]
-                )
                 
                 # 대화 완료 후 슬롯 초기화
                 logger.info("슬롯 초기화 시작")
@@ -619,7 +611,7 @@ class ActionExcludeCourseAndRegenerate(Action):
             
             logger.info(f"재생성 페이로드: {regenerate_payload}")
             
-            dispatcher.utter_message(text="웹 화면에서 수정된 시간표를 확인해주세요! ✨")
+            dispatcher.utter_message(text="화면에서 수정된 시간표를 확인해주세요! ✨")
             dispatcher.utter_message(json_message=regenerate_payload)
             
             logger.info("=== ActionExcludeCourseAndRegenerate 완료 ===")

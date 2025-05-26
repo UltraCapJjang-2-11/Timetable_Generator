@@ -41,8 +41,14 @@
                     <div class="timetable-list">
                         {% for timetable in timetables %}
                         <div class="timetable-card" data-timetable-id="{{ timetable.id }}" onclick="showTimetableById({{ timetable.id }})">
-                            {{ timetable.title }}
-                            <small style="display: block; font-size: 0.8em; color: #666;">{{ timetable.created_at }}</small>
+                            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" class="timetable-icon">
+                                <g clip-rule="evenodd" fill-rule="evenodd" stroke="#056dfa" stroke-linecap="round" stroke-width="2">
+                                    <path d="m3 7h17c.5523 0 1 .44772 1 1v11c0 .5523-.4477 1-1 1h-16c-.55228 0-1-.4477-1-1z"></path>
+                                    <path d="m3 4.5c0-.27614.22386-.5.5-.5h6.29289c.13261 0 .25981.05268.35351.14645l2.8536 2.85355h-10z"></path>
+                                </g>
+                            </svg>
+                            <span class="timetable-label">{{ timetable.title }}</span>
+                            <span class="timetable-date">{{ timetable.created_at|date:"m/d" }}</span>
                         </div>
                         {% empty %}
                         <p style="text-align: center; color: #666;">저장된 시간표가 없습니다.</p>

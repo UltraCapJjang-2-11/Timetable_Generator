@@ -338,8 +338,16 @@ def mypage_view(request):
         try:
             missing_subjects = json.loads(record.missing_major_subjects or '[]')
             context['missing_subjects'] = missing_subjects if isinstance(missing_subjects, list) else []
+            
+            # missing_subjects를 alerts로 변환
+            alerts = []
+            for item in context['missing_subjects']:
+                if isinstance(item, dict) and 'type' in item and 'description' in item:
+                    alerts.append(f"{item['type']}: {item['description']}")
+            context['alerts'] = alerts
         except:
             context['missing_subjects'] = []
+            context['alerts'] = []
         try:
             completed_courses = json.loads(record.completed_courses or '[]')
             context['completed_courses'] = completed_courses if isinstance(completed_courses, list) else []
@@ -359,7 +367,7 @@ def mypage_view(request):
             'missing_total': 0, 'missing_major': 0, 'missing_major_essential': 0,
             'missing_major_elective': 0, 'missing_general': 0, 'missing_free': 0,
             'missing_subjects': [], 'completed_courses': [], 'missing_general_sub': {},
-            'detailed_credits': {}, 'general_requirement': {},
+            'detailed_credits': {}, 'general_requirement': {}, 'alerts': [],
             'error_message': "졸업 정보를 찾을 수 없습니다. 성적표 PDF를 업로드해주세요."
         })
     return render(request, 'home/mypage.html', context)
@@ -507,16 +515,34 @@ def generate_timetable_stream(request):
         except ValueError:
             pre_added_ids = []
 
-        # 2) OpenAI로 파싱된 req_ids를 꼭 포함되도록 합치기 & 중복 제거
         pre_added_ids = list(set(pre_added_ids + req_ids))
         print("DEBUG: final pre_added_ids (기존+필수과목) =", pre_added_ids)
 
         try:
+            target_total    = int(request.GET.get('total_credits', 18))
             target_major    = int(request.GET.get('major_credits', 9))
             target_elective = int(request.GET.get('elective_credits', 9))
-            # 전공+교양 합계를 총 학점으로 강제
-            target_total    = target_major + target_elective
-            print("DEBUG: auto target_total =", target_total)
+            
+            # 전공 + 교양 학점이 총 학점을 초과하지 않도록 조정
+            if target_major + target_elective > target_total:
+                # 비율에 따라 조정
+                ratio = target_total / (target_major + target_elective)
+                target_major = int(target_major * ratio)
+                target_elective = target_total - target_major
+                print(f"DEBUG: 학점 조정됨 (초과) - 전공: {target_major}, 교양: {target_elective}")
+            # 전공 + 교양 학점이 총 학점보다 작은 경우는 그대로 유지 (사용자 의도 존중)
+            # elif target_major + target_elective < target_total:
+            #     # 부족한 학점은 교양에 추가 - 이 로직을 제거하여 사용자 설정 존중
+            #     target_elective = target_total - target_major
+            #     print(f"DEBUG: 교양 학점 증가 - 교양: {target_elective}")
+            
+            # 실제 목표 학점을 전공 + 교양 학점의 합으로 설정 (사용자 의도 존중)
+            actual_total = target_major + target_elective
+            if actual_total != target_total:
+                print(f"DEBUG: 실제 목표 학점 조정 - 요청: {target_total}, 실제: {actual_total}")
+                target_total = actual_total
+            
+            print("DEBUG: 최종 학점 설정 - total:", target_total, "major:", target_major, "elective:", target_elective)
         except ValueError:
             return JsonResponse({"error": "학점 파라미터가 올바르지 않습니다."}, status=500)
 

@@ -69,22 +69,94 @@ body {
     gap: 15px;
 }
 
-.timetable-card, .timetable-add {
-    width: 120px;
+/* 시간표 카드 디자인 */
+.timetable-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 8px;
+    width: 140px;
     height: 120px;
-    background-color: #ffcd4a;
+    border: none;
+    background: #ecf30d50;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.timetable-card:hover {
+    background: #fff42492;
+}
+
+.timetable-card:hover .timetable-icon {
+    animation: spin 1s linear infinite;
+}
+
+.timetable-icon {
+    transition: transform 0.3s ease;
+}
+
+.timetable-label {
+    font-size: 16px;
+    line-height: 20px;
+    color: #000000;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+}
+
+.timetable-date {
+    font-size: 12px;
+    color: #be9b00;
+    opacity: 0.8;
+    text-align: center;
+    margin: 0;
+}
+
+.timetable-add {
+    width: 140px;
+    height: 120px;
+    background-color: #fff;
+    border: 2px dashed #ffcd4a;
+    font-size: 32px;
+    font-weight: bold;
+    color: #FFD700;
+    text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 15px;
+    border-radius: 20px;
     cursor: pointer;
     transition: 0.3s;
 }
 
-.timetable-card:hover, .timetable-add:hover {
-    background-color: #FFC107;
+.timetable-add:hover {
+    background-color: #ffd557;
+    color: #fff;
+    border-color: #ffd863;
+}
+
+/* 시간표 카드 애니메이션 */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-8deg);
+    }
+    50% {
+        transform: rotate(0deg);
+    }
+    75% {
+        transform: rotate(8deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
 }
 
 /* + 버튼 스타일 */

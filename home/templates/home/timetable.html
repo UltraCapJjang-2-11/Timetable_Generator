@@ -47,6 +47,82 @@
           height: 100%;
           background: #4caf50;
       }
+      
+      /* 챗봇 저장 버튼 스타일 (From Uiverse.io by vinodjangid07) */
+      .bookmarkBtn {
+        width: 130px;
+        height: 40px;
+        border-radius: 40px;
+        border: 1px solid rgba(0, 0, 0, 0.349);
+        background-color: rgb(255, 255, 255);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 5px;
+        cursor: pointer;
+        transition-duration: 0.3s;
+        overflow: hidden;
+        margin-right: 5px;
+        position: relative;
+      }
+
+      .IconContainer {
+        width: 30px;
+        height: 30px;
+        background: linear-gradient(to bottom, rgb(255, 239, 136), rgb(255, 215, 70));
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        z-index: 3;
+        transition-duration: 0.3s;
+      }
+
+      .icon {
+        border-radius: 1px;
+        fill: white;
+      }
+
+      .text {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: 7px;
+        transform: translate(-50%, -50%);
+        color: rgb(0, 0, 0);
+        z-index: 1;
+        transition-duration: 0.3s;
+        font-size: 1.04em;
+        white-space: nowrap;
+      }
+
+      .bookmarkBtn:hover .IconContainer {
+        width: 120px;
+        height: 36px;
+        border-radius: 40px;
+        transition-duration: 0.3s;
+      }
+
+      .bookmarkBtn:hover .text {
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition-duration: 0.3s;
+      }
+
+      .bookmarkBtn:active {
+        transform: scale(0.95);
+        transition-duration: 0.3s;
+      }
+      
+
+      
+      /* 버튼 컨테이너 정렬 */
+      .chat-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
     </style>
     
 </head>
@@ -86,14 +162,14 @@
                 <!-- 전공 필수 -->
                 <div class="course-category" id="major-required">
                     {% for course in major_required %}
-                        <div class="course-item" data-type="major_required" data-course-id="{{ course.course_id }}">
-                            <div class="course-name">{{ course.course_name }}</div>
-                            <div class="course-info">
-                                <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
-                                <span class="year">{{ course.year }}</span>
-                                <span class="section">{{ course.section }}</span>
-                            </div>
+                                                    <div class="course-item" data-type="major_required" data-course-id="{{ course.course_id }}">
+                                <div class="course-name">{{ course.course_name }}</div>
+                                <div class="course-info">
+                                    <span class="instructor">{{ course.instructor_name }}</span>
+                                    <span class="credit">{{ course.credits }}학점</span>
+                                    <span class="year">{{ course.target_year }}</span>
+                                    <span class="section">{{ course.section }}</span>
+                                </div>
                             <div class="course-meta">
                                 {% with schedules=course.courseschedule_set.all %}
                                     {% if schedules %}
@@ -127,9 +203,9 @@
                         <div class="course-item" data-type="major_elective" data-course-id="{{ course.course_id }}">
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
-                                <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
-                                <span class="year">{{ course.year }}</span>
+                                <span class="instructor">{{ course.instructor_name }}</span>
+                                <span class="credit">{{ course.credits }}학점</span>
+                                <span class="year">{{ course.target_year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
                             <div class="course-meta">
@@ -164,9 +240,9 @@
                         <div class="course-item" data-type="general_elective" data-course-id="{{ course.course_id }}">
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
-                                <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
-                                <span class="year">{{ course.year }}</span>
+                                <span class="instructor">{{ course.instructor_name }}</span>
+                                <span class="credit">{{ course.credits }}학점</span>
+                                <span class="year">{{ course.target_year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
                             <div class="course-meta">
@@ -201,9 +277,9 @@
                         <div class="course-item" data-type="free_elective" data-course-id="{{ course.course_id }}">
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
-                                <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
-                                <span class="year">{{ course.year }}</span>
+                                <span class="instructor">{{ course.instructor_name }}</span>
+                                <span class="credit">{{ course.credits }}학점</span>
+                                <span class="year">{{ course.target_year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
                             <div class="course-meta">
@@ -238,9 +314,9 @@
                         <div class="course-item" data-type="teaching_required" data-course-id="{{ course.course_id }}">
                             <div class="course-name">{{ course.course_name }}</div>
                             <div class="course-info">
-                                <span class="instructor">{{ course.instructor }}</span>
-                                <span class="credit">{{ course.credit }}학점</span>
-                                <span class="year">{{ course.year }}</span>
+                                <span class="instructor">{{ course.instructor_name }}</span>
+                                <span class="credit">{{ course.credits }}학점</span>
+                                <span class="year">{{ course.target_year }}</span>
                                 <span class="section">{{ course.section }}</span>
                             </div>
                             <div class="course-meta">
@@ -724,11 +800,7 @@
           console.log("설정된 exclude_courses (ID):", window.constraints.exclude_courses);
           console.log("수정 모드 활성화:", window.constraints.is_modification);
           console.log("최종 제약조건 확인:", window.constraints);
-          
-          // 시간표 생성 시작 알림
-          const botBubble = createBotMessageBubble("시간표를 수정 중입니다. 잠시만 기다려주세요...");
-          chatBody.appendChild(botBubble);
-          chatBody.scrollTop = chatBody.scrollHeight;
+
           
           // 시간표 재생성 (수정 모드) - 제약조건이 설정된 후 호출
           // generateTimetableFromNL("시간표 수정 요청") 대신 직접 API 호출
@@ -744,37 +816,21 @@
               buttonContainer.style.marginTop = "10px";
               
               const saveButton = document.createElement("button");
-              saveButton.className = "chat-button timetable-save-btn";
-              saveButton.textContent = "시간표 저장";
-              saveButton.style.marginRight = "5px";
-              saveButton.style.padding = "8px 15px";
-              saveButton.style.borderRadius = "5px";
-              saveButton.style.border = "1px solid #007bff";
-              saveButton.style.backgroundColor = "#007bff";
-              saveButton.style.color = "white";
-              saveButton.style.cursor = "pointer";
+              saveButton.className = "bookmarkBtn";
+              saveButton.innerHTML = `
+                <span class="IconContainer">
+                  <svg viewBox="0 0 384 512" height="0.9em" class="icon">
+                    <path d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"></path>
+                  </svg>
+                </span>
+                <p class="text">저장하기</p>
+              `;
               
               saveButton.onclick = () => {
                 saveTimetableDirectly();
               };
               
-              const regenerateButton = document.createElement("button");
-              regenerateButton.className = "chat-button";
-              regenerateButton.textContent = "다시 생성";
-              regenerateButton.style.padding = "8px 15px";
-              regenerateButton.style.borderRadius = "5px";
-              regenerateButton.style.border = "1px solid #6c757d";
-              regenerateButton.style.backgroundColor = "#6c757d";
-              regenerateButton.style.color = "white";
-              regenerateButton.style.cursor = "pointer";
-              
-              regenerateButton.onclick = () => {
-                input.value = "시간표 다시 생성해줘";
-                sendMessage();
-              };
-              
               buttonContainer.appendChild(saveButton);
-              buttonContainer.appendChild(regenerateButton);
               chatBody.appendChild(buttonContainer);
               chatBody.scrollTop = chatBody.scrollHeight;
             }, 1000);
@@ -1031,37 +1087,21 @@
               buttonContainer.style.marginTop = "10px";
               
               const saveButton = document.createElement("button");
-              saveButton.className = "chat-button timetable-save-btn"; // 고유 클래스 추가
-              saveButton.textContent = "시간표 저장";
-              saveButton.style.marginRight = "5px";
-              saveButton.style.padding = "8px 15px";
-              saveButton.style.borderRadius = "5px";
-              saveButton.style.border = "1px solid #007bff";
-              saveButton.style.backgroundColor = "#007bff";
-              saveButton.style.color = "white";
-              saveButton.style.cursor = "pointer";
+              saveButton.className = "bookmarkBtn"; // 새로운 디자인 클래스
+              saveButton.innerHTML = `
+                <span class="IconContainer">
+                  <svg viewBox="0 0 384 512" height="0.9em" class="icon">
+                    <path d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"></path>
+                  </svg>
+                </span>
+                <p class="text">저장하기</p>
+              `;
               
               saveButton.onclick = () => {
                 saveTimetableDirectly();
               };
               
-              const regenerateButton = document.createElement("button");
-              regenerateButton.className = "chat-button";
-              regenerateButton.textContent = "다시 생성";
-              regenerateButton.style.padding = "8px 15px";
-              regenerateButton.style.borderRadius = "5px";
-              regenerateButton.style.border = "1px solid #6c757d";
-              regenerateButton.style.backgroundColor = "#6c757d";
-              regenerateButton.style.color = "white";
-              regenerateButton.style.cursor = "pointer";
-              
-              regenerateButton.onclick = () => {
-                input.value = "시간표 다시 생성해줘";
-                sendMessage();
-              };
-              
               buttonContainer.appendChild(saveButton);
-              buttonContainer.appendChild(regenerateButton);
               chatBody.appendChild(buttonContainer);
               chatBody.scrollTop = chatBody.scrollHeight;
             }, 1000);

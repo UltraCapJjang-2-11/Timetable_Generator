@@ -174,7 +174,7 @@
                                 {% with schedules=course.courseschedule_set.all %}
                                     {% if schedules %}
                                         <span class="course-schedule">
-                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}; {% endif %}{% endfor %})
+                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}, {% endif %}{% endfor %})
                                         </span>
                                     {% else %}
                                         <span class="course-schedule">(스케줄 정보 없음)</span>
@@ -187,7 +187,7 @@
                                     {% if forloop.first %}
                                         {{ s.day }}:{{ s.times }}@{{ s.location }}
                                     {% else %}
-                                        ;{{ s.day }}:{{ s.times }}@{{ s.location }}
+                                        ,{{ s.day }}:{{ s.times }}@{{ s.location }}
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -212,7 +212,7 @@
                                 {% with schedules=course.courseschedule_set.all %}
                                     {% if schedules %}
                                         <span class="course-schedule">
-                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}; {% endif %}{% endfor %})
+                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}, {% endif %}{% endfor %})
                                         </span>
                                     {% else %}
                                         <span class="course-schedule">(스케줄 정보 없음)</span>
@@ -224,7 +224,7 @@
                                     {% if forloop.first %}
                                         {{ s.day }}:{{ s.times }}
                                     {% else %}
-                                        ;{{ s.day }}:{{ s.times }}
+                                        ,{{ s.day }}:{{ s.times }}
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -249,7 +249,7 @@
                                 {% with schedules=course.courseschedule_set.all %}
                                     {% if schedules %}
                                         <span class="course-schedule">
-                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}; {% endif %}{% endfor %})
+                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}, {% endif %}{% endfor %})
                                         </span>
                                     {% else %}
                                         <span class="course-schedule">(스케줄 정보 없음)</span>
@@ -261,7 +261,7 @@
                                     {% if forloop.first %}
                                         {{ s.day }}:{{ s.times }}
                                     {% else %}
-                                        ;{{ s.day }}:{{ s.times }}
+                                        ,{{ s.day }}:{{ s.times }}
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -286,7 +286,7 @@
                                 {% with schedules=course.courseschedule_set.all %}
                                     {% if schedules %}
                                         <span class="course-schedule">
-                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}; {% endif %}{% endfor %})
+                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}, {% endif %}{% endfor %})
                                         </span>
                                     {% else %}
                                         <span class="course-schedule">(스케줄 정보 없음)</span>
@@ -298,7 +298,7 @@
                                     {% if forloop.first %}
                                         {{ s.day }}:{{ s.times }}
                                     {% else %}
-                                        ;{{ s.day }}:{{ s.times }}
+                                        ,{{ s.day }}:{{ s.times }}
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -323,7 +323,7 @@
                                 {% with schedules=course.courseschedule_set.all %}
                                     {% if schedules %}
                                         <span class="course-schedule">
-                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}; {% endif %}{% endfor %})
+                                            ({% for s in schedules %}{{ s.day }} / {{ s.times }}{% if not forloop.last %}, {% endif %}{% endfor %})
                                         </span>
                                     {% else %}
                                         <span class="course-schedule">(스케줄 정보 없음)</span>
@@ -335,7 +335,7 @@
                                     {% if forloop.first %}
                                         {{ s.day }}:{{ s.times }}
                                     {% else %}
-                                        ;{{ s.day }}:{{ s.times }}
+                                        ,{{ s.day }}:{{ s.times }}
                                     {% endif %}
                                 {% endfor %}
                             </div>

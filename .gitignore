@@ -9,3 +9,4 @@ db/target
 user_uploads/
 venv310/
 test_*.py
+.idea

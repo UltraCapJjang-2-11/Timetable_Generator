@@ -13,24 +13,19 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-import random
-from .models import Course 
+
 from .services.gpt_service import extract_graduation_info_from_text
 from .services.graduation_file_service import save_graduation_data_to_db
 from .services.pdf_service import pdf_to_text
 from django.views.decorators.csrf import csrf_exempt
-from openai import OpenAI
+
 import json
 
 from ortools.sat.python import cp_model
 
-import openai
 import re
 import requests
-from django.utils import timezone
 
-# 새로운 시간표 모델 import
-from .timetable_models import SavedTimetable, SavedTimetableCourse, SavedTimetableSchedule
 
 # Rasa 서버 URL 설정
 RASA_MODEL_ENDPOINT = "http://localhost:5005/model/parse"  # Rasa NLU 서버 URL

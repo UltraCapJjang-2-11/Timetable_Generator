@@ -1033,7 +1033,7 @@ async function generateTimetableFromNL(nlText) {
           // Update UI inputs to reflect parsed constraints
           document.getElementById('major-credits').value = window.constraints.major_credits;
           document.getElementById('elective-credits').value = window.constraints.elective_credits;
-          // TODO: Potentially update free day checkboxes too if needed based on parsed.free_days
+
       }
 
       // 3) Build query parameters using the updated window.constraints and the determined IDs

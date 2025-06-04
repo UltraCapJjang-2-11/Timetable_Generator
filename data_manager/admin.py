@@ -93,3 +93,33 @@ class GraduationRecordAdmin(admin.ModelAdmin):
     list_filter = ('user_major','user_year','created_at',)
     # 검색 박스 대상 필드
     search_fields = ('user_student_id','user_name',)
+
+@admin.register(CourseSumm)
+class CourseSummAdmin(admin.ModelAdmin):
+    list_display = (
+        'course',
+        'group_activity',
+    )
+    list_select_related = ('course',)
+    list_filter = ('group_activity',)
+    search_fields = ('course__course_name', 'course__course_code')
+    fieldsets = (
+        (None, {
+            'fields': ('course', 'course_summarization', 'group_activity')
+        }),
+    )
+
+
+@admin.register(CourseReviewSummary)
+class CourseReviewSummaryAdmin(admin.ModelAdmin):
+    list_display = ('course_code', 'course_name', 'instructor_name', 'review_count', 'avg_rating', 'updated_at')
+    search_fields = ('course_code', 'course_name', 'instructor_name')
+    list_filter = ('instructor_name',)
+    readonly_fields = ('updated_at',)
+
+@admin.register(UserReview)
+class UserReviewAdmin(admin.ModelAdmin):
+    list_display = ('summary', 'rating', 'semester', 'created_at')
+    search_fields = ('summary__course_code', 'summary__instructor_name', 'comment_text')
+    list_filter = ('semester',)
+    readonly_fields = ('created_at',)

@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from data_manager.models import (
-    Department, Category, Semester, Student, Courses,
-    CourseSchedule, TimeTable, TimeTableDetail,
-    Transcript, GraduationRequirement
-)
+from data_manager.models import *
+
+class CollegeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Courses
+        fields = '__all__'
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,14 +26,20 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = '__all__'
 
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Courses
-        fields = '__all__'
-
 class CourseScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseSchedule
+        fields = ['day', 'times', 'location']
+
+class CourseSerializer(serializers.ModelSerializer):
+    schedules = CourseScheduleSerializer(
+        source='courseschedule_set',  # 역참조 이름
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = Courses
         fields = '__all__'
 
 class TimeTableSerializer(serializers.ModelSerializer):
@@ -55,3 +62,20 @@ class GraduationRequirementSerializer(serializers.ModelSerializer):
         model = GraduationRequirement
         fields = '__all__'
 
+class CourseSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseSumm
+        fields = '__all__'
+
+class CourseReviewSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseReviewSummary
+        fields = ['summary_id', 'course_code', 'course_name', 'instructor_name', 'review_count', 'avg_rating', 'dist_json', 'updated_at', 'review_sum']
+
+class UserReviewSerializer(serializers.ModelSerializer):
+    summary_details = CourseReviewSummarySerializer(source='summary', read_only=True)
+    semester_str = serializers.CharField(read_only=True) # annotate된 필드이므로 read_only
+
+    class Meta:
+        model = UserReview
+        fields = ['user_review_id', 'summary', 'summary_details', 'student_id', 'rating', 'comment_text', 'semester_str', 'created_at', 'categories'] # semester_str, created_at, categories 추가

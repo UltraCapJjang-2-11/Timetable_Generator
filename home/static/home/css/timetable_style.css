@@ -56,11 +56,6 @@ body {
 .timetable td {
     display: table-cell; /* Flexbox 제거하여 원래 테이블 레이아웃 유지 */
     vertical-align: middle; /* 병합된 블록이 중앙 정렬되도록 설정 */
-<<<<<<< HEAD
-    padding: 0;
-}
-
-=======
     position: relative;
     padding: 0;
 }
@@ -69,7 +64,6 @@ body {
     pointer-events: none; /* 오버레이가 클릭 이벤트를 가로채지 않도록 함 */
 
   }
->>>>>>> Sihun
 /* 병합된 블록을 자연스럽게 표시 */
 .timetable td .lecture {
     background-color: #ffcccb;
@@ -114,8 +108,8 @@ body {
 
 /* 삭제 버튼 스타일 */
 .lecture .remove-btn {
-    background: rgb(255, 255, 255);
-    color: rgb(0, 0, 0) !important;
+    background: rgb(255, 255, 255); 
+    color: rgb(0, 0, 0) !important; 
     border: none;
     font-size: 14px;
     width: 22px;
@@ -134,8 +128,8 @@ body {
 }
 
 .lecture .remove-btn:hover {
-    background: rgb(131, 130, 130);
-    color: rgb(0, 0, 0) !important;
+    background: rgb(131, 130, 130); 
+    color: rgb(0, 0, 0) !important; 
 }
 
 .lecture {
@@ -392,5 +386,189 @@ body {
     background-color: #ffc32b;
 }
 
+/* ✅ ai 스타일 */
+#ai-chat-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999; /* 항상 최상단에 보이게 z-index 크게 */
+    width: 55px;
+    height: 55px;
+    background: #FFD700;
+    color: white;
+    font-size: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+}
+  
+#ai-chat-widget {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 400px;
+    height: 700px; /* ← 🎯 이 줄 추가 */
+    max-height: 80vh; /* 반응형 제한 (선택 사항) */
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Noto Sans KR', sans-serif;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+  
+@keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}
+  
+.ai-chat-header {
+    background: linear-gradient(90deg, #FFD700, #FFE97F);  /* 노랑 그라데이션 */
+    color: #000;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+  
+.ai-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid #fff;
+}
+  
+.ai-info {
+    font-size: 14px;
+    line-height: 1.2;
+}
+  
+#ai-close-btn {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    background: none;
+    border: none;
+    font-size: 26px;
+    padding: 5px 10px;
+    color: #000;
+    cursor: pointer;
+}
+  
+.ai-chat-body {
+    padding: 12px;
+    max-height: 550px;
+    overflow-y: auto;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* 📌 남은 공간 모두 차지 */
+}
+  
+.chat-time {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+  
+.chat-bubble {
+    display: inline-block; /* 줄에 맞게 크기 변동 */
+    background: #FFF9CC;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    max-width: 80%; /* 화면 대비 최대 폭 제한 */
+    min-width: 40px; /* 너무 짧은 메시지는 최소 폭 설정 */
+    word-wrap: break-word; /* 긴 단어 자동 줄바꿈 */
+    white-space: pre-wrap; /* 띄어쓰기와 줄바꿈 유지 */
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+  
+.chat-bubble.bot {
+    align-self: flex-start;
+}
+
+.chat-bubble.user {
+    background: #FFD700;
+    color: #000;
+    align-self: flex-end;
+    text-align: right;
+    margin-left: auto;
+    display: inline-block;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+  
+  
+.ai-chat-input {
+    display: flex;
+    border-top: 1px solid #eee;
+    padding: 25px 8px;      /* ← 세로 padding 줄이기 */
+    background-color: #fff;
+    margin: 0; 
+}
+  
+.ai-chat-input input {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 14px;
+    outline: none;
+}
+  
+.ai-chat-input button {
+    margin-left: 6px;
+    background: #FFD700;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.schedule-cell{
+  white-space: nowrap;
+  overflow-x: auto;      /* 긴 일정은 좌우 스크롤 */
+  font-size:.875rem;
+}
 
 
+@keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}
+  
+.chat-bubble {
+    animation: fadeInUp 0.2s ease both;
+}
+  
+  
+  
+  

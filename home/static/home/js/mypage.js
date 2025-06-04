@@ -33,4 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   });
+
+  // 알림 데이터 처리 (필요시 추가 기능 구현)
+  console.log('MyPage 로드 완료 - 알림 시스템 활성화');
 });

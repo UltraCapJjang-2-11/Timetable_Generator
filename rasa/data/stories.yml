@@ -1,0 +1,84 @@
+# stories.yml
+version: "3.1"
+
+stories:
+- story: 전체 정보가 있는 시간표 생성 요청
+  steps:
+  - intent: request_timetable
+    entities:
+    - major_credits_entity: "9학점"
+    - elective_credits_entity: "6학점"
+    - course_name_entity: "자료구조"
+    - free_day_entity: "수요일"
+  - slot_was_set:
+    - major_credits_slot: "9학점"
+    - elective_credits_slot: "6학점"
+    - required_courses_slot: ["자료구조"]
+    - free_days_slot: ["수요일"]
+  - action: action_handle_timetable_request
+
+- story: 기본 시간표 생성 요청
+  steps:
+  - intent: request_timetable
+  - action: utter_ask_major_credits
+  - intent: inform_major_credits
+    entities:
+    - major_credits_entity: "12학점"
+  - slot_was_set:
+    - major_credits_slot: "12학점"
+  - action: utter_ask_elective_credits
+  - intent: inform_elective_credits
+    entities:
+    - elective_credits_entity: "6학점"
+  - slot_was_set:
+    - elective_credits_slot: "6학점"
+  - action: action_handle_timetable_request
+
+- story: 시간표 수정 요청
+  steps:
+  - intent: modify_timetable
+    entities:
+    - course_name_entity: "자료구조"
+  - action: action_handle_timetable_request
+
+- story: 인사 후 시간표 요청
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: request_timetable
+  - action: utter_ask_major_credits
+
+- story: 시간표 생성 후 저장
+  steps:
+  - intent: request_timetable
+    entities:
+    - major_credits_entity: "9학점"
+    - elective_credits_entity: "6학점"
+  - slot_was_set:
+    - major_credits_slot: "9학점"
+    - elective_credits_slot: "6학점"
+  - action: action_handle_timetable_request
+  - intent: save_timetable
+  - action: action_save_timetable
+
+- story: 시간표 생성 후 과목 제외하고 재생성
+  steps:
+  - intent: request_timetable
+    entities:
+    - major_credits_entity: "12학점"
+    - elective_credits_entity: "3학점"
+  - slot_was_set:
+    - major_credits_slot: "12학점"
+    - elective_credits_slot: "3학점"
+  - action: action_handle_timetable_request
+  - intent: exclude_course
+    entities:
+    - course_name_entity: "자료구조"
+  - action: action_exclude_course_and_regenerate
+
+- story: 단순 저장 요청
+  steps:
+  - intent: save_timetable
+  - action: action_save_timetable
+
+# ... 더 많은 시나리오 추가 ...

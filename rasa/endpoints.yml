@@ -1,0 +1,3 @@
+# endpoints.yml
+action_endpoint:
+  url: "http://localhost:5056/webhook" # Rasa 액션 서버 주소

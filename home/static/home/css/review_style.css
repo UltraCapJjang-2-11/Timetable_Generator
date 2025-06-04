@@ -1,0 +1,35 @@
+/* Add any custom styles here if needed */
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+#review-search-bar .form-label {
+    margin-bottom: 0.25rem;
+}
+
+#review-search-bar .form-control {
+    margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+    #review-search-bar .form-control {
+        margin-bottom: 0;
+    }
+    #review-search-bar > div:last-child {
+        align-self: flex-end; /* Aligns button to bottom in flex row */
+    }
+}
+
+.list-group-item strong {
+    color: #000000; /* Bootstrap primary color */
+}
+
+/* Style for review detail page (can be expanded) */
+.review-comment-card {
+    margin-bottom: 1rem;
+    border-left: 5px solid #0dcaf0; /* Bootstrap info color */
+}
+
+.review-comment-card .card-body {
+    padding-left: 1.5rem;
+}

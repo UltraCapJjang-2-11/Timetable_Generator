@@ -1,0 +1,121 @@
+{% load org_tags %}
+{% load static %}
+{# ─── ① 드롭다운 UI ─── #}
+<style>
+  #course-results-container .table {
+    border-collapse: separate;
+    border-spacing: 0 8px; /* 행 간의 수직 간격 */
+  }
+
+  .course-block td {
+    background-color: #fff9e6; /* 테마 색상의 밝은 버전 */
+    padding: 12px 15px; /* 셀 내부 여백 */
+  }
+
+  .course-block td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  .course-block td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+
+  /* table-hover 효과 유지 및 조정 */
+  #course-results-container .table-hover .course-block:hover td {
+    background-color: #fdf5d9; /* 호버 시 약간 더 어두운 색 */
+  }
+</style>
+
+<div id="category-dropdowns" class="d-flex flex-row align-items-baseline gap-3 mb-3">
+
+    <div class="d-flex flex-column">
+        <label for="category_root" class="form-label fw-bold">교과목 분류</label>
+        <select id="category_root" class="form-select">
+            <option value="">-- 대분류 --</option>
+        </select>
+    </div>
+
+    <div id="child-container" class="d-flex flex-column" style="display:none;">
+        <label id="label_child" for="category_child" class="form-label"></label>
+        <select id="category_child" class="form-select" disabled>
+            <option value="">-- 선택 --</option>
+        </select>
+    </div>
+
+    <div id="grandchild-container" class="d-flex flex-column" style="display:none;">
+        <label id="label_grandchild" for="category_grandchild" class="form-label"></label>
+        <select id="category_grandchild" class="form-select" disabled>
+            <option value="">-- 선택 --</option>
+        </select>
+    </div>
+</div>
+
+<!-- 전공 선택 시 표시될 단과대/학과 드롭다운 -->
+<div id="org-container" style="display:none;">
+  {% org_dropdowns %}
+</div>
+
+<div id="course-name-search-container" class="d-flex flex-row align-items-baseline gap-3 mb-3">
+    <div class="d-flex flex-column flex-grow-1">
+        <label for="course_name_search" class="form-label fw-bold">강의명 검색</label>
+        <input type="text" id="course_name_search" class="form-control" placeholder="강의명 입력">
+    </div>
+</div>
+
+
+{# ─── ② 검색 버튼 ─── #}
+<button id="search-button" class="btn btn-warning w-100 mb-3">검색</button>
+
+{# 결과 테이블: Bootstrap 테이블 클래스 + 네 개의 열만 표시 #}
+<div id="course-results-container" class="course-list-container">
+  <table class="table table-sm table-hover align-middle mb-0">
+    <thead class="sticky-top" style="background-color: #ffcd4a; color: #333;">
+      <tr>
+        <th style="width:40%; ">강의명</th>
+        <th style="width:20%;">교수명</th>
+        <th style="width:25%;">시간표</th>
+        <th style="width:15%;" class="text-center">학점</th>
+      </tr>
+    </thead>
+    <tbody id="course-list-body"></tbody>
+  </table>
+</div>
+
+{# ─── ④ 카테고리 JSON 임베딩 ─── #}
+{{ categories|json_script:"categories-data" }}
+
+<!-- 강의 상세 팝업 -->
+<div id="course-popup" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="popup-title" class="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+          <p><strong>교과목번호:</strong> <span id="popup-code"></span></p>         <!-- NEW -->
+          <p><strong>분반:</strong>       <span id="popup-section"></span></p>      <!-- NEW -->
+          <p><strong>대상 학년:</strong>   <span id="popup-year"></span></p>         <!-- NEW -->
+
+          <p><strong>학점:</strong> <span id="popup-credits"></span></p>
+          <p><strong>교수:</strong> <span id="popup-instructor"></span></p>
+          <p><strong>그룹 활동:</strong> <span id="popup-group"></span></p>
+          <p><strong>시간표 / 강의실:</strong><br><span id="popup-schedules"></span></p>
+          <hr>
+          <h6>강의 요약</h6>
+          <p id="popup-summary" style="white-space:pre-wrap;"></p>
+      </div>
+      <div class="modal-footer">
+          <button id="view-reviews-button" type="button" class="btn btn-info me-auto">강의 평가 보기</button> {# NEW BUTTON #}
+          <button id="add-to-timetable-btn-popup" type="button" class="btn btn-primary">시간표에 추가</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- 부트스트랩 JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'home/js/category_dropdown.js' %}"></script>

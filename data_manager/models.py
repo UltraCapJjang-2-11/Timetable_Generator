@@ -334,6 +334,42 @@ class Transcript(models.Model):
         return f"Transcript {self.transcript_id} - Student {self.student.student_id}, Course {self.course.course_id}"
 
 
+class CourseSumm(models.Model):
+    """
+    Courses 테이블의 course_id를 PK 및 FK로 참조하는
+    약한 엔티티(OneToOne) 모델입니다.
+    """
+    course = models.OneToOneField(
+        Courses,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        verbose_name="강의"
+    )
+    course_summarization = models.TextField(
+        verbose_name="강의 요약",
+        help_text="강의에 대한 간략한 설명을 입력하세요."
+    )
+    group_activity = models.CharField(
+        max_length=1,
+        choices=[
+            ('Y', '있음'),
+            ('N', '없음'),
+        ],
+        default='N',
+        verbose_name="조별 과제 여부",
+        help_text="조별 과제가 있는 경우 'Y', 없는 경우 'N'을 선택하세요."
+    )
+
+    class Meta:
+        db_table = 'course_summ'
+        verbose_name = '강의 요약 정보'
+        verbose_name_plural = '강의 요약 정보'
+        managed = False
+
+    def __str__(self):
+        return f"{self.course.course_name} 요약"
+
+
 ## 14. Graduation_record 테이블 (임시)
 class GraduationRecord(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -378,3 +414,123 @@ class GraduationRecord(models.Model):
         return f"{self.user_name or self.user_id} ({self.user_student_id})"
 
 
+class CourseReviewSummary(models.Model):
+    summary_id = models.AutoField(primary_key=True)
+    course_code = models.CharField("강의코드", max_length=20)
+    course_name = models.CharField("강의명", max_length=200)
+    instructor_name = models.CharField("교수명", max_length=100)
+
+    review_count = models.IntegerField("리뷰 개수")
+    avg_rating = models.DecimalField("평균 평점", max_digits=3, decimal_places=2)
+    dist_json = models.JSONField("분포 JSON")  # 전체 통계 분포 저장
+    updated_at = models.DateTimeField("최종 갱신일", auto_now=True)
+
+    review_sum = models.TextField("리뷰 요약", null=True, blank=True)
+
+    class Meta:
+        db_table = 'course_review_summaries'
+        verbose_name = "강의별 요약 통계"
+        verbose_name_plural = "강의별 요약 통계"
+        managed = False
+
+    def __str__(self):
+        return f"{self.course_code} - {self.instructor_name}"
+
+    def get_formatted_distribution(self):
+        if not self.dist_json or not isinstance(self.dist_json, dict):
+            return []
+
+        # 카테고리 및 항목에 대한 한글 레이블 정의
+        category_labels = {
+            "grade": "학점 만족도",
+            "assign": "과제량",
+            "group_activity": "팀플 유무/빈도"
+        }
+
+        item_labels = {
+            "grade": {
+                "many": "너그러움",  # 사용자의 설명: many(너그러움)
+                "normal": "보통",    # 사용자의 설명: normal(보통)
+                "none": "깐깐함"     # 사용자의 설명: none(깐깐함)
+            },
+            "assign": {
+                "many": "많음",
+                "normal": "보통",
+                "none": "없음"
+            },
+            "group_activity": {
+                "many": "많음/자주 있음",
+                "normal": "보통/가끔 있음",
+                "none": "없음"
+            }
+        }
+        
+        # 항목 표시 순서 정의 (예: 긍정적 -> 중립 -> 부정적 순서로)
+        item_order = ['many', 'normal', 'none']
+
+        formatted_data = []
+
+        for category_key, items_data in self.dist_json.items():
+            if not isinstance(items_data, dict):
+                continue # items_data가 dict가 아니면 건너뛰기
+
+            category_display_label = category_labels.get(category_key, category_key.replace("_", " ").title())
+            
+            # 해당 카테고리의 전체 응답 수 계산
+            total_count_for_category = sum(items_data.values())
+            
+            processed_items = []
+            if total_count_for_category > 0:
+                for item_key in item_order: # 정의된 순서대로 처리
+                    if item_key in items_data:
+                        count = items_data[item_key]
+                        item_display_label = item_labels.get(category_key, {}).get(item_key, item_key.title())
+                        percentage = (count / total_count_for_category) * 100
+                        processed_items.append({
+                            'label': item_display_label,
+                            'key': item_key,
+                            'count': count,
+                            'percentage': round(percentage, 1) # 소수점 첫째 자리까지
+                        })
+            
+            if processed_items: # 처리된 항목이 있을 경우에만 추가
+                formatted_data.append({
+                    'category_label': category_display_label,
+                    'items': processed_items,
+                    'total_responses': total_count_for_category
+                })
+                
+        return formatted_data
+
+
+class UserReview(models.Model):
+    user_review_id = models.AutoField(primary_key=True)
+    summary = models.ForeignKey(
+        CourseReviewSummary,
+        verbose_name="요약 통계",
+        on_delete=models.CASCADE,
+        related_name="reviews"
+    )
+    # student 모델을 사용 중이라면 아래 라인을 활성화하고 import 도 맞춰주세요.
+    # student = models.ForeignKey(Student, verbose_name="학생", null=True, blank=True, on_delete=models.SET_NULL)
+    student_id = models.IntegerField("학생 ID", null=True, blank=True)
+
+    rating = models.DecimalField("별점", max_digits=2, decimal_places=1)
+    comment_text = models.TextField("리뷰 본문", null=True, blank=True)
+    categories = models.JSONField("카테고리 선택", default=dict)  # {"assign":"none", ...}
+    semester = models.ForeignKey(
+        Semester,
+        verbose_name="학기",
+        null=True, blank=True,
+        on_delete=models.SET_NULL
+    )
+    created_at = models.DateTimeField("작성일", auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_review'
+        verbose_name = "개별 강의평"
+        verbose_name_plural = "개별 강의평"
+        managed = False
+
+    def __str__(self):
+        return f"{self.summary} / {self.rating}점"

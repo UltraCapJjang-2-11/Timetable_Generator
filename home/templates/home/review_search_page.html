@@ -1,0 +1,212 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>강의 리뷰 검색</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  {#  프로젝트의 다른 CSS 파일이 있다면 여기에 추가 #}
+    <link rel="stylesheet" href="{% static 'home/css/base_style.css' %}"> {# 예시: 프로젝트 공통 CSS #}
+    <link rel="stylesheet" href="{% static 'home/css/review_style.css' %}"> {# 예시: 프로젝트 공통 CSS #}
+  <style>
+    /* 페이지 전체 높이 및 flex 레이아웃을 위한 body 스타일 */
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-top: 100px; /* base_style.css에 정의된 헤더 높이(80px)에 맞춰 body에 padding-top을 추가 */
+    }
+    /* header 스타일 (제공된 CSS가 있다면 해당 파일에서 관리) */
+    header .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #f8f9fa; /* 예시 배경색 */
+        border-bottom: 1px solid #dee2e6;
+    }
+    header .logo img {
+        height: 40px; /* 로고 크기 조정 */
+    }
+    header .nav-links a {
+        margin-left: 15px;
+        text-decoration: none;
+        color: #333;
+    }
+    header .nav-links a span {
+        /* span은 비워두거나, 밑줄 효과 등에 사용 가능 */
+    }
+
+    /* 메인 컨텐츠 영역이 남은 공간을 모두 차지하도록 */
+    .main-content {
+        flex-grow: 1;
+    }
+
+    /* 스크롤 가능한 영역의 높이 제한 (예시) */
+    .scrollable-area {
+        max-height: calc(100vh - 250px); /* 헤더, 폼 등의 높이를 고려하여 조정 */
+        overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 (제공된 코드로 대체) -->
+  <header>
+    <nav class="navigation">
+        <a href="{% url 'dashboard' %}" class="logo">
+            <img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고">
+        </a>
+        <div class="nav-links">
+            <a href="{% url 'dashboard' %}">Home<span></span></a>
+            <a href="{% url 'mypage' %}">MyPage<span></span></a>
+            <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+            <a href="{% url 'logout' %}">Logout<span></span></a>
+        </div>
+    </nav>
+  </header>
+
+  <!-- 본문: 검색 + 리뷰 요약 -->
+  <div class="container main-content py-4">
+
+    <div class="row h-100">
+
+      <!-- 왼쪽: 검색 폼 + 검색 결과 -->
+      <div class="col-lg-6 d-flex flex-column">
+        <!-- 검색 폼 -->
+        <div class="mb-3">
+          <form method="GET" action="{% url 'review_search_page' %}">
+            <div class="mb-2">
+              <label for="course_name_query" class="form-label">강의명</label>
+              <input type="text" class="form-control" id="course_name_query" name="course_name" value="{{ search_query_course_name|default:'' }}" placeholder="강의명으로 검색">
+            </div>
+            <div class="mb-2">
+              <label for="instructor_name_query" class="form-label">교수명</label>
+              <input type="text" class="form-control" id="instructor_name_query" name="instructor_name" value="{{ search_query_instructor_name|default:'' }}" placeholder="교수명으로 검색">
+            </div>
+            <div class="mb-2">
+              <label for="course_code_query" class="form-label">과목 코드</label>
+              <input type="text" class="form-control" id="course_code_query" name="course_code" value="{{ search_query_course_code|default:'' }}" placeholder="과목 코드로 검색">
+            </div>
+            <button id ="review-search-button" class="btn btn-primary w-100" type="submit">검색</button>
+          </form>
+        </div>
+
+        <!-- 검색 결과 -->
+        <div class="flex-fill border rounded p-3 scrollable-area">
+          <h2 class="h6 mb-3 ">검색 결과 ({{ search_results|length }}개)</h2>
+          {% if search_results %}
+            <div class="list-group">
+              {% for summary in search_results %}
+                <a href="?summary_id={{ summary.summary_id }}{% if search_query_course_name %}&amp;course_name={{ search_query_course_name|urlencode }}{% endif %}{% if search_query_instructor_name %}&amp;instructor_name={{ search_query_instructor_name|urlencode }}{% endif %}{% if search_query_course_code %}&amp;course_code={{ search_query_course_code|urlencode }}{% endif %}"
+                   class="list-group-item list-group-item-action {% if selected_summary and selected_summary.summary_id == summary.summary_id %}active{% endif %}">
+                  <div class="d-flex w-100 justify-content-between">
+                      {{ summary.course_name }}
+                      <small>({{ summary.course_code }}) - {{ summary.instructor_name }}</small>
+                      <small>평균 평점: {{ summary.avg_rating|floatformat:1 }} (수강생 평가 {{ summary.review_count }}개)</small>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% elif search_query_course_name or search_query_instructor_name or search_query_course_code %}
+            <p>검색 결과가 없습니다.</p>
+          {% else %}
+            <p>강의명, 교수명 또는 과목 코드를 입력하여 검색하세요.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- 오른쪽: 리뷰 요약 결과 컨테이너 -->
+      <div class="col-lg-6">
+        <div class="h-100 border rounded p-3 scrollable-area">
+          <h2 class="h6 mb-3">강의 리뷰 요약</h2>
+          {% if selected_summary %}
+            <h4>{{ selected_summary.course_name }} ({{ selected_summary.course_code }})</h4>
+            <p><strong>교수명:</strong> {{ selected_summary.instructor_name }}</p>
+            <hr>
+            <p><strong>평균 평점:</strong> <span class="badge text-dark fs-6">{{ selected_summary.avg_rating|floatformat:1 }} / 5.0</span></p>
+
+            <h5>강의 특징 분포</h5>
+            {% if selected_summary.dist_json %}
+                {% for category_data in selected_summary.get_formatted_distribution %}
+                    <div class="mb-3">
+                        <h6>{{ category_data.category_label }} <small class="text-muted"> (총 {{ category_data.total_responses }}명 응답)</small></h6>
+                        <ul class="list-group list-group-flush">
+                            {% for item in category_data.items %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ item.label }}
+                                    <div>
+                                        <span class="badge bg-primary rounded-pill">{{ item.percentage }}%</span>
+                                        <small class="text-muted ms-1">({{ item.count }}명)</small>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% empty %}
+                    <p>강의 특징 분포 정보가 없습니다.</p>
+                {% endfor %}
+            {% else %}
+                <p>강의 특징 분포 정보가 없습니다.</p>
+            {% endif %}
+
+            <div class="mt-4 border p-3 rounded">
+                <h5>수강생 코멘트 요약</h5>
+                <small class="text-danger d-block mb-2"> 학생들의 강의 평가를 기반으로 Chat GPT 를 통해 생성된 요약입니다. 만약, 강의 평가가 충분하지 않으면, 특정 학생의 편향된 의견의 요약이 나타날 수 있습니다.</small>
+                {% if selected_summary and selected_summary.review_sum %}
+                    <p style="white-space: pre-wrap;">{{ selected_summary.review_sum }}</p>
+                {% else %}
+                    <p class="text-muted fst-italic">(코멘트 요약 정보가 없거나 아직 준비 중입니다.)</p>
+                {% endif %}
+            </div>
+
+            {% if selected_summary %}
+            <button type="button" class="btn btn-outline-secondary btn-sm mt-3" id="viewAllCommentsBtn" data-summary-id="{{ selected_summary.summary_id }}">
+                수강생 전체 코멘트 보기
+            </button>
+            {% endif %}
+        {%  endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (필요 시) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  {# Chart.js 등의 라이브러리 로드 및 스크립트 작성은 여기에 #}
+  {% if selected_summary and selected_summary.rating_distribution %}
+  <script>
+    // 예시: 평점 분포 데이터를 JS로 전달 (Chart.js 등에서 사용 가능)
+    // const ratingData = JSON.parse('{{ selected_summary.rating_distribution_json_for_chart|escapejs }}');
+    // console.log(ratingData);
+    // Chart.js 등으로 차트 그리는 로직...
+  </script>
+  {% endif %}
+
+  <!-- 모든 사용자 리뷰를 표시할 Bootstrap Modal -->
+  <div class="modal fade" id="allUserReviewsModal" tabindex="-1" aria-labelledby="allUserReviewsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="allUserReviewsModalLabel">수강생 전체 코멘트</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body" id="allUserReviewsModalBody">
+                  <!-- API로부터 받은 사용자 리뷰들이 여기에 동적으로 추가됩니다. -->
+                  <p class="text-center">로딩 중...</p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <script src="{% static 'home/js/review_search_page.js' %}"></script> {# 새로운 JS 파일 연결 #}
+</body>
+</html>

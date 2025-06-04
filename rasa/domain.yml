@@ -1,0 +1,145 @@
+# domain.yml
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - request_timetable
+  - inform_major_credits
+  - inform_elective_credits
+  - inform_required_course
+  - inform_free_day
+  - inform_avoid_time
+  - modify_timetable
+  - save_timetable
+  - exclude_course
+
+entities:
+  - department
+  - major_credits_entity
+  - elective_credits_entity
+  - course_name_entity
+  - free_day_entity
+  - free_day_keyword_entity
+  - time_entity
+  - time_range_entity
+  - specific_time_entity
+  - specific_time_range_entity
+
+slots:
+  major_credits_slot:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: major_credits_entity
+  elective_credits_slot:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: elective_credits_entity
+  required_courses_slot:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: course_name_entity
+  free_days_slot:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: free_day_entity
+    - type: from_entity
+      entity: free_day_keyword_entity
+  time_slot:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: time_entity
+  time_range_slot:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: time_range_entity
+  requested_department_slot:
+    type: text
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: department
+  specific_avoid_times_slot:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: specific_time_entity
+  specific_avoid_time_ranges_slot:
+    type: list
+    influence_conversation: true
+    mappings:
+    - type: from_entity
+      entity: specific_time_range_entity
+
+responses:
+  utter_greet:
+  - text: "안녕하세요! 저는 시간표 도우미 Timey입니다. 무엇을 도와드릴까요?"
+
+  utter_goodbye:
+  - text: "안녕히 가세요! 필요하시면 언제든 불러주세요."
+
+  utter_iamabot:
+  - text: "저는 충북대학교 학생들을 위한 시간표 생성 AI 도우미입니다."
+
+  utter_ask_major_credits:
+  - text: "전공은 몇 학점 정도 생각하고 계세요?"
+
+  utter_ask_elective_credits:
+  - text: "교양은 몇 학점 정도 들으실 계획인가요?"
+
+  utter_ask_required_courses:
+  - text: "꼭 수강하고 싶은 과목이 있으신가요?"
+
+  utter_ask_free_days:
+  - text: "공강으로 비워두고 싶은 요일이 있나요?"
+
+  utter_ask_more_preferences:
+  - text: "다른 선호사항이 있으신가요? 특정 시간대나 피하고 싶은 시간이 있으신가요?"
+
+  utter_constraints_received:
+  - text: "요청하신 조건을 모두 받았습니다. 시간표를 생성할게요."
+
+  utter_timetable_generating:
+  - text: "시간표를 생성 중입니다. 잠시만 기다려주세요..."
+
+  utter_default_fallback:
+  - text: "죄송합니다. 제대로 이해하지 못했어요. 다시 말씀해주시겠어요?"
+
+  utter_affirm:
+  - text: "네, 알겠습니다."
+
+  utter_deny:
+  - text: "아니요, 다른 방법으로 도와드릴게요."
+
+  utter_mood_great:
+  - text: "기분이 좋으시다니 저도 기쁩니다!"
+
+  utter_mood_unhappy:
+  - text: "정말 안타깝네요. 시간표 생성으로 도움을 드릴게요."
+
+actions:
+  - action_handle_timetable_request
+  - action_save_timetable
+  - action_exclude_course_and_regenerate
+
+session_config:
+  session_expiration_time: 60  # 세션 만료 시간(분)
+  carry_over_slots_to_new_session: true  # 새 세션에 슬롯 유지

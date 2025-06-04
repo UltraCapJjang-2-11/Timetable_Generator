@@ -3,5 +3,9 @@ home/__pycache__/
 config/settings.py
 **/__pycache__/
 .venv/
+.venv310/
 db/target
-userupload
+.rasa/
+user_uploads/
+venv310/
+test_*.py

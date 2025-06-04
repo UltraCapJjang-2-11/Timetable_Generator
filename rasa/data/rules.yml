@@ -1,0 +1,77 @@
+# rules.yml
+version: "3.1"
+
+rules:
+- rule: 작별 인사에 대한 응답
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: 봇 확인 질문에 대한 응답
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+
+# 충돌을 해결하기 위해 조건부 규칙으로 변경
+- rule: 모든 정보가 있는 경우 시간표 생성 요청
+  condition:
+  - slot_was_set:
+    - major_credits_slot: '*'
+    - elective_credits_slot: '*'
+  steps:
+  - intent: request_timetable
+  - action: action_handle_timetable_request
+
+- rule: 기본 정보 없는 경우 시간표 생성 요청
+  steps:
+  - intent: request_timetable
+  - action: utter_ask_major_credits
+
+- rule: 시간표 수정 요청에 대한 응답
+  steps:
+  - intent: modify_timetable
+  - action: action_handle_timetable_request
+
+- rule: 전공 학점 입력 후 교양 학점 물어보기
+  steps:
+  - intent: inform_major_credits
+  - action: utter_ask_elective_credits
+
+- rule: 교양 학점 입력 후 시간표 생성 처리
+  condition:
+  - slot_was_set:
+    - major_credits_slot: '*'
+  steps:
+  - intent: inform_elective_credits
+  - action: action_handle_timetable_request
+
+# 이미 전공 학점 정보가 있고, 교양 학점도 제공된 경우 바로 처리
+- rule: 전공 학점 정보가 있을 때 교양 학점 입력 즉시 처리
+  condition:
+  - slot_was_set:
+    - major_credits_slot: '*'
+  steps:
+  - intent: inform_elective_credits
+  - action: action_handle_timetable_request
+
+- rule: 공강 요일만 알려줬을 때 전공 학점 물어보기
+  steps:
+  - intent: inform_free_day
+  - action: utter_ask_major_credits
+
+- rule: 필수 과목만 알려줬을 때 전공 학점 물어보기
+  steps:
+  - intent: inform_required_course
+  - action: utter_ask_major_credits
+
+# 과목 제외 및 재생성 규칙 추가
+- rule: 과목 제외하고 재생성 요청
+  steps:
+  - intent: exclude_course
+  - action: action_exclude_course_and_regenerate
+
+# - rule: Activate timetable_form # Form을 사용할 경우
+#   steps:
+#   - intent: request_timetable
+#   - action: timetable_form
+#   - active_loop: timetable_form

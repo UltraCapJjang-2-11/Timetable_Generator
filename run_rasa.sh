@@ -29,19 +29,19 @@ fi
 echo "사용할 모델: $LATEST_MODEL"
 
 # Rasa 액션 서버 실행 (백그라운드)
-echo "Rasa 액션 서버를 실행합니다 (포트 5056)..."
-rasa run actions -p 5056 &
+echo "Rasa 액션 서버를 실행합니다 (포트 5055)..."
+rasa run actions -p 5055 &
 ACTION_PID=$!
 sleep 5  # 액션 서버가 시작될 때까지 기다림
 
 # Rasa 서버 실행 (백그라운드)
-echo "Rasa 서버를 실행합니다 (포트 5006)..."
-rasa run --enable-api --cors "*" -m "$LATEST_MODEL" -p 5006 --endpoints endpoints.yml &
+echo "Rasa 서버를 실행합니다 (포트 5005)..."
+rasa run --enable-api --cors "*" -m "$LATEST_MODEL" -p 5005 --endpoints endpoints.yml &
 RASA_PID=$!
 
 echo "완료. Rasa 서버가 실행 중입니다."
-echo "  - 메인 서버: http://localhost:5006"
-echo "  - 액션 서버: http://localhost:5056"
+echo "  - 메인 서버: http://localhost:5005"
+echo "  - 액션 서버: http://localhost:5055"
 echo ""
 echo "현재 실행 중인 프로세스:"
 echo "  - Rasa 서버 PID: $RASA_PID"

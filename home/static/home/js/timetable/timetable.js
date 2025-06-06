@@ -209,20 +209,41 @@ function handleGenerateButtonClick() {
 
 function handleTimetableActionRequest(e) {
     const parsedData = e.detail;
-    Object.keys(constraints).forEach(key => {
-        if (parsedData[key] !== undefined) constraints[key] = parsedData[key];
-    });
-
+    
     if (parsedData.is_modification) {
+        // 시간표 수정의 경우: 기존 제약조건 + 새로운 제약조건
         constraints.is_modification = true;
+        
+        // 새로운 제약조건만 업데이트 (기존 조건 유지)
+        Object.keys(parsedData).forEach(key => {
+            if (parsedData[key] !== undefined && key !== 'is_modification') {
+                constraints[key] = parsedData[key];
+            }
+        });
+        
         const excludeCoursesLower = (constraints.exclude_courses || []).map(name => name.toLowerCase().trim());
         const fixedCourses = lastGeneratedTimetable.filter(course =>
             !excludeCoursesLower.some(exName => course.course_name.toLowerCase().trim().includes(exName))
         );
         constraints.existing_courses = fixedCourses.map(course => String(course.course_id));
     } else {
+        // 새로운 시간표 생성의 경우: 모든 제약조건을 새로 설정
         constraints.is_modification = false;
         constraints.existing_courses = [];
+        
+        // 모든 제약조건을 새로 설정 (기존 조건 초기화)
+        Object.keys(constraints).forEach(key => {
+            if (parsedData[key] !== undefined) {
+                constraints[key] = parsedData[key];
+            } else if (key !== 'total_credits' && key !== 'is_modification') {
+                // total_credits는 유지하고, 나머지는 초기화
+                if (key === 'free_days' || key === 'required_courses' || key === 'avoid_times' || 
+                    key === 'avoid_time_ranges' || key === 'only_time_ranges' || key === 'exclude_courses' ||
+                    key === 'specific_avoid_times' || key === 'specific_avoid_time_ranges') {
+                    constraints[key] = [];
+                }
+            }
+        });
     }
 
     document.getElementById('major-credits').value = constraints.major_credits;

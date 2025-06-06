@@ -830,28 +830,43 @@ class ActionExcludeCourseAndRegenerate(Action):
             if major_credits is None or elective_credits is None or not processed_free_days:
                 logger.info("슬롯에서 제약조건을 찾을 수 없어 최근 대화에서 추출 시도")
                 
-                # 최근 봇 메시지에서 학점 정보 및 공강 정보 추출
+                # 최근 시간표 생성 이벤트만 찾기 (가장 최근 것 하나만)
+                latest_timetable_event = None
+                
+                # 뒤에서부터 검색하여 가장 최근의 시간표 생성 관련 봇 메시지 찾기
                 for event in reversed(list(tracker.events)):
                     if event.get('event') == 'bot' and event.get('text'):
                         bot_text = event.get('text', '')
                         
-                        # 학점 정보 추출
-                        if "전공" in bot_text and "교양" in bot_text and "학점" in bot_text:
-                            # "전공 9학점, 교양 5학점 조건으로" 형태에서 추출
-                            major_match = re.search(r'전공\s*(\d+)\s*학점', bot_text)
-                            elective_match = re.search(r'교양\s*(\d+)\s*학점', bot_text)
-                            
-                            if major_match and major_credits is None:
-                                major_credits = int(major_match.group(1))
-                                logger.info(f"봇 메시지에서 전공 학점 추출: {major_credits}")
-                            
-                            if elective_match and elective_credits is None:
-                                elective_credits = int(elective_match.group(1))
-                                logger.info(f"봇 메시지에서 교양 학점 추출: {elective_credits}")
+                        # 시간표 생성 완료 메시지를 찾음
+                        if ("시간표를 생성합니다" in bot_text or 
+                            "시간표가 생성" in bot_text or
+                            "조건으로 시간표" in bot_text):
+                            latest_timetable_event = event
+                            logger.info(f"가장 최근 시간표 생성 이벤트 발견: '{bot_text}'")
+                            break
+                
+                # 최근 시간표 생성 이벤트에서만 정보 추출
+                if latest_timetable_event:
+                    bot_text = latest_timetable_event.get('text', '')
+                    
+                    # 학점 정보 추출
+                    if "전공" in bot_text and "교양" in bot_text and "학점" in bot_text:
+                        major_match = re.search(r'전공\s*(\d+)\s*학점', bot_text)
+                        elective_match = re.search(r'교양\s*(\d+)\s*학점', bot_text)
                         
-                        # 공강 정보 추출 (추가)
-                        if not processed_free_days and "공강" in bot_text:
-                            logger.info(f"봇 메시지에서 공강 정보 검색: '{bot_text}'")
+                        if major_match and major_credits is None:
+                            major_credits = int(major_match.group(1))
+                            logger.info(f"최근 봇 메시지에서 전공 학점 추출: {major_credits}")
+                        
+                        if elective_match and elective_credits is None:
+                            elective_credits = int(elective_match.group(1))
+                            logger.info(f"최근 봇 메시지에서 교양 학점 추출: {elective_credits}")
+                    
+                    # 공강 정보 추출 - 해당 메시지에 공강 정보가 없으면 공강 없음으로 처리
+                    if not processed_free_days:
+                        if "공강" in bot_text:
+                            logger.info(f"최근 봇 메시지에서 공강 정보 검색: '{bot_text}'")
                             day_patterns = {
                                 r'월요일|월': '월',
                                 r'화요일|화': '화', 
@@ -863,29 +878,15 @@ class ActionExcludeCourseAndRegenerate(Action):
                                 if re.search(pattern, bot_text):
                                     if day_abbr not in processed_free_days:
                                         processed_free_days.append(day_abbr)
-                                        logger.info(f"봇 메시지에서 공강일 추출: {day_abbr}")
-                
-                # 사용자 메시지에서도 공강 정보 추출 시도 (추가)
-                if not processed_free_days:
-                    logger.info("사용자 메시지 히스토리에서 공강 정보 검색")
-                    for event in reversed(list(tracker.events)):
-                        if event.get('event') == 'user' and event.get('text'):
-                            user_text = event.get('text', '')
-                            if "공강" in user_text:
-                                logger.info(f"사용자 메시지에서 공강 정보 검색: '{user_text}'")
-                                day_patterns = {
-                                    r'월요일|월': '월',
-                                    r'화요일|화': '화', 
-                                    r'수요일|수': '수',
-                                    r'목요일|목': '목',
-                                    r'금요일|금': '금'
-                                }
-                                for pattern, day_abbr in day_patterns.items():
-                                    if re.search(pattern, user_text):
-                                        if day_abbr not in processed_free_days:
-                                            processed_free_days.append(day_abbr)
-                                            logger.info(f"사용자 메시지에서 공강일 추출: {day_abbr}")
-                                break  # 첫 번째 공강 메시지만 처리
+                                        logger.info(f"최근 봇 메시지에서 공강일 추출: {day_abbr}")
+                        else:
+                            # 최근 시간표 생성 메시지에 공강 정보가 없으면 공강 없음
+                            logger.info("최근 시간표 생성 메시지에 공강 정보가 없어 공강 없음으로 처리")
+                            processed_free_days = []
+                else:
+                    # 시간표 생성 이벤트를 찾을 수 없는 경우 기본값 사용
+                    logger.info("최근 시간표 생성 이벤트를 찾을 수 없어 기본값 사용")
+                    processed_free_days = []
             
             logger.info(f"최종 추출된 공강일: {processed_free_days}")
             

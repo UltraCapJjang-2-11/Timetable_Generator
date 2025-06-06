@@ -277,7 +277,7 @@ def timetable_view(request):
     free_elective = service.course_search(year = year, term = term, category_name='일선').order_by('course_name')
     teaching_required = service.course_search(year = year, term = term, category_name='교직').order_by('course_name')
 
-    return render(request, "home/timetable.html", {
+    return render(request, "home/timetable/timetable.html", {
         'major_required': major_required,
         'major_elective': major_elective,
         'general_elective': general_elective,

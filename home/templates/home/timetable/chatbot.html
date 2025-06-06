@@ -1,0 +1,18 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'home/css/chatbot.css' %}">
+<div id="ai-chat-toggle">💬</div>
+<div id="ai-chat-widget" style="display: none;">
+    <div class="ai-chat-header">
+        <img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="AI" class="ai-avatar">
+        <div class="ai-info">
+            <strong>Timey</strong><br>
+            <small>AI 도우미</small>
+        </div>
+        <button id="ai-close-btn">×</button>
+    </div>
+    <div class="ai-chat-body"></div>
+    <div class="ai-chat-input">
+       <input type="text" placeholder="메시지를 입력하세요...">
+       <button>➤</button>
+    </div>
+</div>

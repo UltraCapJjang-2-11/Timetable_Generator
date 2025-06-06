@@ -95,6 +95,7 @@ class CourseSearchView(APIView):
 
         # 3) 직렬화 후 응답
         serializer = CourseSerializer(queryset, many=True)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

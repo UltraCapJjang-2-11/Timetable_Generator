@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>시간표 생성</title>
+
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/timetable_style.css' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+    <header>
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="logo">
+                <img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고">
+            </a>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}">Home<span></span></a>
+                <a href="{% url 'manage' %}">Manage<span></span></a>
+                <a href="{% url 'mypage' %}">MyPage<span></span></a>
+                <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+                <a href="#">Logout<span></span></a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-fluid">
+        {% include "home/timetable/left_panel.html" %}
+
+        <div class="middle-panel">
+            <table class="timetable">
+                <thead>
+                    <tr>
+                        <th>시간</th>
+                        <th>월</th>
+                        <th>화</th>
+                        <th>수</th>
+                        <th>목</th>
+                        <th>금</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <script>
+                        // 이 스크립트는 페이지의 기본 구조를 동적으로 생성합니다.
+                        // 복잡한 로직이 아니므로 HTML에 남겨두거나,
+                        // 혹은 더 엄격한 분리를 위해 JS 파일의 초기화 함수로 옮길 수 있습니다.
+                        const timetableBody = document.querySelector(".timetable tbody");
+                        for (let hour = 9; hour <= 18; hour++) {
+                            const row = document.createElement("tr");
+                            const timeCell = document.createElement("td");
+                            timeCell.textContent = `${hour}:00`;
+                            row.appendChild(timeCell);
+                            for (let i = 0; i < 5; i++) {
+                                const cell = document.createElement("td");
+                                cell.classList.add("timetable-cell");
+                                cell.setAttribute("data-hour", hour);
+                                cell.setAttribute("data-day", i);
+                                row.appendChild(cell);
+                            }
+                            timetableBody.appendChild(row);
+                        }
+                    </script>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="right-panel">
+            <div class="goal-settings">
+                <h3>목표 학점 설정 🎯</h3>
+                <div class="goal-inputs">
+                    <label for="total-credits">총 목표 학점 (최대 24):</label>
+                    <input type="number" id="total-credits" min="1" max="24" value="18">
+
+                    <label for="major-credits">전공 학점:</label>
+                    <input type="number" id="major-credits" min="0" max="24" value="9">
+
+                    <label for="elective-credits">교양 학점:</label>
+                    <input type="number" id="elective-credits" min="0" max="24" value="9">
+                </div>
+            </div>
+            <div class="day-off-settings">
+                <h3>희망 공강 요일 📅</h3>
+                <div class="day-options">
+                    <label><input type="checkbox" value="월"> 월</label>
+                    <label><input type="checkbox" value="화"> 화</label>
+                    <label><input type="checkbox" value="수"> 수</label>
+                    <label><input type="checkbox" value="목"> 목</label>
+                    <label><input type="checkbox" value="금"> 금</label>
+                </div>
+            </div>
+            <button id="generate-btn">📅 시간표 생성</button>
+            <div class="timetable-navigation">
+                <button id="prev-timetable" class="nav-arrow">◀</button>
+                <span id="timetable-index">0 / 0</span>
+                <button id="next-timetable" class="nav-arrow">▶</button>
+            </div>
+            <button id="save-timetable-btn">💾 현재 시간표 저장</button>
+
+        </div>
+    </div>
+
+    <div id="progress-overlay">
+      <div id="progress-message">
+        <p id="progress-text">시간표 생성 중...</p>
+        <div id="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+        <p id="progress-count"></p>
+      </div>
+    </div>
+
+    {% include "home/timetable/chatbot.html" %}
+
+    <script type="module" src="{% static 'home/js/timetable/timetable.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

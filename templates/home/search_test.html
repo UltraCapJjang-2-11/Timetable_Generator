@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Course Search Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 16px;
+    }
+    label {
+      display: inline-block;
+      width: 150px;
+      margin: 4px 0;
+    }
+    input[type="text"] {
+      width: 300px;
+    }
+    #result {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Course Search Test Page</h1>
+  <p>이 페이지에서 검색 파라미터를 입력하고, /data-manager/course/search/ API를 호출해 JSON 결과를 확인할 수 있습니다.</p>
+
+  <form id="searchForm">
+    <div>
+      <label for="dept_name">학과명 (dept_name):</label>
+      <input type="text" id="dept_name" name="dept_name" placeholder="예: 소프트웨어학부">
+    </div>
+    <div>
+      <label for="category_name">카테고리 (category_name):</label>
+      <input type="text" id="category_name" name="category_name" placeholder="예: 전공필수">
+    </div>
+    <div>
+      <label for="instructor_name">교수명 (instructor_name):</label>
+      <input type="text" id="instructor_name" name="instructor_name" placeholder="예: 김교수">
+    </div>
+    <div>
+      <label for="course_name">강의명 (course_name):</label>
+      <input type="text" id="course_name" name="course_name" placeholder="예: 자료구조">
+    </div>
+    <div>
+      <label for="credit">학점 (credit):</label>
+      <input type="text" id="credit" name="credit" placeholder="예: 3">
+    </div>
+    <div>
+      <label for="year">학년도 (year):</label>
+      <input type="text" id="year" name="year" placeholder="예: 2023">
+    </div>
+    <div>
+      <label for="term">학기 (term):</label>
+      <input type="text" id="term" name="term" placeholder="예: 1학기">
+    </div>
+    <div>
+      <label for="exclude_day_time_map">시간 제외 (JSON):</label>
+      <input type="text" id="exclude_day_time_map" name="exclude_day_time_map" placeholder='예: {"월":["03","04"]}'>
+    </div>
+
+    <button type="submit">검색</button>
+  </form>
+
+  <hr>
+
+  <h2>검색 결과 (JSON)</h2>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const dept_name = document.getElementById('dept_name').value.trim();
+      const category_name = document.getElementById('category_name').value.trim();
+      const instructor_name = document.getElementById('instructor_name').value.trim();
+      const course_name = document.getElementById('course_name').value.trim();
+      const credit = document.getElementById('credit').value.trim();
+      const year = document.getElementById('year').value.trim();
+      const term = document.getElementById('term').value.trim();
+      const exclude_day_time_map = document.getElementById('exclude_day_time_map').value.trim();
+
+      const params = new URLSearchParams();
+      if (dept_name) params.append('dept_name', dept_name);
+      if (category_name) params.append('category_name', category_name);
+      if (instructor_name) params.append('instructor_name', instructor_name);
+      if (course_name) params.append('course_name', course_name);
+      if (credit) params.append('credit', credit);
+      if (year) params.append('year', year);
+      if (term) params.append('term', term);
+      if (exclude_day_time_map) params.append('exclude_day_time_map', exclude_day_time_map);
+
+      const baseUrl = 'http://127.0.0.1:8000/data-manager/course/search/';
+      const url = `${baseUrl}?${params.toString()}`;
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+          document.getElementById('result').textContent = `Error: ${err.message}`;
+        });
+    });
+  </script>
+</body>
+</html>

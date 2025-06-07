@@ -1,0 +1,344 @@
+{% load static %}
+{% load dictionary_extras %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Mypage</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'home/css/mypage_style.css' %}">
+  <style>
+    .sub-table { margin-top: 10px; font-size: 0.9rem; }
+    .sub-table th, .sub-table td { padding: 4px; text-align: center; }
+    
+    /* From Uiverse.io by elijahgummer */ 
+    .upload-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: linear-gradient(45deg, #ffc75d, #ffc708);
+      box-shadow: 0 0 24px #ffb20861;
+      border: 2px solid #ffe825;
+      border-radius: 100px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease,
+        text-shadow 0.3s ease;
+      padding: 10px 20px;
+      color: #09090b;
+      font-weight: bold;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .upload-button:hover {
+      background-color: #ffc75d !important;
+      box-shadow: 0 0 34px #ffb20861 !important;
+      text-shadow: 0 0 4px #ffe825;
+      border-color: #ffe825 !important;
+    }
+
+    .upload-icon {
+      margin-right: 5px;
+      filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.3));
+    }
+
+    #graduation_pdf {
+      display: none;
+    }
+
+    .upload-section {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .upload-button-container {
+      position: absolute;
+      top: -60px;
+      right: 0;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    
+    .upload-button-container .text-muted {
+      font-size: 0.9rem;
+      max-width: 200px;
+      line-height: 1.3;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ header -->
+<header>
+  <nav class="navigation">
+      <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
+      <div class="nav-links">
+          <a href="{% url 'dashboard' %}">Home<span></span></a>
+          <a href="{% url 'manage' %}">Manage<span></span></a>
+          <a href="{% url 'mypage' %}">MyPage<span></span></a>
+          <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+          <a href="{% url 'logout' %}">Logout<span></span></a>
+      </div>
+  </nav>
+</header> 
+<!-- ✅ end header -->
+
+<div class="container" style="margin-top: 70px;">
+
+  <!-- 사용자 정보 -->
+  <div class="row mb-4 upload-section">
+    <!-- 업로드 버튼과 설명 -->
+    <div class="upload-button-container">
+      <div class="d-flex align-items-center gap-3">
+        <form id="uploadForm" method="POST" action="{% url 'upload_graduation' %}" enctype="multipart/form-data" style="display: inline;">
+          {% csrf_token %}
+          <button type="button" class="upload-button" onclick="document.getElementById('graduation_pdf').click();">
+            <svg
+              id="UploadToCloud"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              height="16px"
+              width="16px"
+              class="upload-icon"
+            >
+              <path d="M0 0h24v24H0V0z" fill="none"></path>
+              <path
+                class="color000000 svgShape"
+                fill="#000000"
+                d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l4.65-4.65c.2-.2.51-.2.71 0L17 13h-3z"
+              ></path>
+            </svg>
+            Upload PDF
+          </button>
+          <input id="graduation_pdf" name="graduation_pdf" type="file" accept=".pdf" onchange="autoSubmit()">
+        </form>
+        <p class="text-muted mb-0">업로드된 파일을 바탕으로, 졸업 요건 정보를 확인할 수 있습니다.</p>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="card notification-card">
+        <div class="tools">
+          <div class="circle">
+            <span class="red box"></span>
+          </div>
+          <div class="circle">
+            <span class="yellow box"></span>
+          </div>
+          <div class="circle">
+            <span class="green box"></span>
+          </div>
+        </div>
+        <div class="card-header">개인 정보</div>
+        <div class="card-body">
+          <p><strong>학번:</strong> {{ user_student_id }}</p>
+          <p><strong>이름:</strong> {{ user_name }}</p>
+          <p><strong>전공:</strong> {{ user_major }}</p>
+          <p><strong>학년:</strong> {{ user_year }}</p>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card notification-card">
+        <div class="tools">
+          <div class="circle">
+            <span class="red box"></span>
+          </div>
+          <div class="circle">
+            <span class="yellow box"></span>
+          </div>
+          <div class="circle">
+            <span class="green box"></span>
+          </div>
+        </div>
+        <div class="card-header">알림</div>
+        <div class="card-body">
+          {% if alerts %}
+            {% for msg in alerts %}
+              <p>• {{ msg }}</p>
+            {% endfor %}
+          {% else %}
+            <p>알림이 없습니다.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- 졸업 요건 이수 현황 섹션 -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h4>졸업 요건 이수 현황</h4>
+      <div class="row">
+        <div class="col-md-6">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>이수 학점</th>
+                <th>졸업 기준</th>
+                <th>미이수</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 총 학점 -->
+              <tr>
+                <td>총 학점</td>
+                <td>{{ total_credits }}</td>
+                <td>{{ total_requirement }}</td>
+                <td>{{ total_requirement|subtract:total_credits }}</td>
+              </tr>
+              <!-- 전공 (필수) -->
+              <tr>
+                <td>전공 (필수)</td>
+                <td>
+                  {% if detailed_credits %}
+                    {{ detailed_credits|dict_get:"전공"|dict_get:"전공필수"|dict_get:"earned" }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if major_requirement_data %}
+                    {{ major_requirement_data|dict_get:"전공필수" }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if detailed_credits and major_requirement_data %}
+                    {% with req=major_requirement_data|dict_get:"전공필수" earned=detailed_credits|dict_get:"전공"|dict_get:"전공필수"|dict_get:"earned" %}
+                      {{ req|subtract:earned }}
+                    {% endwith %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+              <!-- 전공 (선택) -->
+              <tr>
+                <td>전공 (선택)</td>
+                <td>
+                  {% if detailed_credits %}
+                    {{ detailed_credits|dict_get:"전공"|dict_get:"전공선택"|dict_get:"earned" }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if major_requirement_data %}
+                    {{ major_requirement_data|dict_get:"전공선택" }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if detailed_credits and major_requirement_data %}
+                    {% with req=major_requirement_data|dict_get:"전공선택" earned=detailed_credits|dict_get:"전공"|dict_get:"전공선택"|dict_get:"earned" %}
+                      {{ req|subtract:earned }}
+                    {% endwith %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+              <!-- 교양 (전체) -->
+              <tr>
+                <td>교양</td>
+                <td>{{ general_credits }}</td>
+                <td>전체: {{ general_requirement.required.minimum }} ~ {{ general_requirement.required.maximum }}</td>
+                <td>{{ general_requirement.required.minimum|subtract:general_credits }}</td>
+              </tr>
+              <!-- 교양 세부 내역 -->
+              {% if detailed_credits %}
+                {% with general_required=detailed_credits|dict_get:"교양"|dict_get:"required" breakdown=detailed_credits|dict_get:"교양"|dict_get:"breakdown" %}
+                  {% if breakdown %}
+                    <tr>
+                      <td colspan="4">
+                        <strong>교양 세부 내역</strong>
+                        <table class="table table-sm sub-table">
+                          <thead class="table-light">
+                            <tr>
+                              <th>세부 항목</th>
+                              <th>졸업 기준</th>
+                              <th>이수 학점</th>
+                              <th>미이수</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for key, val in breakdown|dict_items %}
+                              <tr>
+                                <td>{{ key }}</td>
+                                <td>{{ general_required|dict_get:key }}</td>
+                                <td>{{ val.earned }}</td>
+                                <td>{{ general_required|dict_get:key|subtract:val.earned }}</td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% endwith %}
+              {% endif %}
+              <!-- 일반선택 -->
+              <tr>
+                <td>일반선택</td>
+                <td>{{ free_credits }}</td>
+                <td>{{ free_requirement }}</td>
+                <td>{{ free_requirement|subtract:free_credits }}</td>
+              </tr>
+              <!-- 졸업 -->
+              <tr class="table-light">
+                <td>졸업</td>
+                <td colspan="2">총 졸업 학점: {% if detailed_credits %}{{ detailed_credits|dict_get:"졸업"|dict_get:"total" }}{% else %}-{% endif %}</td>
+                <td>{% if detailed_credits %}{{ detailed_credits|dict_get:"졸업"|dict_get:"earned" }}{% else %}-{% endif %}</td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <!-- 차트 렌더링용 컨테이너 -->
+          <div class="chart-container"
+               data-major="{{ major_credits }}"
+               data-general="{{ general_credits }}"
+               data-free="{{ free_credits }}">
+            <canvas id="graduationChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js (mypage.js에서 사용) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- 별도 JS 파일 (mypage.js) -->
+<script src="{% static 'home/js/mypage.js' %}"></script>
+
+<script>
+function autoSubmit() {
+    const fileInput = document.getElementById('graduation_pdf');
+    const form = document.getElementById('uploadForm');
+    
+    if (fileInput.files.length > 0) {
+        // 파일이 선택되면 자동으로 폼 제출
+        form.submit();
+    }
+}
+</script>
+
+</body>
+</html>

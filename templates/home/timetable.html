@@ -1,0 +1,928 @@
+{% load category_tags %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>시간표 생성</title>
+
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/timetable_style.css' %}">
+
+    <!-- 부트스트랩 CSS 추가 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- (추가) 진행 상황 오버레이 스타일 -->
+    <style>
+      #progress-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0,0,0,0.5);
+          z-index: 10000;
+      }
+      #progress-message {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          text-align: center;
+      }
+      #progress-bar {
+          width: 300px;
+          height: 20px;
+          background: #ddd;
+          border-radius: 10px;
+          overflow: hidden;
+          margin-top: 10px;
+      }
+      #progress-fill {
+          width: 0%;
+          height: 100%;
+          background: #4caf50;
+      }
+      
+      /* 챗봇 저장 버튼 스타일 (From Uiverse.io by vinodjangid07) */
+      .bookmarkBtn {
+        width: 130px;
+        height: 40px;
+        border-radius: 40px;
+        border: 1px solid rgba(0, 0, 0, 0.349);
+        background-color: rgb(255, 255, 255);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: 5px;
+        cursor: pointer;
+        transition-duration: 0.3s;
+        overflow: hidden;
+        margin-right: 5px;
+        position: relative;
+      }
+
+      .IconContainer {
+        width: 30px;
+        height: 30px;
+        background: linear-gradient(to bottom, rgb(255, 239, 136), rgb(255, 215, 70));
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        z-index: 3;
+        transition-duration: 0.3s;
+      }
+
+      .icon {
+        border-radius: 1px;
+        fill: white;
+      }
+
+      .text {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: 7px;
+        transform: translate(-50%, -50%);
+        color: rgb(0, 0, 0);
+        z-index: 1;
+        transition-duration: 0.3s;
+        font-size: 1.04em;
+        white-space: nowrap;
+      }
+
+      .bookmarkBtn:hover .IconContainer {
+        width: 120px;
+        height: 36px;
+        border-radius: 40px;
+        transition-duration: 0.3s;
+      }
+
+      .bookmarkBtn:hover .text {
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition-duration: 0.3s;
+      }
+
+      .bookmarkBtn:active {
+        transform: scale(0.95);
+        transition-duration: 0.3s;
+      }
+      
+
+      
+      /* 버튼 컨테이너 정렬 */
+      .chat-buttons {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+    </style>
+    
+</head>
+<body>
+    <!-- header -->
+    <header>
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="logo">
+                <img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고">
+            </a>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}">Home<span></span></a>
+                <a href="{% url 'manage' %}">Manage<span></span></a>
+                <a href="{% url 'mypage' %}">MyPage<span></span></a>
+                <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+                <a href="#">Logout<span></span></a>
+            </div>
+        </nav>
+    </header> 
+    <!-- 컨테이너 -->
+    <div class="container-fluid">
+        <!-- 왼쪽 패널: 강의 검색/필터 및 강의 목록 -->
+        <div class="left-panel p-3 border-end overflow-auto">
+            {% category_dropdown %}           {# ← 드롭다운 + 검색버튼 + 결과테이블 일괄 포함 #}
+        </div>
+        <!-- 가운데 패널: 시간표 표시 -->
+        <div class="middle-panel">
+            <table class="timetable">
+                <thead>
+                    <tr>
+                        <th>시간</th>
+                        <th>월</th>
+                        <th>화</th>
+                        <th>수</th>
+                        <th>목</th>
+                        <th>금</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <script>
+                        const timetableBody = document.querySelector(".timetable tbody");
+                        for (let hour = 9; hour <= 18; hour++) {
+                            const row = document.createElement("tr");
+                            const timeCell = document.createElement("td");
+                            timeCell.textContent = `${hour}:00`;
+                            row.appendChild(timeCell);
+                            for (let i = 0; i < 5; i++) {
+                                const cell = document.createElement("td");
+                                cell.classList.add("timetable-cell");
+                                cell.setAttribute("data-hour", hour);
+                                cell.setAttribute("data-day", i);
+                                row.appendChild(cell);
+                            }
+                            timetableBody.appendChild(row);
+                        }
+                    </script>
+                </tbody>
+            </table>
+        </div>
+        <!-- 오른쪽 패널: 설정 및 탐색 -->
+        <div class="right-panel">
+            <div class="goal-settings">
+                <h3>목표 학점 설정 🎯</h3>
+                <div class="goal-inputs">
+                    <label for="total-credits">총 목표 학점 (최대 24):</label>
+                    <input type="number" id="total-credits" min="1" max="24" value="18">
+                    
+                    <label for="major-credits">전공 학점:</label>
+                    <input type="number" id="major-credits" min="0" max="24" value="9">
+                    
+                    <label for="elective-credits">교양 학점:</label>
+                    <input type="number" id="elective-credits" min="0" max="24" value="9">
+                </div>
+            </div>
+            <div class="day-off-settings">
+                <h3>희망 공강 요일 📅</h3>
+                <div class="day-options">
+                    <label><input type="checkbox" value="월"> 월</label>
+                    <label><input type="checkbox" value="화"> 화</label>
+                    <label><input type="checkbox" value="수"> 수</label>
+                    <label><input type="checkbox" value="목"> 목</label>
+                    <label><input type="checkbox" value="금"> 금</label>
+                </div>
+            </div>
+            <button id="generate-btn">📅 시간표 생성</button>
+            <div class="timetable-navigation">
+                <button id="prev-timetable" class="nav-arrow">◀</button>
+                <span id="timetable-index">1 / 1</span>
+                <button id="next-timetable" class="nav-arrow">▶</button>
+            </div>
+            <button id="save-timetable-btn">💾 현재 시간표 저장</button>
+
+        </div>
+    </div>
+    
+    <!-- 진행 상황 오버레이 (추가된 부분) -->
+    <div id="progress-overlay">
+      <div id="progress-message">
+        <p id="progress-text">시간표 생성 중...</p>
+        <div id="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+        <p id="progress-count"></p>
+      </div>
+    </div>
+
+
+    <!-- AI 채팅창 -->
+    <div id="ai-chat-toggle">💬</div>
+    <div id="ai-chat-widget">
+        <div class="ai-chat-header">
+            <img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="AI" class="ai-avatar">
+            <div class="ai-info">
+                <strong>Timey</strong><br>
+                <small>AI 도우미</small>
+            </div>
+            <button id="ai-close-btn">×</button>
+        </div>
+        <div class="ai-chat-body">
+            <div class="chat-time" id="chat-time-initial"></div>
+            <div class="chat-bubble bot">안녕하세요! 저는 Timey입니다.<br>궁금하신 점을 알려주시면 답변드릴게요!</div>
+        </div>
+        <div class="ai-chat-input">
+           <input type="text" placeholder="메시지를 입력하세요...">
+           <button>➤</button>
+        </div>
+    </div>            
+
+    <script src="{% static 'home/js/timetable_script.js' %}"></script>
+    <!-- AI 채팅창 기능 -->
+    <script>
+        let existingCourses = [];
+        const chatToggle = document.getElementById("ai-chat-toggle");
+        const chatWidget = document.getElementById("ai-chat-widget");
+        const closeBtn = document.getElementById("ai-close-btn");
+        const input = document.querySelector(".ai-chat-input input");
+        const sendBtn = document.querySelector(".ai-chat-input button");
+        const chatBody = document.querySelector(".ai-chat-body");
+      
+        chatToggle.addEventListener("click", () => {
+          chatWidget.style.display = "flex";
+          chatToggle.style.display = "none";
+        });
+      
+        closeBtn.addEventListener("click", () => {
+          chatWidget.style.display = "none";
+          chatToggle.style.display = "flex";
+        });
+      
+        sendBtn.addEventListener("click", sendMessage);
+        input.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendMessage();
+          }
+        });
+      
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const period = hours < 12 ? '오전' : '오후';
+            const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+            return `오늘 ${period} ${hour12}:${minutes}`;
+        }
+          
+        // 페이지 로드 시 초기 채팅 시간 표시 업데이트
+        document.getElementById("chat-time-initial").textContent = getCurrentTime();
+
+        // 마지막 메시지 시간을 추적하는 변수
+        let lastMessageTime = '';
+
+        function sendMessage() {
+          const text = input.value.trim();
+          if (!text) return;
+      
+          console.log(`사용자 메시지 전송: "${text}"`);
+          
+          const currentTime = getCurrentTime();
+          
+          // 이전 메시지와 시간이 다른 경우에만 타임스탬프 추가
+          if (currentTime !== lastMessageTime) {
+            const timeStamp = document.createElement("div");
+            timeStamp.className = "chat-time";
+            timeStamp.textContent = currentTime;
+            chatBody.appendChild(timeStamp);
+            lastMessageTime = currentTime;
+          }
+          
+          // 사용자 메시지 버블 생성 및 추가
+          const userBubble = document.createElement("div");
+          userBubble.className = "chat-bubble user";
+          userBubble.textContent = text;
+          chatBody.appendChild(userBubble);
+          
+          // 입력창 비우기
+          input.value = "";
+          
+          // 로딩 애니메이션 표시
+          const loaderBubble = document.createElement("div");
+          loaderBubble.className = "chat-bubble bot loading";
+          loaderBubble.innerHTML = "<div class='loading-dots'><span></span><span></span><span></span></div>";
+          chatBody.appendChild(loaderBubble);
+          
+          // 스크롤 맨 아래로
+          chatBody.scrollTop = chatBody.scrollHeight;
+          
+          // Rasa 서버에 메시지 전송
+          sendToRasaAndGetResponse(text, loaderBubble);
+        }
+
+        // 봇 메시지 버블 생성 함수
+        function createBotMessageBubble(text) {
+          const currentTime = getCurrentTime();
+          
+          // 컨테이너 생성
+          const container = document.createDocumentFragment();
+          
+          // 이전 메시지와 시간이 다른 경우에만 타임스탬프 추가
+          if (currentTime !== lastMessageTime) {
+            const timeStamp = document.createElement("div");
+            timeStamp.className = "chat-time";
+            timeStamp.textContent = currentTime;
+            container.appendChild(timeStamp);
+            lastMessageTime = currentTime;
+          }
+          
+          // 봇 메시지 버블 생성
+          const botBubble = document.createElement("div");
+          botBubble.className = "chat-bubble bot";
+          botBubble.textContent = text;
+          container.appendChild(botBubble);
+          
+          return container;
+        }
+
+        // 사용자 메시지 버블 생성 함수 (누락됨)
+        function createUserMessageBubble(text) {
+          const currentTime = getCurrentTime();
+          
+          // 컨테이너 생성
+          const container = document.createDocumentFragment();
+          
+          // 이전 메시지와 시간이 다른 경우에만 타임스탬프 추가
+          if (currentTime !== lastMessageTime) {
+            const timeStamp = document.createElement("div");
+            timeStamp.className = "chat-time";
+            timeStamp.textContent = currentTime;
+            container.appendChild(timeStamp);
+            lastMessageTime = currentTime;
+          }
+          
+          // 사용자 메시지 버블 생성
+          const userBubble = document.createElement("div");
+          userBubble.className = "chat-bubble user";
+          userBubble.textContent = text;
+          container.appendChild(userBubble);
+          
+          return container;
+        }
+
+        // 로딩 버블 생성 함수 (누락됨)
+        function createLoaderBubble() {
+          const loaderBubble = document.createElement("div");
+          loaderBubble.className = "chat-bubble bot loading";
+          loaderBubble.innerHTML = "<div class='loading-dots'><span></span><span></span><span></span></div>";
+          return loaderBubble;
+        }
+
+        // 사용자 세션 ID 생성 (고유한 대화 식별자)
+        function generateSessionId() {
+          return 'user_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+        const sessionId = generateSessionId();
+
+        // Rasa 서버에 메시지 전송 및 응답 처리
+        async function sendToRasaAndGetResponse(text, loaderBubble) {
+          try {
+            console.log(`Rasa에 메시지 전송: "${text}", 세션 ID: ${sessionId}`);
+            
+            // Django 백엔드 경로를 통해 Rasa에 요청
+            const response = await fetch("/parse_constraints/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+              },
+              body: JSON.stringify({
+                text: text,
+                session_id: sessionId
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP 오류: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            // 로딩 버블 제거
+            if (loaderBubble && loaderBubble.parentNode) {
+              loaderBubble.parentNode.removeChild(loaderBubble);
+            }
+            
+            console.log('Rasa 응답:', data);
+
+            // 응답이 비어있는 경우
+            if (data.length === 0) {
+              const botBubble = createBotMessageBubble("응답을 받지 못했어요. 다른 질문을 해보시겠어요?");
+              chatBody.appendChild(botBubble);
+              chatBody.scrollTop = chatBody.scrollHeight;
+              return;
+            }
+
+            // 응답 처리
+            handleRasaResponse(data);
+          } catch (error) {
+            console.error("Rasa 통신 오류:", error);
+            
+            // 로딩 버블 제거
+            if (loaderBubble && loaderBubble.parentNode) {
+              loaderBubble.parentNode.removeChild(loaderBubble);
+            }
+
+            // 오류 메시지 표시
+            const botBubble = createBotMessageBubble("연결 문제가 발생했습니다. 다시 시도해주세요.");
+            chatBody.appendChild(botBubble);
+            chatBody.scrollTop = chatBody.scrollHeight;
+          }
+        }
+
+        // CSRF 토큰 가져오기 함수
+        function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+
+        // Rasa 응답 처리
+        function handleRasaResponse(data) {
+          // 각 응답 메시지 처리
+          data.forEach(message => {
+            if (message.text) {
+              const botBubble = createBotMessageBubble(message.text);
+              chatBody.appendChild(botBubble);
+            }
+            
+            // 시간표 생성 이벤트 처리
+            if (message.custom && message.custom.event_type === "initiate_timetable_generation_sse") {
+              // 기존 시간표 생성 로직 호출
+              handleTimetableGenerationEvent(message.custom);
+            } else if (message.custom && message.custom.payload && message.custom.payload.event_type === "initiate_timetable_generation_sse") {
+              // 페이로드 형식 처리
+              handleTimetableGenerationEvent(message.custom.payload);
+            }
+            
+            // 시간표 저장 이벤트 처리
+            if (message.custom && message.custom.event_type === "save_timetable") {
+              console.log("시간표 저장 이벤트 수신됨");
+              console.log("현재 window.lastGeneratedTimetable:", window.lastGeneratedTimetable);
+              
+              // 직접 시간표 저장 함수 호출
+              saveTimetableDirectly();
+            }
+            
+            // 과목 제외 및 재생성 이벤트 처리
+            if (message.custom && message.custom.event_type === "exclude_and_regenerate_timetable") {
+              handleExcludeAndRegenerateEvent(message.custom);
+            }
+            
+            // 버튼 표시 (시간표 생성 후 저장 버튼 표시)
+            if (message.buttons) {
+              const buttonContainer = document.createElement("div");
+              buttonContainer.className = "chat-buttons";
+              buttonContainer.style.marginTop = "10px";
+              
+              message.buttons.forEach(button => {
+                const btn = document.createElement("button");
+                btn.className = "chat-button";
+                btn.textContent = button.title;
+                btn.style.marginRight = "5px";
+                btn.style.padding = "5px 10px";
+                btn.style.borderRadius = "5px";
+                btn.style.border = "1px solid #ddd";
+                btn.style.backgroundColor = "#f0f0f0";
+                btn.style.cursor = "pointer";
+                
+                btn.onclick = () => {
+                  // 버튼 클릭 시 해당 메시지를 사용자가 입력한 것처럼 처리
+                  input.value = button.payload;
+                  sendMessage();
+                };
+                
+                buttonContainer.appendChild(btn);
+              });
+              
+              chatBody.appendChild(buttonContainer);
+            }
+          });
+          
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // 과목 제외 및 재생성 이벤트 처리
+        function handleExcludeAndRegenerateEvent(data) {
+          console.log("과목 제외 및 재생성 이벤트 수신:", data);
+          
+          // 현재 시간표가 있는지 확인
+          if (!window.lastGeneratedTimetable || window.lastGeneratedTimetable.length === 0) {
+            console.error("수정할 시간표가 없습니다.");
+            const botBubble = createBotMessageBubble("수정할 시간표가 없습니다. 먼저 시간표를 생성해주세요.");
+            chatBody.appendChild(botBubble);
+            chatBody.scrollTop = chatBody.scrollHeight;
+            return;
+          }
+          
+          // 제약조건 객체를 완전히 새로 초기화 (기존 잘못된 구조 제거)
+          window.constraints = {
+            major_credits: data.major_credits || window.constraints?.major_credits || 0,
+            elective_credits: data.elective_credits || window.constraints?.elective_credits || 0,
+            required_courses: data.required_courses || window.constraints?.required_courses || [],
+            free_days: data.free_days || window.constraints?.free_days || [],
+            avoid_times: data.avoid_times || window.constraints?.avoid_times || [],
+            avoid_time_ranges: data.avoid_time_ranges || window.constraints?.avoid_time_ranges || [],
+            only_time_ranges: data.only_time_ranges || window.constraints?.only_time_ranges || [],
+            exclude_courses: data.exclude_courses || [],
+            existing_courses: [],
+            is_modification: true
+          };
+          
+          console.log("제약조건 초기화 완료:", window.constraints);
+          
+          // 기존 시간표에서 제외할 과목들을 필터링하여 고정할 과목 목록 생성
+          const excludeCoursesLower = data.exclude_courses.map(name => name.toLowerCase().trim());
+          
+          // 제외할 과목의 ID 찾기 (과목명 → 과목 코드 변환)
+          const excludeCourseIds = [];
+          const fixedCourses = window.lastGeneratedTimetable.filter(course => {
+            const courseNameLower = course.course_name.toLowerCase().trim();
+            // 제외할 과목명이 현재 과목명에 포함되어 있는지 확인 (더 정확한 매칭)
+            const shouldExclude = excludeCoursesLower.some(excludeName => {
+              // 정확한 매칭 우선, 그 다음 부분 매칭
+              return courseNameLower === excludeName || 
+                     courseNameLower.includes(excludeName) ||
+                     excludeName.includes(courseNameLower);
+            });
+            
+            if (shouldExclude) {
+              excludeCourseIds.push(String(course.course_id));
+              console.log(`제외할 과목 발견: ${course.course_name} (ID: ${course.course_id})`);
+            }
+            
+            return !shouldExclude;
+          });
+          
+          console.log("현재 시간표:", window.lastGeneratedTimetable.map(c => c.course_name));
+          console.log("제외할 과목들 (이름):", data.exclude_courses);
+          console.log("제외할 과목들 (ID):", excludeCourseIds);
+          console.log("고정할 과목들:", fixedCourses.map(c => c.course_name));
+          
+          // 고정할 과목들의 ID를 existing_courses로 설정
+          window.constraints.existing_courses = fixedCourses.map(course => String(course.course_id));
+          
+          // 제외할 과목을 과목 코드로 설정 (과목명 대신)
+          window.constraints.exclude_courses = excludeCourseIds;
+          
+          console.log("설정된 existing_courses:", window.constraints.existing_courses);
+          console.log("설정된 exclude_courses (ID):", window.constraints.exclude_courses);
+          console.log("수정 모드 활성화:", window.constraints.is_modification);
+          console.log("최종 제약조건 확인:", window.constraints);
+
+          
+          // 시간표 재생성 (수정 모드) - 제약조건이 설정된 후 호출
+          // generateTimetableFromNL("시간표 수정 요청") 대신 직접 API 호출
+          generateTimetableDirectly().then(() => {
+            // 수정 완료 후 메시지
+            setTimeout(() => {
+              const completeBubble = createBotMessageBubble("시간표가 수정되었습니다! 마음에 드시나요?");
+              chatBody.appendChild(completeBubble);
+              
+              // 저장 버튼 추가
+              const buttonContainer = document.createElement("div");
+              buttonContainer.className = "chat-buttons";
+              buttonContainer.style.marginTop = "10px";
+              
+              const saveButton = document.createElement("button");
+              saveButton.className = "bookmarkBtn";
+              saveButton.innerHTML = `
+                <span class="IconContainer">
+                  <svg viewBox="0 0 384 512" height="0.9em" class="icon">
+                    <path d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"></path>
+                  </svg>
+                </span>
+                <p class="text">저장하기</p>
+              `;
+              
+              saveButton.onclick = () => {
+                saveTimetableDirectly();
+              };
+              
+              buttonContainer.appendChild(saveButton);
+              chatBody.appendChild(buttonContainer);
+              chatBody.scrollTop = chatBody.scrollHeight;
+            }, 1000);
+          }).catch(error => {
+            console.error("시간표 재생성 오류:", error);
+            const errorBubble = createBotMessageBubble("시간표 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+            chatBody.appendChild(errorBubble);
+            chatBody.scrollTop = chatBody.scrollHeight;
+          });
+        }
+
+        // 직접 시간표 생성 함수 (Rasa 파싱 없이)
+        async function generateTimetableDirectly() {
+          return new Promise((resolve, reject) => {
+            console.log("직접 시간표 생성 시작");
+            console.log("현재 제약조건:", window.constraints);
+            console.log("제외할 과목 확인:", window.constraints.exclude_courses);
+            console.log("window.constraints 타입:", typeof window.constraints);
+            console.log("window.constraints 키들:", Object.keys(window.constraints));
+            
+            // window.constraints가 배열인지 확인
+            if (Array.isArray(window.constraints)) {
+              console.log("⚠️ window.constraints가 배열입니다! 객체로 변환 필요");
+              // 배열에서 실제 제약조건 객체 찾기
+              const constraintObj = window.constraints.find(item => 
+                item && typeof item === 'object' && 
+                (item.major_credits || item.exclude_courses || item.free_days)
+              );
+              if (constraintObj) {
+                console.log("배열에서 제약조건 객체 발견:", constraintObj);
+                window.constraints = constraintObj;
+              }
+            }
+            
+            console.log("최종 제약조건 객체:", window.constraints);
+            console.log("최종 제외할 과목:", window.constraints.exclude_courses);
+            
+            // 파라미터를 직접 구성 (buildParamsFromConstraints 대신)
+            const idsToUse = window.constraints.existing_courses || [];
+            console.log("직접 파라미터 구성 - idsToUse:", idsToUse);
+            console.log("직접 파라미터 구성 - exclude_courses:", window.constraints.exclude_courses);
+            
+            // URLSearchParams 직접 생성
+            const paramsObject = new URLSearchParams();
+            
+            // 학점 정보 추가
+            const totalCredits = (window.constraints.major_credits || 0) + (window.constraints.elective_credits || 0);
+            paramsObject.append("total_credits", totalCredits);
+            paramsObject.append("major_credits", window.constraints.major_credits || 0);
+            paramsObject.append("elective_credits", window.constraints.elective_credits || 0);
+            
+            // 기존 과목 추가
+            idsToUse.forEach(id => {
+              paramsObject.append("existing_courses[]", id);
+            });
+            
+            // 공강 요일 추가
+            if (window.constraints.free_days && window.constraints.free_days.length > 0) {
+              window.constraints.free_days.forEach(day => {
+                paramsObject.append("free_days[]", day);
+              });
+            }
+            
+            // 제외할 과목 추가 (핵심!)
+            if (window.constraints.exclude_courses && window.constraints.exclude_courses.length > 0) {
+              console.log("제외할 과목 직접 추가 시작:", window.constraints.exclude_courses);
+              window.constraints.exclude_courses.forEach(course => {
+                paramsObject.append("exclude_courses[]", course);
+                console.log("제외할 과목 직접 추가됨:", course);
+              });
+              console.log("제외할 과목 직접 추가 완료");
+            }
+            
+            const paramsString = paramsObject.toString();
+            
+            console.log("직접 생성 - 사용할 ID들:", idsToUse);
+            console.log("직접 생성 - URL 파라미터:", paramsString);
+            
+            // exclude_courses가 URL에 포함되었는지 확인
+            if (window.constraints.exclude_courses && window.constraints.exclude_courses.length > 0) {
+              console.log("제외할 과목이 URL에 포함되었는지 확인:", paramsString.includes('exclude_courses'));
+              console.log("URL 파라미터 전체:", paramsString);
+              console.log("exclude_courses 검색 결과:", paramsString.indexOf('exclude_courses'));
+            }
+            
+            // SSE로 시간표 생성 스트림 요청
+            const eventSourceUrl = "/generate_timetable_stream/?" + decodeURIComponent(paramsString);
+            console.log("직접 생성 - EventSource URL:", eventSourceUrl);
+            
+            const evtSource = new EventSource(eventSourceUrl);
+            const progressOverlay = document.getElementById("progress-overlay");
+            const progressText = document.getElementById("progress-text");
+
+            progressOverlay.style.display = "block";
+            progressText.textContent = "시간표 수정 중…";
+
+            evtSource.onmessage = e => {
+              const data = JSON.parse(e.data);
+              if (data.progress === "완료") {
+                window.timetables = data.timetables;
+                window.currentIndex = 0;
+                
+                // 수정 모드 완료 후 플래그 초기화
+                if (window.constraints.is_modification) {
+                  console.log("수정 모드 완료, 제약조건 유지");
+                  window.constraints.is_modification = false;
+                }
+                
+                setTimeout(() => progressOverlay.style.display = "none", 800);
+                applyTimetableToMiddlePanel();
+                evtSource.close();
+                resolve();
+              } else {
+                let progressMsg = "시간표 수정 중...";
+                if (data.processed !== undefined && data.found !== undefined) {
+                  progressMsg = `처리된 조합: ${data.processed}, 후보: ${data.found}`;
+                }
+                progressText.textContent = progressMsg;
+              }
+            };
+
+            evtSource.onerror = () => {
+              progressText.textContent = "시간표 수정 중 오류가 발생했습니다.";
+              evtSource.close();
+              setTimeout(() => progressOverlay.style.display = "none", 1200);
+              reject(new Error("시간표 수정 오류"));
+            };
+          });
+        }
+
+        const progressOverlay = document.getElementById("progress-overlay");
+        const progressText    = document.getElementById("progress-text");
+        const progressFill    = document.getElementById("progress-fill");
+        const progressCount   = document.getElementById("progress-count");
+        
+        // 시간표 저장을 직접 처리하는 함수
+        async function saveTimetableDirectly() {
+          console.log("시간표 저장 함수 직접 호출됨");
+          console.log("window.lastGeneratedTimetable:", window.lastGeneratedTimetable);
+          
+          // 현재 표시된 시간표가 있는지 확인
+          if (!window.lastGeneratedTimetable || window.lastGeneratedTimetable.length === 0) {
+            console.error("저장할 시간표가 없습니다.");
+            const botBubble = createBotMessageBubble("저장할 시간표가 없습니다. 먼저 시간표를 생성해주세요.");
+            chatBody.appendChild(botBubble);
+            chatBody.scrollTop = chatBody.scrollHeight;
+            return;
+          }
+          
+          console.log("시간표 데이터 검증 통과");
+          
+          // 저장할 시간표 데이터 준비
+          const timetableData = {
+            courses: window.lastGeneratedTimetable.map(course => ({
+              course_id: course.course_id,
+              course_name: course.course_name,
+              credit: course.credit,
+              category: course.category,
+              schedules: course.schedules,
+              location: course.location || '',
+              note: '',
+              color: ''
+            })),
+            title: '' // 서버에서 자동 생성
+          };
+          
+          console.log("저장할 시간표 데이터:", timetableData);
+          console.log("첫 번째 과목 상세:", timetableData.courses[0]);
+          if (timetableData.courses[0] && timetableData.courses[0].schedules) {
+            console.log("첫 번째 과목 스케줄:", timetableData.courses[0].schedules);
+          }
+          
+          console.log("서버로 요청 전송 시작...");
+          
+          try {
+            // 서버에 시간표 저장 요청
+            const response = await fetch('/save_timetable/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+              },
+              body: JSON.stringify(timetableData)
+            });
+            
+            console.log("서버 응답 상태:", response.status);
+            const result = await response.json();
+            console.log("저장 응답:", result);
+            
+            if (response.ok && result.success) {
+              const botBubble = createBotMessageBubble("시간표가 성공적으로 저장되었습니다! '내 시간표 관리' 페이지에서 확인할 수 있습니다.");
+              chatBody.appendChild(botBubble);
+            } else {
+              const botBubble = createBotMessageBubble("시간표 저장에 실패했습니다: " + (result.error || "알 수 없는 오류"));
+              chatBody.appendChild(botBubble);
+            }
+            chatBody.scrollTop = chatBody.scrollHeight;
+          } catch (error) {
+            console.error("시간표 저장 오류:", error);
+            console.error("오류 상세:", error.stack);
+            const botBubble = createBotMessageBubble("시간표 저장 중 오류가 발생했습니다: " + error.message);
+            chatBody.appendChild(botBubble);
+            chatBody.scrollTop = chatBody.scrollHeight;
+          }
+        }
+
+        // 시간표 생성 이벤트 처리 (초기 생성용)
+        function handleTimetableGenerationEvent(data) {
+          console.log("시간표 생성 이벤트 수신:", data);
+          
+          // 생성된 데이터를 window.constraints에 먼저 저장
+          if (data.major_credits) window.constraints.major_credits = data.major_credits;
+          if (data.elective_credits) window.constraints.elective_credits = data.elective_credits;
+          if (data.required_courses) window.constraints.required_courses = data.required_courses;
+          if (data.free_days) window.constraints.free_days = data.free_days;
+          if (data.avoid_times) window.constraints.avoid_times = data.avoid_times;
+          if (data.avoid_time_ranges) window.constraints.avoid_time_ranges = data.avoid_time_ranges;
+          if (data.only_time_ranges) window.constraints.only_time_ranges = data.only_time_ranges;
+          
+          // 특정 시간대 공강 정보 저장 (추가)
+          if (data.specific_avoid_times) window.constraints.specific_avoid_times = data.specific_avoid_times;
+          if (data.specific_avoid_time_ranges) window.constraints.specific_avoid_time_ranges = data.specific_avoid_time_ranges;
+          
+          console.log("window.constraints 업데이트 완료:", window.constraints);
+          
+          // 시간표 생성 함수 직접 호출하여 NL 처리하도록 수정
+          generateTimetableFromNL("시간표 생성해줘").then(() => {
+            // 시간표 생성 완료 후 저장 버튼 표시
+            setTimeout(() => {
+              // 기존 완료 메시지와 버튼들을 모두 제거
+              const existingMessages = chatBody.querySelectorAll('.chat-bubble.bot');
+              existingMessages.forEach(bubble => {
+                if (bubble.textContent.includes('시간표가 마음에 드시나요')) {
+                  bubble.remove();
+                }
+              });
+              
+              // 기존 시간표 저장 버튼들을 모두 제거
+              const existingButtons = chatBody.querySelectorAll('.chat-buttons');
+              existingButtons.forEach(container => {
+                // 시간표 저장 텍스트가 포함된 버튼이 있는 컨테이너 제거
+                const buttons = container.querySelectorAll('button');
+                let hasSaveButton = false;
+                buttons.forEach(btn => {
+                  if (btn.textContent.includes('시간표 저장')) {
+                    hasSaveButton = true;
+                  }
+                });
+                if (hasSaveButton) {
+                  container.remove();
+                }
+              });
+              
+              const completeBubble = createBotMessageBubble("시간표가 마음에 드시나요? 저장하시거나 수정할 수 있어요!");
+              chatBody.appendChild(completeBubble);
+              
+              // 저장 버튼 추가
+              const buttonContainer = document.createElement("div");
+              buttonContainer.className = "chat-buttons";
+              buttonContainer.style.marginTop = "10px";
+              
+              const saveButton = document.createElement("button");
+              saveButton.className = "bookmarkBtn"; // 새로운 디자인 클래스
+              saveButton.innerHTML = `
+                <span class="IconContainer">
+                  <svg viewBox="0 0 384 512" height="0.9em" class="icon">
+                    <path d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"></path>
+                  </svg>
+                </span>
+                <p class="text">저장하기</p>
+              `;
+              
+              saveButton.onclick = () => {
+                saveTimetableDirectly();
+              };
+              
+              buttonContainer.appendChild(saveButton);
+              chatBody.appendChild(buttonContainer);
+              chatBody.scrollTop = chatBody.scrollHeight;
+            }, 1000);
+          });
+        }
+    </script>
+      
+
+
+
+    <!-- 부트스트랩 JS 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 업데이트된 timetable_script.js 파일 연결 -->
+</body>
+</html>

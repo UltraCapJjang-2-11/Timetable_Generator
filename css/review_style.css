@@ -1,0 +1,48 @@
+/* Add any custom styles here if needed */
+:root {
+  --main-bg: #fffbe6;        /* 노란 배경 (연한 노랑) */
+  --main-text: #222;         /* 거의 검정 */
+  --accent: #ffcc00;         /* 포인트 노랑 */
+  --accent-light: #ffecb3;   /* 연한 노랑 */
+  --accent-mid: #f8d671;     /* 중간 노랑 */
+  --accent-dark: #ffb300;    /* 더 진한 노랑 */
+  --primary-btn: #000;       /* 검정 버튼 */
+  --primary-btn-text: #fff;  /* 버튼 내 흰 텍스트 */
+}
+
+
+
+body {
+    font-family: 'Arial', sans-serif;
+}
+
+#review-search-bar .form-label {
+    margin-bottom: 0.25rem;
+}
+
+#review-search-bar .form-control {
+    margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+    #review-search-bar .form-control {
+        margin-bottom: 0;
+    }
+    #review-search-bar > div:last-child {
+        align-self: flex-end; /* Aligns button to bottom in flex row */
+    }
+}
+
+.list-group-item strong {
+    color: #000000; /* Bootstrap primary color */
+}
+
+/* Style for review detail page (can be expanded) */
+.review-comment-card {
+    margin-bottom: 1rem;
+    border-left: 5px solid #ffcd4a; /* Bootstrap info color */
+}
+
+.review-comment-card .card-body {
+    padding-left: 1.5rem;
+}

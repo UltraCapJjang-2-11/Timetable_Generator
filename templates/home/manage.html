@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>시간표 관리</title>
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/manage_style.css' %}">
+
+    <!-- ✅아이콘 무료 사이트-->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- ✅ 부트스트랩 CSS 추가 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <!-- ✅ header -->
+    <header>
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}">Home<span></span></a>
+                <a href="{% url 'manage' %}">Manage<span></span></a>
+                <a href="{% url 'mypage' %}">MyPage<span></span></a>
+                <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+                <a href="#">Logout<span></span></a>
+            </div>
+        </nav>
+    </header> 
+    <!-- ✅ end header -->
+
+    <div class="manage-container">
+
+        <div class="mypage-container vertical-layout">
+              <section class="timetable-side">
+              <!-- ✅ 시간표 Section (기존 timetable-section 내용) -->
+               <h2>내 시간표</h2>
+               <div class="timetable-section">
+                    <div class="timetable-list">
+                        {% for timetable in timetables %}
+                        <div class="timetable-card" data-timetable-id="{{ timetable.id }}" onclick="showTimetableById({{ timetable.id }})">
+                            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" class="timetable-icon">
+                                <g clip-rule="evenodd" fill-rule="evenodd" stroke="#ffc000" stroke-linecap="round" stroke-width="2">
+                                    <path d="m3 7h17c.5523 0 1 .44772 1 1v11c0 .5523-.4477 1-1 1h-16c-.55228 0-1-.4477-1-1z"></path>
+                                    <path d="m3 4.5c0-.27614.22386-.5.5-.5h6.29289c.13261 0 .25981.05268.35351.14645l2.8536 2.85355h-10z"></path>
+                                </g>
+                            </svg>
+                            <span class="timetable-label">{{ timetable.title }}</span>
+                            <span class="timetable-date">{{ timetable.created_at|date:"m/d" }}</span>
+                        </div>
+                        {% empty %}
+                        <!--<p style="text-align: center; color: #666;">저장된 시간표가 없습니다.</p>-->
+                        {% endfor %}
+                        <a href="{% url 'timetable' %}" class="timetable-add">+</a>
+                    </div>
+                </div>
+              </section>
+
+              <section class="chatroom-side">
+                <!-- ✅ 강의별 채팅방 Section (기존 chatroom-section 내용) -->
+                <h2>강의별 채팅방</h2>
+                <div class="chatroom-container">
+                    <!-- 왼쪽: 강의 목록 -->
+                    <div class="lecture-list">
+                        <ul>
+                            <li onclick="selectChat('강의 1')">강의 1</li>
+                            <li onclick="selectChat('강의 2')">강의 2</li>
+                            <li onclick="selectChat('강의 3')">강의 3</li>
+                            <li onclick="selectChat('강의 4')">강의 4</li>
+                            <li onclick="selectChat('강의 5')">강의 5</li>
+                            <li onclick="selectChat('강의 6')">강의 6</li>
+                            <li onclick="selectChat('강의 7')">강의 7</li>
+                            <li onclick="selectChat('강의 8')">강의 8</li>
+                            <li onclick="selectChat('강의 9')">강의 9</li>
+                        </ul>
+                    </div>
+
+                    <!-- 오른쪽: 채팅방 표시 영역 -->
+                    <div class="chatroom-view">
+                        <div id="chat-placeholder">
+                            <p>좌측 강의를 선택하면 채팅방이 표시됩니다.</p>
+                            <!-- 여기에 채팅 UI가 삽입될 예정 -->
+                        </div>
+                    </div>
+                </div>
+              </section>
+
+        </div>
+
+        
+                     
+    </div>
+
+    <!-- 풀스크린 시간표 컨테이너 -->
+    <div id="timetable-overlay" class="timetable-overlay hidden">
+        <button class="close-btn" onclick="hideTimetable()">×</button>
+        <h2 id="timetable-title"></h2>
+
+        <!-- 버튼 컨테이너 -->
+        <div class="timetable-buttons">
+            <button class="edit-btn" onclick="editTimetable()">수정하기</button>
+            <button class="delete-btn" onclick="deleteTimetable()">삭제하기</button>
+        </div>
+
+        <div class="middle-panel">
+            <div class="table-container">  <!-- 스크롤을 적용할 컨테이너 추가 -->
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>월</th>
+                            <th>화</th>
+                            <th>수</th>
+                            <th>목</th>
+                            <th>금</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 서버에서 전달받은 시간표 데이터
+        const timetablesData = {{ timetables_json|safe }};
+        let currentTimetable = null; // 현재 선택된 시간표 데이터 저장
+        let currentTimetableId = null; // 현재 선택된 시간표 ID
+        
+        console.log("시간표 데이터 로드됨:", timetablesData);
+        console.log("시간표 개수:", timetablesData.length);
+        
+        // 페이지 로드 시 시간표 목록 확인
+        document.addEventListener('DOMContentLoaded', function() {
+            const timetableCards = document.querySelectorAll('.timetable-card');
+            console.log("시간표 카드 개수:", timetableCards.length);
+            
+            if (timetablesData.length === 0) {
+                console.log("저장된 시간표가 없습니다.");
+            } else {
+                timetablesData.forEach((timetable, index) => {
+                    console.log(`시간표 ${index + 1}:`, timetable.title, `(${timetable.courses.length}개 과목)`);
+                });
+            }
+        });
+        
+        function showTimetableById(id) {
+            console.log("시간표 표시 요청:", id);
+            const timetableData = timetablesData.find(t => t.id === id);
+            if (timetableData) {
+                console.log("시간표 데이터 찾음:", timetableData);
+                showTimetable(timetableData);
+            } else {
+                console.error("시간표 데이터를 찾을 수 없습니다:", id);
+            }
+        }
+    
+        function showTimetable(timetableData) {
+            const overlay = document.getElementById("timetable-overlay");
+            const timetableTitle = document.getElementById("timetable-title");
+            const timetableBody = document.querySelector(".timetable tbody");
+    
+            // 현재 선택한 시간표 데이터 저장
+            currentTimetable = timetableData;
+            currentTimetableId = timetableData.id;
+    
+            // 제목 변경
+            timetableTitle.textContent = timetableData.title;
+    
+            // 기존 시간표 데이터 초기화
+            timetableBody.innerHTML = "";
+    
+            // 새로운 시간표 생성
+            for (let hour = 9; hour <= 20; hour++) {
+                const row = document.createElement("tr");
+                const timeCell = document.createElement("td");
+                timeCell.textContent = `${hour}:00`;
+                row.appendChild(timeCell);
+    
+                for (let i = 0; i < 5; i++) {
+                    const cell = document.createElement("td");
+                    cell.classList.add("timetable-cell");
+                    cell.setAttribute("data-hour", hour);
+                    cell.setAttribute("data-day", i);
+                    row.appendChild(cell);
+                }
+    
+                timetableBody.appendChild(row);
+            }
+            
+            // 시간표 데이터 표시
+            const dayMapping = {"월": 0, "화": 1, "수": 2, "목": 3, "금": 4};
+            const colors = ["#FFE5E5", "#E5F3FF", "#E5FFE5", "#FFF5E5", "#F5E5FF", "#FFE5F5"];
+            let colorIndex = 0;
+            
+            timetableData.courses.forEach(course => {
+                const courseColor = colors[colorIndex % colors.length];
+                colorIndex++;
+                
+                course.schedules.forEach(schedule => {
+                    const dayIndex = dayMapping[schedule.day];
+                    if (dayIndex === undefined) return;
+                    
+                    // times 파싱 (예: "02,03,04" -> [10, 11, 12])
+                    const timeSlots = schedule.times.split(",").map(t => parseInt(t.trim()) + 8);
+                    
+                    timeSlots.forEach(hour => {
+                        const cell = document.querySelector(`.timetable-cell[data-hour="${hour}"][data-day="${dayIndex}"]`);
+                        if (cell) {
+                            cell.style.backgroundColor = courseColor;
+                            cell.innerHTML = `
+                                <div style="font-size: 12px; padding: 2px;">
+                                    <strong>${course.course_name}</strong><br>
+                                    <small>${schedule.location || ''}</small>
+                                </div>
+                            `;
+                        }
+                    });
+                });
+            });
+    
+            // 시간표 오버레이 보이기
+            overlay.classList.remove("hidden");
+            overlay.style.display = "flex";
+        }
+    
+        function hideTimetable() {
+            const overlay = document.getElementById("timetable-overlay");
+            overlay.classList.add("hidden");
+            overlay.style.display = "none";
+        }
+    
+        function editTimetable() {
+            // 시간표 수정 페이지로 이동
+            window.location.href = "{% url 'timetable' %}";
+        }
+    
+        async function deleteTimetable() {
+            const confirmDelete = confirm(`"${currentTimetable.title}"을(를) 삭제하시겠습니까?`);
+            if (confirmDelete) {
+                try {
+                    const response = await fetch(`/delete_timetable/${currentTimetableId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        alert("시간표가 삭제되었습니다.");
+                        location.reload(); // 페이지 새로고침
+                    } else {
+                        alert("시간표 삭제에 실패했습니다.");
+                    }
+                } catch (error) {
+                    console.error("삭제 오류:", error);
+                    alert("시간표 삭제 중 오류가 발생했습니다.");
+                }
+            }
+        }
+        
+        // CSRF 토큰 가져오기
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+    
+    
+
+<!-- ✅ 부트스트랩 JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ script.js 파일 연결 -->
+<script src="{% static 'home/js/manage.js' %}"></script>
+
+</body>
+</html>

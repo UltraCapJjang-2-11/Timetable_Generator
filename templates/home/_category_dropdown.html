@@ -1,0 +1,228 @@
+{% load org_tags %}
+{% load static %}
+
+<!-- ========== 스타일 ========== -->
+<style>
+  :root {
+    --bg-main: #fffbe6;
+    --accent: #ffcd4a;
+    --accent-dark: #fabb1d;
+    --text-main: #212529;
+  }
+  
+  #course-results-container .table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+  }
+  
+  .course-block td {
+    background-color: var(--bg-main);
+    padding: 12px 15px;
+    border: 1px solid #e6d8aa;
+  }
+  
+  .course-block td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+  
+  .course-block td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+  
+  #course-results-container .table-hover .course-block:hover td {
+    background-color: #fff2c2;
+  }
+  
+  .custom-info {
+    background-color: #242323;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-info:hover {
+    background-color: #535353;
+    color: white;
+  }
+  
+  .custom-primary {
+    background-color: var(--accent);
+    color: black;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-primary:hover {
+    background-color: var(--accent-dark);
+    color: black;
+  }
+  
+  .custom-close-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-close-btn:hover {
+    background-color: #5a6268;
+    color: white;
+  }
+  
+  th {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 너무 길면 ... 처리 */
+  }
+  
+  .modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-header {
+    background-color: var(--accent);
+    color: var(--text-main);
+    border-bottom: 1px solid #f5deb3;
+  }
+</style>
+
+<!-- ========== 드롭다운 검색 영역 ========== -->
+<div id="category-dropdowns" class="d-flex flex-row align-items-baseline gap-3 mb-1">
+  <div class="d-flex flex-column">
+    <label for="category_root" class="form-label fw-bold"></label>
+    <select id="category_root" class="form-select">
+      <option value="">-- 대분류 --</option>
+    </select>
+  </div>
+
+  <div id="child-container" class="d-flex flex-column" style="display:none;">
+    <label id="label_child" for="category_child" class="form-label"></label>
+    <select id="category_child" class="form-select" disabled>
+      <option value="">-- 선택 --</option>
+    </select>
+  </div>
+
+  <div id="grandchild-container" class="d-flex flex-column" style="display:none;">
+    <label id="label_grandchild" for="category_grandchild" class="form-label"></label>
+    <select id="category_grandchild" class="form-select" disabled>
+      <option value="">-- 선택 --</option>
+    </select>
+  </div>
+</div>
+
+<div id="org-container" style="display:none;">
+  {% org_dropdowns %}
+</div>
+
+<!-- ========== 강의명 검색 영역 ========== -->
+<div class="row mb-1 align-items-end" id="course-name-search-container">
+  <div class="col-md-8">
+    <label for="course_name_search" class="form-label fw-semibold"></label>
+    <input type="text" id="course_name_search" class="form-control" placeholder="강의명 입력" />
+  </div>
+  <div class="col-md-4 text-end">
+    <button id="search-button" class="btn custom-primary w-100 mt-md-2">검색</button>
+  </div>
+</div>
+
+<!-- ========== 검색 결과 테이블 ========== -->
+<div id="course-results-container" class="course-list-container">
+  <table class="table table-sm table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 8px;">
+    <thead class="sticky-top" style="background-color: var(--accent); color: #333; top: 0; z-index: 1;">
+      <tr>
+        <th class="text-center" style="white-space: nowrap; width: 40%; border: 1px solid #e6d8aa; border-radius: 8px 0 0 8px; background-color:rgb(255, 255, 255);">강의명</th>
+        <th class="text-center" style="white-space: nowrap; width: 25%; border: 1px solid #e6d8aa; background-color:rgb(255, 255, 255);">교수명</th>
+        <th class="text-center" style="white-space: nowrap; width: 23%; border: 1px solid #e6d8aa; background-color:rgb(255, 255, 255);">시간표</th>
+        <th class="text-center" style="white-space: nowrap; width: 12%; border: 1px solid #e6d8aa; border-radius: 0 8px 8px 0; background-color:rgb(255, 255, 255);">학점</th>
+      </tr>
+    </thead>
+    <tbody id="course-list-body">
+      <!-- JS로 강의 데이터 렌더링 -->
+    </tbody>
+  </table>
+</div>
+
+<!-- ========== 카테고리 JSON 데이터 ========== -->
+{{ categories|json_script:'categories-data' }}
+
+<!-- ========== 강의 상세 팝업 ========== -->
+<div id="course-popup" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="popup-title" class="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+  <div class="d-flex flex-wrap gap-4">
+    <!-- 왼쪽: 강의 상세 정보 -->
+    <div class="flex-fill" style="min-width: 260px;">
+      <div class="bg-white border rounded p-3 shadow-sm h-100">
+        <h6 class="fw-bold mb-3">📘 강의 정보</h6>
+        <div class="d-flex flex-column gap-2 small">
+          <div class="d-flex align-items-center gap-2 border-bottom pb-1">
+            <span class="text-muted fw-semibold" style="min-width: 90px;">교과목 번호</span>
+            <span id="popup-code" class="fw-bold text-dark"></span>
+          </div>
+          <div class="d-flex align-items-center gap-2 border-bottom pb-1">
+            <span class="text-muted fw-semibold" style="min-width: 90px;">분반</span>
+            <span id="popup-section" class="fw-bold text-dark"></span>
+          </div>
+          <div class="d-flex align-items-center gap-2 border-bottom pb-1">
+            <span class="text-muted fw-semibold" style="min-width: 90px;">대상 학년</span>
+            <span id="popup-year" class="fw-bold text-dark"></span>
+          </div>
+          <div class="d-flex align-items-center gap-2 border-bottom pb-1">
+            <span class="text-muted fw-semibold" style="min-width: 90px;">학점</span>
+            <span id="popup-credits" class="fw-bold text-dark"></span>
+          </div>
+          <div class="d-flex align-items-center gap-2 border-bottom pb-1">
+            <span class="text-muted fw-semibold" style="min-width: 90px;">교수명</span>
+            <span id="popup-instructor" class="fw-bold text-dark"></span>
+          </div>
+          <div class="d-flex align-items-center gap-2 border-bottom pb-1">
+            <span class="text-muted fw-semibold" style="min-width: 90px;">그룹 활동</span>
+            <span id="popup-group" class="fw-bold text-dark"></span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-muted fw-semibold" style="min-width: 90px;">시간표 / 강의실</span>
+            <span id="popup-schedules" class="fw-bold text-dark" style="white-space: normal;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 오른쪽: 강의 요약 -->
+    <div class="flex-fill" style="min-width: 280px;">
+      <div class="bg-light border rounded p-3 h-100 shadow-sm">
+        <h6 class="fw-bold mb-2">📝 강의 요약</h6>
+        <p id="popup-summary" style="white-space: pre-wrap; font-size: 0.95rem;" class="mb-0"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <div class="modal-footer justify-content-between flex-wrap gap-2">
+        <button id="view-reviews-button" class="btn custom-info">강의 평가 보기</button>
+        <div class="ms-auto d-flex gap-2">
+          <button id="add-to-timetable-btn-popup" class="btn custom-primary">시간표에 추가</button>
+          <button class="btn custom-close-btn" data-bs-dismiss="modal">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 스크립트 ========== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<script src="{% static 'home/js/category_dropdown.js' %}"></script>

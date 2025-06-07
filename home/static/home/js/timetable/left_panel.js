@@ -139,14 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function setupAddToTimetableButton(courseData) {
         // .cloneNode(true)와 replaceChild를 사용하여 기존 이벤트 리스너를 효과적으로 제거합니다.
-        const oldBtn = document.getElementById('add-to-timetable-btn-popup');
-        const newBtn = oldBtn.cloneNode(true);
-        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        const addBtn = document.getElementById('add-to-timetable-btn-popup');
 
-        newBtn.textContent = '시간표에 추가';
-        newBtn.disabled = false;
+        addBtn.textContent = '시간표에 추가';
+        addBtn.disabled = false;
 
-        newBtn.onclick = function() {
+        addBtn.onclick = function() {
             const event = new CustomEvent('addCourseToTimetable', {
                 detail: {
                     course_id: String(courseData.course_id),
@@ -167,11 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Object} courseData 강의 평가를 볼 강의 데이터.
      */
     function setupViewReviewsButton(courseData) {
-        const oldBtn = $panelElements.viewReviewsButton;
-        const newBtn = oldBtn.cloneNode(true);
-        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        const addBtn = $panelElements.viewReviewsButton;
 
-        newBtn.addEventListener('click', () => {
+        addBtn.addEventListener('click', () => {
             const { course_code, instructor_name } = courseData;
             if (course_code && instructor_name) {
                 const params = new URLSearchParams({ course_code, instructor_name });

@@ -1,6 +1,4 @@
-// home/js/timetable/left_panel.js
-
-// 외부 모듈에서 필요한 함수와 DOM 요소를 가져옵니다.
+import { Course } from "../models/Course.js";
 import { getCategoryDOMElements, getSelectedCategoryId } from "../dropdown/category_dropdown.js";
 import { getOrgDOMElements } from '../dropdown/org_dropdown.js';
 
@@ -9,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const $categoryElements = getCategoryDOMElements();
     const $orgElements = getOrgDOMElements();
 
-    // left_panel.js가 직접 사용하는 DOM 요소를 캐싱합니다.
+    // DOM 요소 캐싱
     const $panelElements = {
         courseNameSearch: document.getElementById('course_name_search'),
         searchButton: document.getElementById('search-button'),
@@ -57,52 +55,108 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-            renderCourseList(data);
+
+            // ✅ 2. API 응답(순수 객체 배열)을 Course 객체 배열로 변환합니다.
+            const courses = Course.createFromApiData(data);
+
+            renderCourseList(courses);
         } catch (error) {
             $panelElements.courseListBody.innerHTML = `<tr><td colspan="4" class="text-danger text-center py-3">오류: ${error}</td></tr>`;
         }
     }
 
     /**
-     * 검색 결과를 테이블에 렌더링합니다.
-     * @param {Array<Object>} courses 검색된 강의 목록.
+     * 검색 결과를 Bootstrap 그리드 기반의 카드로 렌더링합니다.
+     * @param {Array<Course>} courses 검색된 Course 객체 목록.
      */
     function renderCourseList(courses) {
-        $panelElements.courseListBody.innerHTML = '';
+        const container = $panelElements.courseListBody;
+        container.innerHTML = '';
 
         if (!courses || courses.length === 0) {
-            $panelElements.courseListBody.innerHTML = '<tr><td colspan="4" class="text-center py-3">검색 결과가 없습니다.</td></tr>';
+            container.innerHTML = '<p class="text-center py-3">검색 결과가 없습니다.</p>';
             return;
         }
 
         courses.forEach(course => {
-            const tr = document.createElement('tr');
-            tr.className = 'search-row course-block';
-            tr.style.cursor = 'pointer';
-            tr.dataset.courseId = course.course_id;
+            const courseItem = document.createElement('div');
+            // ✅ 1. 카드 아이템에 Bootstrap의 .row 클래스를 직접 사용하지 않고, 내부에 row를 둡니다.
+            courseItem.className = 'course-item';
+            courseItem.dataset.courseId = course.id;
 
-            tr.innerHTML = `
-                <td class="fw-bold">${course.course_name}</td>
-                <td>${course.instructor_name || '-'}</td>
-                <td>${(course.schedules || []).map(s => `${s.day} ${s.times}`).join('<br>')}</td>
-                <td class="text-center">${course.credits}</td>
+            const scheduleHtml = course.schedules.map(s => `
+                <div class="schedule-entry">
+                    <span><strong>${s.day}</strong> | ${s.times.join(',')}교시 | ${s.location || '장소 미정'}</span>
+                </div>
+            `).join('');
+
+            courseItem.innerHTML = `
+                <div class="row align-items-center">
+                    <div class="col-md-10">
+                        <div class="course-item-content">
+                            <div class="course-info">
+                                <div class="course-title-line">
+                                    <span class="course-name">${course.getFullTitle()}</span>
+                                    <span class="course-code">(${course.code})</span>
+                                </div>
+                                <div class="course-detail-line">
+                                    <span class="professor-name">${course.instructor || '미정'}</span>
+                                    <span class="credits-info">| ${course.credits}학점</span>
+                                </div>
+                                <div class="course-semester-line">
+                                    <span class="semester">${course.semester}</span>
+                                </div>
+                            </div>
+                            ${scheduleHtml ? `<div class="course-item-schedule">${scheduleHtml}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="course-item-actions">
+                            <button class="add-course-btn" title="시간표에 추가">+</button>
+                            <button class="details-btn" title="상세 정보 보기">ⓘ</button>
+                        </div>
+                    </div>
+                </div>
             `;
 
-            tr.addEventListener('click', () => fetchCourseSummaryAndShowPopup(course));
-            $panelElements.courseListBody.appendChild(tr);
+            // 이벤트 리스너 할당 로직은 이전과 동일하게 유지됩니다.
+            const addBtn = courseItem.querySelector('.add-course-btn');
+            const detailsBtn = courseItem.querySelector('.details-btn');
+
+            addBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const event = new CustomEvent('addCourseToTimetable', { detail: course.toObject() });
+                document.dispatchEvent(event);
+
+                addBtn.textContent = '✓';
+                addBtn.disabled = true;
+                setTimeout(() => {
+                    addBtn.textContent = '+';
+                    addBtn.disabled = false;
+                }, 1000);
+            });
+
+            detailsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                fetchCourseSummaryAndShowPopup(course);
+            });
+
+            container.appendChild(courseItem);
         });
     }
 
     /**
      * 강의 요약을 가져와 강의 팝업을 표시합니다.
-     * @param {Object} courseData 기본 강의 정보.
+     * @param {Course} course 기본 강의 정보.
      */
-    async function fetchCourseSummaryAndShowPopup(courseData) {
+    async function fetchCourseSummaryAndShowPopup(course) {
         try {
-            const response = await fetch(`/data-manager/course/${courseData.course_id}/summary/`);
+            const response = await fetch(`/data-manager/course/${course.id}/summary/`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const summary = await response.json();
-            showCoursePopup({ ...courseData, ...summary });
+
+            // 원본 Course 객체의 데이터와 요약 정보를 합쳐 팝업에 전달
+            showCoursePopup(course, summary);
         } catch (error) {
             alert('강의 요약을 불러오지 못했습니다: ' + error);
         }
@@ -110,48 +164,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * 강의 상세 정보를 표시하는 팝업을 띄웁니다.
-     * @param {Object} data 강의 상세 데이터.
+     *  @param {Course} course 상세 정보를 표시할 Course 객체.
+     *  @param {Object} summary 추가적인 요약 정보 (예: course_summary).
      */
-    function showCoursePopup(data) {
+    function showCoursePopup(course, summary) {
         const modal = bootstrap.Modal.getOrCreateInstance($panelElements.coursePopup);
 
-        $panelElements.popupTitle.textContent = data.course_name;
-        $panelElements.popupCode.textContent = data.course_code;
-        $panelElements.popupSection.textContent = data.section;
-        $panelElements.popupYear.textContent = data.target_year;
-        $panelElements.popupCredits.textContent = data.credits;
-        $panelElements.popupInstructor.textContent = data.instructor_name;
-        $panelElements.popupGroup.textContent = data.group_activity === 'Y' ? '있음' : '없음';
-        $panelElements.popupSchedules.innerHTML = (data.schedules || [])
-            .map(s => `${s.day} ${s.times} (${s.location || '-'})`)
-            .join('<br>');
-        $panelElements.popupSummary.textContent = data.course_summary || '(요약 정보 없음)';
+        // Course 객체의 속성과 메서드를 사용하여 팝업 내용을 채웁니다.
+        $panelElements.popupTitle.textContent = course.name;
+        $panelElements.popupCode.textContent = course.code;
+        $panelElements.popupSection.textContent = course.section;
+        $panelElements.popupYear.textContent = course.targetYear;
+        $panelElements.popupCredits.textContent = course.credits;
+        $panelElements.popupInstructor.textContent = course.instructor;
+        $panelElements.popupGroup.textContent = course.group_activity === 'Y' ? '있음' : '없음'; // 이 속성이 Course 클래스에 있다면
+        $panelElements.popupSchedules.innerHTML = course.getScheduleString().replace(/<br>/g, ' / '); // 팝업에서는 다른 포맷으로
+        $panelElements.popupSummary.textContent = summary.course_summary || '(요약 정보 없음)';
 
-        setupAddToTimetableButton(data);
-        setupViewReviewsButton(data);
+        setupAddToTimetableButton(course); // Course 객체 전달
+        setupViewReviewsButton(course);   // Course 객체 전달
 
         modal.show();
     }
 
     /**
      * 팝업 내 '시간표에 추가' 버튼을 설정합니다.
-     * @param {Object} courseData 시간표에 추가할 강의 데이터.
+     * @param {Course} course 시간표에 추가할 Course 객체.
      */
-    function setupAddToTimetableButton(courseData) {
-        // .cloneNode(true)와 replaceChild를 사용하여 기존 이벤트 리스너를 효과적으로 제거합니다.
+    function setupAddToTimetableButton(course) {
         const addBtn = document.getElementById('add-to-timetable-btn-popup');
-
         addBtn.textContent = '시간표에 추가';
         addBtn.disabled = false;
 
         addBtn.onclick = function() {
             const event = new CustomEvent('addCourseToTimetable', {
-                detail: {
-                    course_id: String(courseData.course_id),
-                    course_name: courseData.course_name,
-                    credits: courseData.credits,
-                    schedules: courseData.schedules || [],
-                }
+                detail: course.toObject()
             });
             document.dispatchEvent(event);
 
@@ -162,20 +209,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * 팝업 내 '강의 평가 보기' 버튼을 설정합니다.
-     * @param {Object} courseData 강의 평가를 볼 강의 데이터.
+     * @param {Course} course 강의 평가를 볼 Course 객체.
      */
-    function setupViewReviewsButton(courseData) {
-        const addBtn = $panelElements.viewReviewsButton;
-
-        addBtn.addEventListener('click', () => {
-            const { course_code, instructor_name } = courseData;
-            if (course_code && instructor_name) {
-                const params = new URLSearchParams({ course_code, instructor_name });
-                window.location.href = `/reviews/?${params.toString()}`;
+    function setupViewReviewsButton(course) {
+        const viewBtn = $panelElements.viewReviewsButton;
+        viewBtn.onclick = () => { // 이전 리스너가 누적되지 않도록 onclick으로 재할당
+            if (course.code && course.instructor) {
+                const params = new URLSearchParams({
+                    course_code: course.code,
+                    instructor_name: course.instructor
+                });
+                window.open(`/reviews/?${params.toString()}`, '_blank'); // 새 탭에서 열기
             } else {
                 alert('강의 코드 또는 교수자 정보가 없어 강의 평가를 볼 수 없습니다.');
             }
-        });
+        };
     }
 
     // --- 이벤트 리스너 등록 ---

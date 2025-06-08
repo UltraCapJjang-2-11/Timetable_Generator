@@ -512,7 +512,6 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
     return candidate_data
 
 
-
 # ------------------------------------
 # 3. generate_timetable_stream 함수 (교양의 parent_category 조건 추가)
 def generate_timetable_stream(request):
@@ -528,9 +527,8 @@ def generate_timetable_stream(request):
         svc = CourseFilterService()
         # 미리 연도·학기·카테고리를 넣어서 기본 queryset을 받아옵니다.
         major_qs = (
-            svc.course_search(year=year, term=term, category_name='전공필수') |
-            svc.course_search(year=year, term=term, category_name='전공선택') |
-            svc.course_search(year=year, term=term, category_name='교양선택')
+            svc.course_search(year=year, term=term, category_name='교양') |
+            svc.course_search(year=year, term=term, category_name='전공')
         )
         for name in req_names:
            
@@ -769,10 +767,17 @@ def generate_timetable_stream(request):
                 continue
             data_item = {
                 'id': course.course_id,
-                'credit': course.credits,
-                'category': course.category.category_name,  # course_type
                 'course_name': course.course_name,
-                'year': course.target_year,
+                'course_code': course.course_code,
+                'section': course.section,
+                'credit': course.credits, # CP-SAT 모델은 'credit'을 사용하므로 일단 유지
+                'credits': course.credits, # 프론트엔드를 위해 'credits'도 추가
+                'year': course.target_year ,
+                'instructor_name': course.instructor_name,
+                'capacity': course.capacity,
+                'dept_name': course.dept.dept_name if course.dept else '',
+                'category': course.category.category_name,
+                'semester': "2025 1학기",
                 'schedule': schedule_list,
                 'location': locations[0] if locations else "",
                 'pre_added': course.course_id in pre_added_ids
@@ -1004,6 +1009,7 @@ def generate_timetable_stream(request):
             def __init__(self, x, candidate_data, limit):
                 cp_model.CpSolverSolutionCallback.__init__(self)
                 self._x = x
+                # candidate_data를 id를 키로 하는 딕셔너리로 변환하여 쉽게 접근
                 self._candidate_data = {d['id']: d for d in candidate_data}
                 self._limit = limit
                 self._solutions = []
@@ -1015,17 +1021,29 @@ def generate_timetable_stream(request):
                 if self._solution_count > self._limit:
                     self.StopSearch()
                     return
+
                 solution = []
                 for cid, var in self._x.items():
                     if self.Value(var) == 1:
+                        # self._candidate_data에서 해당 강의의 전체 정보를 가져옵니다.
                         data = self._candidate_data[cid]
+
                         solution.append({
+                            # --- 기존 필드명과 구조를 프론트엔드 Course 클래스에 맞게 수정 ---
                             'course_id': data['id'],
-                            'course_name': data['course_name'],
-                            'credit': data['credit'],
-                            'category': data['category'],
-                            'schedules': data['schedule'],
-                            'location': data['location']
+                            'course_name': data.get('course_name', ''),
+                            'course_code': data.get('course_code', ''),  # 누락된 필드 추가
+                            'section': data.get('section', ''),  # 누락된 필드 추가
+                            'credits': data.get('credit', 0),  # 'credit' -> 'credits'로 변경
+                            'target_year': data.get('year', ''),  # 'year' -> 'target_year'로 변경
+                            'instructor_name': data.get('instructor_name', ''),  # 누락된 필드 추가
+                            'capacity': data.get('capacity', 0),  # 누락된 필드 추가
+                            'dept_name': data.get('dept_name', ''),  # 누락된 필드 추가
+                            'category_name': data.get('category', ''),  # 'category' -> 'category_name'으로 변경
+                            'semester': data.get('semester', ''),  # 누락된 필드 추가
+                            'schedules': data.get('schedule', []),
+                            # 필드명은 'schedule' -> 'schedules'가 더 명확하나, 기존 코드가 schedule을 사용하므로 유지하거나 양쪽 모두 수정 필요. 여기서는 일단 유지.
+                            'location': data.get('location', '')
                         })
                 self._solutions.append(solution)
 
@@ -1048,6 +1066,8 @@ def generate_timetable_stream(request):
             'timetables': timetables_data,
             'message': f"총 {len(timetables_data)}개의 시간표를 찾았습니다." if timetables_data else "조건에 맞는 시간표를 찾지 못했습니다. 조건을 변경해보세요."
         }
+
+        print("DEBUG: Result:", result)
 
         def event_stream():
             yield f"data: {json.dumps(result, ensure_ascii=False)}\n\n"

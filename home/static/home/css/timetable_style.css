@@ -20,7 +20,6 @@
     border-radius: 10px;
     text-align: center;
 }
-
 #progress-bar {
     width: 300px;
     height: 20px;
@@ -34,7 +33,6 @@
     height: 100%;
     background: #4caf50;
 }
-
 body {
     padding-top: 80px;
 }
@@ -83,7 +81,7 @@ body {
     padding: 10px;
     text-align: center;
     vertical-align: middle;
-    height: 80px;
+    height: 85px;
     background: #f9f9f9;
     border-radius: 10px;
     transition: 0.3s ease-in-out;
@@ -101,7 +99,6 @@ body {
 }
 
 .timetable td .lecture {
-    background-color: #ffcccb;
     color: black;
     border-radius: 8px;
     font-size: 14px;
@@ -167,7 +164,6 @@ body {
 }
 
 .lecture {
-    background-color: #ffcccb;
     color: black;
     border-radius: 8px;
     padding: 5px;
@@ -209,33 +205,6 @@ body {
     border: 1px solid #ccc;
 }
 
-/* 필터 버튼 */
-.filter-buttons {
-    width: 90%;
-    display: flex;
-    gap: 5px;
-    justify-content: center;
-    margin-bottom: 20px;
-    margin-top: 20px;
-}
-
-.filter-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #ddd;
-}
-
-.filter-btn:hover {
-    transform: scale(1.1);
-}
-
-.filter-btn.active {
-    background-color: #ffcd4a;
-    color: rgb(0, 0, 0);
-}
-
 /* 강의 블록 컨테이너 (전체 리스트) */
 .course-list-container {
     flex: 1;
@@ -244,53 +213,6 @@ body {
     padding-top: 10px;
     height: calc(100vh - 150px);
 }
-
-/* 리스트안의 강의 블록 스타일 */
-.course-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: white;
-    padding: 12px;
-    border-radius: 12px;
-    width: 300px;
-    height: 120px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: 0.3s ease-in-out;
-    text-align: center;
-    margin-bottom: 15px;
-    transform: translateX(40px);
-}
-
-/* 블록 내 텍스트 스타일 */
-.course-name {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-.course-info {
-    font-size: 12px;
-    color: #555;
-    margin-bottom: 8px;
-}
-
-/* 강의 추가 버튼 */
-.add-course-btn {
-    padding: 5px 10px;
-    border: none;
-    background-color: #ffcd4a;
-    color: rgb(0, 0, 0);
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-/* 블록 마우스 오버 효과 */
-.course-item:hover {
-    transform: scale(1.0);
-}
-
 
 /* 오른쪽 패널 스타일 */
 .right-panel {

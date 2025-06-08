@@ -90,9 +90,6 @@ class CourseSearchView(APIView):
             term=term
         )
 
-        # schedules 를 미리 가져오기
-        queryset = queryset.prefetch_related('courseschedule_set')
-
         # 3) 직렬화 후 응답
         serializer = CourseSerializer(queryset, many=True)
         print(serializer.data)

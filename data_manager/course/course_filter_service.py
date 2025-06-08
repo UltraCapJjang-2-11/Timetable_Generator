@@ -191,4 +191,7 @@ class CourseFilterService:
         if year and term:
             queryset = self.filter_by_semester_terms(queryset, year, term)
 
+        # 강의의 schedule를 prefetch
+        queryset = queryset.prefetch_related('courseschedule_set')
+
         return queryset

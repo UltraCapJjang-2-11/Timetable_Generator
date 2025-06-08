@@ -1,10 +1,11 @@
-// home/js/timetable.js
 import { initChatbot } from './chatbot.js'; // 챗봇 모듈 임포트
+import { Course } from '../models/Course.js';
+import { Timetable } from '../models/Timetable.js';
 
 /**
  * ----------------------------------------------------------------
  * 1. 상태 관리 (State Management)
- * - 애플리케이션의 전역 상태를 관리하는 변수들입니다.
+ * - 애플리케이션의 전역 상태를 관리하는 변수들
  * ----------------------------------------------------------------
  */
 
@@ -24,20 +25,15 @@ const constraints = {
     existing_courses: []
 };
 
-let timetables = [];
-let currentIndex = 0;
-let lastGeneratedTimetable = null;
-const lectureColors = {};
-const colorPalette = ['#f28b82', '#fbbc04', '#fff475', '#ccff90', '#a7ffeb', '#cbf0f8', '#aecbfa', '#d7aefb', '#fdcfe8'];
-
+let timetables = [];  // 생성된 Timetable 객체의 배열
+let currentIndex = 0;  // 현재 렌더링(선택된)시간표의 인덱스
+let lastGeneratedTimetable = null; // 가장 최근에 생성된 시간표
 
 /**
  * ----------------------------------------------------------------
  * 2. 유틸리티 함수 (Utility Functions)
  * ----------------------------------------------------------------
  */
-
-const convertDayToIndex = (day) => ({ "월": 0, "화": 1, "수": 2, "목": 3, "금": 4 }[day] ?? -1);
 
 function getCookie(name) {
     if (document.cookie && document.cookie !== '') {
@@ -88,7 +84,12 @@ function setupSseConnection(url, onComplete) {
     evtSource.onmessage = (e) => {
         const data = JSON.parse(e.data);
         if (data.progress === "완료") {
-            timetables = data.timetables;
+
+            timetables = data.timetables.map(timetableCourseData => {
+                const courses = Course.createFromApiData(timetableCourseData);
+                return new Timetable(courses); // Course 배열로 Timetable 인스턴스 생성
+            });
+
             currentIndex = 0;
             if (constraints.is_modification) {
                 constraints.is_modification = false;
@@ -113,15 +114,15 @@ function setupSseConnection(url, onComplete) {
 }
 
 async function saveCurrentTimetable() {
-    if (!lastGeneratedTimetable || lastGeneratedTimetable.length === 0) {
+    if (!lastGeneratedTimetable || lastGeneratedTimetable.courses.length === 0) {
         return { success: false, message: "저장할 시간표가 없습니다. 먼저 시간표를 생성해주세요." };
     }
 
-    const timetableData = {
-        courses: lastGeneratedTimetable.map(course => ({ ...course, note: '', color: '' })),
-        title: ''
-    };
+    // 저장할 데이터 Format 생성
+    const timetableData = lastGeneratedTimetable.toSaveFormat();
 
+
+    // API(시간표 저장) 요청
     try {
         const response = await fetch('/save_timetable/', {
             method: 'POST',
@@ -146,48 +147,23 @@ async function saveCurrentTimetable() {
  */
 
 function applyTimetableToMiddlePanel() {
-    document.querySelectorAll(".timetable-cell").forEach(cell => { cell.innerHTML = ""; });
     const timetableIndexElem = document.getElementById("timetable-index");
+    const gridBody = document.querySelector(".timetable tbody");
 
     if (timetables.length === 0) {
         timetableIndexElem.textContent = "0 / 0";
         lastGeneratedTimetable = null;
+        // 그리드 클리어 로직도 render 메서드에 포함되므로 여기서 호출 가능
+        new Timetable([]).render(gridBody);
         return;
     }
 
+    // ✅ 3. 렌더링 로직을 Timetable 객체에 완전히 위임합니다.
     lastGeneratedTimetable = timetables[currentIndex];
-    const currentColors = {};
-    const usedColors = [];
-
-    lastGeneratedTimetable.forEach(course => {
-        if (!currentColors[course.course_id]) {
-            const availableColors = colorPalette.filter(c => !usedColors.includes(c));
-            const color = availableColors.length > 0 ? availableColors[0] : colorPalette[Math.floor(Math.random() * colorPalette.length)];
-            currentColors[course.course_id] = color;
-            usedColors.push(color);
-        }
-        lectureColors[course.course_id] = currentColors[course.course_id];
-    });
-
-    lastGeneratedTimetable.forEach(course => {
-        const courseColor = lectureColors[course.course_id];
-        course.schedules.forEach(schedule => {
-            const dayIndex = convertDayToIndex(schedule.day);
-            if (dayIndex === -1 || !schedule.times) return;
-
-            const timeSlots = schedule.times.split(",").map(str => parseInt(str, 10) + 8);
-            timeSlots.forEach(slot => {
-                const cell = document.querySelector(`.timetable-cell[data-hour="${slot}"][data-day="${dayIndex}"]`);
-                if (cell) {
-                    cell.innerHTML += `<div class="lecture" style="background-color: ${courseColor};">${course.course_name}<br>${schedule.location}</div>`;
-                }
-            });
-        });
-    });
+    lastGeneratedTimetable.render(gridBody); // "이 시간표야, 저기(gridBody)에 네 자신을 그려줘"
 
     timetableIndexElem.textContent = `${currentIndex + 1} / ${timetables.length}`;
 }
-
 
 /**
  * ----------------------------------------------------------------
@@ -221,10 +197,10 @@ function handleTimetableActionRequest(e) {
         });
         
         const excludeCoursesLower = (constraints.exclude_courses || []).map(name => name.toLowerCase().trim());
-        const fixedCourses = lastGeneratedTimetable.filter(course =>
-            !excludeCoursesLower.some(exName => course.course_name.toLowerCase().trim().includes(exName))
+        const fixedCourses = lastGeneratedTimetable.courses.filter(course =>
+            !excludeCoursesLower.some(exName => course.name.toLowerCase().trim().includes(exName))
         );
-        constraints.existing_courses = fixedCourses.map(course => String(course.course_id));
+        constraints.existing_courses = fixedCourses.map(course => String(course.id));
     } else {
         // 새로운 시간표 생성의 경우: 모든 제약조건을 새로 설정
         constraints.is_modification = false;

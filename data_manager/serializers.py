@@ -32,15 +32,56 @@ class CourseScheduleSerializer(serializers.ModelSerializer):
         fields = ['day', 'times', 'location']
 
 class CourseSerializer(serializers.ModelSerializer):
-    schedules = CourseScheduleSerializer(
-        source='courseschedule_set',  # 역참조 이름
-        many=True,
-        read_only=True
-    )
+    """
+    강의 정보를 직렬화하면서, category와 semester 정보를
+    ID가 아닌 이름과 포맷된 문자열로 보여줍니다.
+    """
+    # 1. 기존 category, semester 필드를 대체할 새로운 필드 정의
+    category_name = serializers.SerializerMethodField()
+    semester = serializers.SerializerMethodField()
+    dept_name = serializers.SerializerMethodField()
+    # CourseSchedule 정보(schedules)를 함께 보여주기 위해 추가
+    schedules = CourseScheduleSerializer(many=True, read_only=True, source='courseschedule_set')
 
     class Meta:
         model = Courses
-        fields = '__all__'
+        fields = [
+            'course_id',
+            'schedules',
+            'course_name',
+            'course_code',
+            'section',
+            'credits',
+            'target_year',
+            'foreign_course',
+            'instructor_name',
+            'capacity',
+            'dept_name',
+            'category_name',
+            'semester',
+        ]
+
+    def get_dept_name(self, obj):
+        return obj.dept.dept_name if obj.dept else None
+
+    # SerializerMethodField의 값을 어떻게 만들지 정의하는 메소드
+    def get_category_name(self, obj):
+        """
+        Courses 객체(obj)의 category(ForeignKey)를 통해
+        Category 모델의 category_name을 가져옵니다.
+        """
+        # obj.category가 None일 경우를 대비하여 안전하게 처리
+        return obj.category.category_name if obj.category else None
+
+    def get_semester(self, obj):
+        """
+        Courses 객체(obj)의 semester(ForeignKey)를 통해
+        Semester 모델의 year와 term을 조합하여 문자열을 만듭니다.
+        """
+        # obj.semester가 None일 경우를 대비하여 안전하게 처리
+        if obj.semester:
+            return f"{obj.semester.year} {obj.semester.term}"
+        return None
 
 class TimeTableSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,0 +1,131 @@
+/* left_panel.css */
+
+/* 검색창 및 필터 컨테이너 스타일 */
+.course-search-container{
+    width: 100%;
+    position: relative;
+    background-color: #f8f9fa;
+    z-index: 10;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.course-search {
+    flex-grow: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+
+.course-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    transition: box-shadow 0.2s ease-in-out;
+    width: 100%;
+}
+
+.course-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px); /* 값을 -1px로 줄여 움직임을 완화 */
+}
+
+.course-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.course-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.course-title-line {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.course-title-line .course-code {
+    font-size: 0.9rem;
+    color: #555;
+    margin-left: 6px;
+}
+
+.course-detail-line {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.course-detail-line .credits-info {
+    margin-left: 8px;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.course-semester-line {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.course-item-schedule {
+    font-size: 0.8rem;
+    color: #777;
+    border-top: 1px dashed #eee;
+    padding-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.course-item-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: end;
+    gap: 12px;
+    height: 100%;
+}
+
+.course-item-actions button {
+    border: none;
+    border-radius: 50%;
+    width: 36px;  /* 버튼 크기 약간 키움 */
+    height: 36px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1; /* 아이콘/텍스트 세로 정렬 */
+}
+
+.add-course-btn {
+    background-color: #ffc107;
+    color: #333;
+    font-weight: bold;
+}
+
+.add-course-btn:hover {
+    background-color: #e0a800;
+}
+
+.details-btn {
+    background-color: #f0f0f0;
+    color: #555;
+    font-size: 1rem;
+    font-family: "Malgun Gothic", sans-serif;
+}
+
+.details-btn:hover {
+    background-color: #dcdcdc;
+}

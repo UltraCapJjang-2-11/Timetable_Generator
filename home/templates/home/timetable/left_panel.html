@@ -1,7 +1,7 @@
 {% load static %}
 {% load org_tags %}
 {% load category_tags %}
-
+<link rel="stylesheet" type="text/css" href="{% static 'home/css/left_panel.css' %}">
 <div class="left-panel p-3 border-end overflow-auto">
 
     {# 교과목 분류(카테고리) 선택하는 드롭다운 #}
@@ -25,19 +25,10 @@
 
     {# 결과 테이블 #}
     <div id="course-results-container" class="course-list-container">
-        <table class="table table-sm table-hover align-middle mb-0">
-            <thead class="sticky-top" style="background-color: #ffcd4a; color: #333;">
-                <tr>
-                  <th style="width:40%; ">강의명</th>
-                  <th style="width:20%;">교수명</th>
-                  <th style="width:25%;">시간표</th>
-                  <th style="width:15%;" class="text-center">학점</th>
-                </tr>
-            </thead>
-            <tbody id="course-list-body"></tbody>
-        </table>
+        <div id="course-list-body"></div>
     </div>
 
+    {# 상세 정보 모달 #}
     <div id="course-popup" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">

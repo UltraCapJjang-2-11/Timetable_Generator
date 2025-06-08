@@ -170,7 +170,6 @@ class Courses(models.Model):
     class Meta:
         db_table = 'Courses'
         managed = False
-        unique_together = (('course_code', 'section'),)
 
     def __str__(self):
         return f"[{self.course_id}] {self.course_code}-{self.section} / {self.course_name}"

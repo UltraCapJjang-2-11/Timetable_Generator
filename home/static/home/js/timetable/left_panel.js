@@ -96,12 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="course-item-content">
                             <div class="course-info">
                                 <div class="course-title-line">
-                                    <span class="course-name">${course.getFullTitle()}</span>
-                                    <span class="course-code">(${course.code})</span>
+                                    <span class="course-name">${course.name}</span>
+                                    <span class="course-code">(${course.code}-${course.section})</span>
                                 </div>
                                 <div class="course-detail-line">
-                                    <span class="professor-name">${course.instructor || '미정'}</span>
+                                    <span class="professor-name">${course.instructor || '미지정'}</span>
                                     <span class="credits-info">| ${course.credits}학점</span>
+                                    <span class="category-info">| ${course.categoryName}</span>
                                 </div>
                                 <div class="course-semester-line">
                                     <span class="semester">${course.semester}</span>
@@ -214,14 +215,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupViewReviewsButton(course) {
         const viewBtn = $panelElements.viewReviewsButton;
         viewBtn.onclick = () => { // 이전 리스너가 누적되지 않도록 onclick으로 재할당
-            if (course.code && course.instructor) {
+            if (course.code) {
                 const params = new URLSearchParams({
                     course_code: course.code,
-                    instructor_name: course.instructor
+                    instructor_name: course.instructor || ''
                 });
                 window.open(`/reviews/?${params.toString()}`, '_blank'); // 새 탭에서 열기
             } else {
-                alert('강의 코드 또는 교수자 정보가 없어 강의 평가를 볼 수 없습니다.');
+                alert('강의 코드가 없어 강의 평가를 볼 수 없습니다.');
             }
         };
     }

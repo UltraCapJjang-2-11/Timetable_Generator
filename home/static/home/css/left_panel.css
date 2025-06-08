@@ -54,7 +54,7 @@
 }
 
 .course-title-line .course-code {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #555;
     margin-left: 6px;
 }
@@ -67,6 +67,12 @@
 .course-detail-line .credits-info {
     margin-left: 8px;
     color: #007bff;
+    font-weight: 500;
+}
+
+.course-detail-line .category-info {
+    margin-left: 8px;
+    color: #ff605c;
     font-weight: 500;
 }
 

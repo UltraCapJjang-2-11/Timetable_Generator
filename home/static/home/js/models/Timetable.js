@@ -65,6 +65,44 @@ export class Timetable {
         return false;
     }
 
+
+
+    /**
+     * 시간표에 새로운 강의를 추가합니다. 충돌이 발생하면 추가하지 않습니다.
+     * @param {Course} newCourse 추가할 Course 객체
+     * @returns {boolean} 추가 성공 여부
+     */
+    addCourse(newCourse) {
+        // 이미 있는 강의인지 확인
+        if (this.courses.some(c => c.id === newCourse.id)) {
+            return false; // 이미 있으므로 추가하지 않음
+        }
+
+        // 기존 모든 강의와 시간 충돌 검사
+        for (const existingCourse of this.courses) {
+            if (existingCourse.conflictsWith(newCourse)) {
+                return false; // 충돌 발생 시 추가하지 않음
+            }
+        }
+
+        this.courses.push(newCourse);
+        // 학점 정보 등 다시 계산
+        this.totalCredits = this.calculateTotalCredits();
+        this.majorCredits = this.calculateCreditsByMajor();
+        return true;
+    }
+
+    /**
+     * ID를 이용해 시간표에서 강의를 삭제합니다.
+     * @param {number} courseId 삭제할 강의의 ID
+     */
+    removeCourse(courseId) {
+        this.courses = this.courses.filter(c => c.id !== courseId);
+        // 학점 정보 등 다시 계산
+        this.totalCredits = this.calculateTotalCredits();
+        this.majorCredits = this.calculateCreditsByMajor();
+    }
+
     /**
      * 이 Timetable 인스턴스를 API 저장용 포맷으로 변환합니다.
      * @returns {object} API /save_timetable/ 엔드포인트가 기대하는 형식의 객체

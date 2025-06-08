@@ -1,0 +1,49 @@
+<div class="right-panel">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="goal-settings">
+                <h3>목표 학점 설정</h3>
+                <div class="goal-inputs">
+                    <div class="total-credits-display">
+                        <label for="total-credits-display">총 목표 학점:</label>
+                        <span id="total-credits-display">0</span>
+                    </div>
+
+                    <label for="major-credits">전공 학점:</label>
+                    <input type="number" id="major-credits" min="0" max="24" value="0">
+
+                    <label for="elective-credits">교양 학점:</label>
+                    <input type="number" id="elective-credits" min="0" max="24" value="0">
+                </div>
+            </div>
+            <div class="day-off-settings">
+                <h3>희망 공강 요일</h3>
+                <div class="day-options">
+                    <label><input type="checkbox" value="월"> 월</label>
+                    <label><input type="checkbox" value="화"> 화</label>
+                    <label><input type="checkbox" value="수"> 수</label>
+                    <label><input type="checkbox" value="목"> 목</label>
+                    <label><input type="checkbox" value="금"> 금</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="right-panel-actions">
+                <button id="generate-btn" class="btn-block">시간표 생성</button>
+                <button id="save-timetable-btn" class="btn-block">현재 시간표 저장</button>
+                <div class="timetable-navigation">
+                    <button id="prev-timetable" class="nav-arrow">◀</button>
+                    <span id="timetable-index">0 / 0</span>
+                    <button id="next-timetable" class="nav-arrow">▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="current-courses-section">
+        <h4>현재 강의 목록</h4>
+        <div id="current-course-list" class="current-course-list">
+            <p class="placeholder">시간표를 생성하면 강의 목록이 여기에 표시됩니다.</p>
+        </div>
+    </div>
+</div>

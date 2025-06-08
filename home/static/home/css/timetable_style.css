@@ -44,16 +44,14 @@ body {
 }
 
 .left-panel, .right-panel {
-    flex: 1;
+    flex: 1; /* 3단 레이아웃 비율 유지 */
     background-color: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
+
 
 .middle-panel {
     flex: 2.5;
-    padding: 20px;
+    padding: 12px;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -63,8 +61,7 @@ body {
 
 /* 가운데 영역 스타일 */
 .timetable {
-    width: 100%;
-    max-width: 900px;
+    width: 90%;
     border-collapse: separate;
     border-spacing: 5px;
     background: #ffffff;
@@ -73,7 +70,6 @@ body {
     overflow: hidden;
     table-layout: fixed;
 }
-
 
 /* 각 칸(셀) 스타일 */
 .timetable th, .timetable td {
@@ -92,10 +88,15 @@ body {
     vertical-align: middle;
     position: relative;
     padding: 0;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.preview-lecture {
-    pointer-events: none;
+/* 강의 시간 미리보기 스타일 */
+.timetable td.preview-cell {
+    background-color: rgba(255, 205, 74, 0.4); /* 기존 추가 버튼과 유사한 반투명 노란색 */
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.3); /* 안쪽 그림자 효과 */
+    transform: scale(1.1); /* 살짝 확대되는 효과 */
+    z-index: 10;
 }
 
 .timetable td .lecture {
@@ -174,174 +175,4 @@ body {
 }
 
 
-/* 왼쪽 영역 스타일 */
-.left-panel {
-    flex: 1;
-    background-color: #f8f9fa;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 15px 20px;
-    border-radius: 15px;
-    height: 100%;
-}
 
-/* 검색창 및 필터 컨테이너 스타일 */
-.course-search-container{
-    width: 100%;
-    position: relative;
-    background-color: #f8f9fa;
-    z-index: 10;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.course-search {
-    flex-grow: 1;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-/* 강의 블록 컨테이너 (전체 리스트) */
-.course-list-container {
-    flex: 1;
-    width: 100%;
-    overflow-y: auto;
-    padding-top: 10px;
-    height: calc(100vh - 150px);
-}
-
-/* 오른쪽 패널 스타일 */
-.right-panel {
-    flex: 1;
-    background-color: #f8f9fa;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-}
-
-/* 목표 학점 입력 스타일 */
-.goal-settings {
-    width: 100%;
-    margin-bottom: 20px;
-    margin-top: -200px;
-}
-
-.goal-settings h3 {
-    font-size: 20px;
-    margin-bottom: 20px;
-}
-
-.goal-inputs {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.goal-inputs label {
-    font-size: 14px;
-}
-
-.goal-inputs input {
-    width: 80px;
-    padding: 5px;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-
-/* 공강 요일 선택 스타일 */
-.day-off-settings {
-    margin-top: 20px;
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.day-off-settings h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.day-options {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.day-options label {
-    font-size: 16px;
-    cursor: pointer;
-}
-
-/* 시간표 생성 & 저장 버튼 스타일 */
-#generate-btn, #save-timetable-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    width: 60%;
-    margin-top: 10px;
-    transition: background 0.3s;
-}
-
-/* 시간표 생성 버튼 스타일 */
-#generate-btn {
-    background-color: #1b1b1b;
-    color: white;
-    margin-bottom: 20px;
-}
-
-#generate-btn:hover {
-    background-color: #000000;
-}
-
-/* 시간표 저장 버튼 스타일 */
-#save-timetable-btn {
-    background-color: #ffcd4a;
-    color: rgb(0, 0, 0);
-}
-
-#save-timetable-btn:hover {
-    background-color: #ffc32b;
-}
-
-/* 시간표 탐색 버튼 스타일 */
-.timetable-navigation {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-    margin-bottom: 20px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.nav-arrow {
-    background-color: #ffcd4a;
-    color: rgb(0, 0, 0);
-    border: none;
-    padding: 5px 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.nav-arrow:hover {
-    background-color: #ffc32b;
-}
-
-.schedule-cell{
-  white-space: nowrap;
-  overflow-x: auto;
-  font-size:.875rem;
-}

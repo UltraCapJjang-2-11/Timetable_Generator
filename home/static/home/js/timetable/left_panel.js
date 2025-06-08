@@ -1,6 +1,7 @@
 import { Course } from "../models/Course.js";
 import { getCategoryDOMElements, getSelectedCategoryId } from "../dropdown/category_dropdown.js";
 import { getOrgDOMElements } from '../dropdown/org_dropdown.js';
+import { timetableState } from "./state.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     // 각 모듈에서 필요한 DOM 요소를 가져옵니다.
@@ -55,10 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const data = await response.json();
-
-            // ✅ 2. API 응답(순수 객체 배열)을 Course 객체 배열로 변환합니다.
             const courses = Course.createFromApiData(data);
-
             renderCourseList(courses);
         } catch (error) {
             $panelElements.courseListBody.innerHTML = `<tr><td colspan="4" class="text-danger text-center py-3">오류: ${error}</td></tr>`;
@@ -80,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         courses.forEach(course => {
             const courseItem = document.createElement('div');
-            // ✅ 1. 카드 아이템에 Bootstrap의 .row 클래스를 직접 사용하지 않고, 내부에 row를 둡니다.
             courseItem.className = 'course-item';
             courseItem.dataset.courseId = course.id;
 
@@ -100,12 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="course-code">(${course.code}-${course.section})</span>
                                 </div>
                                 <div class="course-detail-line">
-                                    <span class="professor-name">${course.instructor || '미지정'}</span>
-                                    <span class="credits-info">| ${course.credits}학점</span>
-                                    <span class="category-info">| ${course.categoryName}</span>
-                                </div>
-                                <div class="course-semester-line">
-                                    <span class="semester">${course.semester}</span>
+                                    <span class="professor-name bg-secondary-subtle text-secondary-emphasis">${course.instructor || '미지정'}</span>
+                                    <span class="credits-info bg-secondary-subtle text-secondary-emphasis">${course.credits}학점</span>
+                                    <span class="category-info bg-secondary-subtle text-secondary-emphasis">${course.categoryName}</span>
+                                    <span class="semester-info bg-secondary-subtle text-secondary-emphasis">${course.semester}</span>
                                 </div>
                             </div>
                             ${scheduleHtml ? `<div class="course-item-schedule">${scheduleHtml}</div>` : ''}
@@ -120,14 +115,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
+            courseItem.addEventListener('mouseenter', () => {
+                document.dispatchEvent(new CustomEvent('previewCourse', {
+                    detail: { course: course.toObject() }
+                }));
+            });
+
+            // 마우스가 강의 카드에서 나갔을 때
+            courseItem.addEventListener('mouseleave', () => {
+                document.dispatchEvent(new CustomEvent('clearPreview'));
+            });
+
             // 이벤트 리스너 할당 로직은 이전과 동일하게 유지됩니다.
             const addBtn = courseItem.querySelector('.add-course-btn');
             const detailsBtn = courseItem.querySelector('.details-btn');
 
+
+
             addBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const event = new CustomEvent('addCourseToTimetable', { detail: course.toObject() });
-                document.dispatchEvent(event);
+                document.dispatchEvent(new CustomEvent('addCourseToView', {
+                    detail: { course: course }
+                }));
 
                 addBtn.textContent = '✓';
                 addBtn.disabled = true;
@@ -189,23 +198,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * 팝업 내 '시간표에 추가' 버튼을 설정합니다.
-     * @param {Course} course 시간표에 추가할 Course 객체.
+     * 팝업 내 '시간표에 추가/제거' 버튼을 설정합니다.
+     * @param {Course} course 시간표에 추가/제거할 강의 데이터.
      */
     function setupAddToTimetableButton(course) {
         const addBtn = document.getElementById('add-to-timetable-btn-popup');
-        addBtn.textContent = '시간표에 추가';
-        addBtn.disabled = false;
 
-        addBtn.onclick = function() {
-            const event = new CustomEvent('addCourseToTimetable', {
-                detail: course.toObject()
-            });
-            document.dispatchEvent(event);
+        const isAdded = timetableState.currentTimetable?.courses.some(c => c.id === course.id) || false;
+        const isConflict = timetableState.currentTimetable?.courses.some(c => c.conflictsWith(course)) || false;
 
-            this.textContent = '추가됨';
-            this.disabled = true;
-        };
+        if (isAdded) {
+            addBtn.textContent = '시간표에서 제거';
+            addBtn.style.backgroundColor = '#dc3545';
+            addBtn.disabled = false;
+
+            addBtn.onclick = function() {
+                document.dispatchEvent(new CustomEvent('removeCourseFromView', {
+                    detail: { courseId: course.id }
+                }));
+                bootstrap.Modal.getInstance(document.getElementById('course-popup'))?.hide();
+            };
+        }
+        else if (isConflict) {
+            addBtn.textContent = '시간이 겹치는 강의';
+            addBtn.style.backgroundColor = '#dc3545';
+            addBtn.disabled = true;
+        }
+        else {
+            addBtn.textContent = '시간표에 추가';
+            addBtn.style.backgroundColor = '#007bff';
+            addBtn.disabled = false;
+
+            addBtn.onclick = function() {
+                document.dispatchEvent(new CustomEvent('addCourseToView', {
+                    detail: { course: course }
+                }));
+                this.textContent = '추가됨';
+                this.disabled = true;
+            };
+        }
     }
 
     /**

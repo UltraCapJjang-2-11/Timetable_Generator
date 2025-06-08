@@ -73,8 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleRootCategoryChange() {
         resetSelect($elements.childCategory);
         resetSelect($elements.grandchildCategory);
-        $elements.childContainer.style.display = 'none';
-        $elements.grandchildContainer.style.display = 'none';
         if ($elements.courseNameSearch) $elements.courseNameSearch.value = '';
 
         hideOrgDropdowns();

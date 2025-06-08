@@ -1067,8 +1067,6 @@ def generate_timetable_stream(request):
             'message': f"총 {len(timetables_data)}개의 시간표를 찾았습니다." if timetables_data else "조건에 맞는 시간표를 찾지 못했습니다. 조건을 변경해보세요."
         }
 
-        print("DEBUG: Result:", result)
-
         def event_stream():
             yield f"data: {json.dumps(result, ensure_ascii=False)}\n\n"
 

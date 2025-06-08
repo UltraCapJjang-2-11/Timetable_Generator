@@ -1,0 +1,197 @@
+/* right_panel.css (통합 및 수정된 최종본) */
+
+/* --- 1. 전체 패널 구조 --- */
+.right-panel {
+    flex: 1; /* 전체 3단 레이아웃의 비율은 유지 */
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 15px;
+
+    /* ✅ display:flex와 중앙 정렬 속성을 제거하여
+       내부 요소들(Bootstrap 그리드 등)이 스스로 레이아웃을 잡도록 허용합니다. */
+    display: block; /* 기본 블록 레벨 요소로 변경 */
+    text-align: left; /* 내부 텍스트 기본 정렬을 왼쪽으로 */
+}
+
+/* --- 2. 좌측 제약조건 영역 --- */
+.goal-settings h3, .day-off-settings h3 {
+    font-size: 1.1rem; /* h3 폰트 크기 통일 */
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.goal-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.goal-inputs label, .total-credits-display label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #343a40;
+    margin: 0;
+}
+
+.goal-inputs input[type="number"] {
+    width: 100%; /* 너비를 100%로 설정하여 정렬을 맞춤 */
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.total-credits-display {
+    display: flex;
+    justify-content: space-between; /* 라벨과 값 양쪽 정렬 */
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+#total-credits-display {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.day-off-settings {
+    margin-top: 25px;
+}
+
+.day-options {
+    display: flex;
+    justify-content: flex-start; /* 왼쪽부터 정렬 */
+    gap: 15px;
+}
+
+.day-options label {
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+
+/* --- 3. 우측 버튼 영역 --- */
+.right-panel-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 40px;
+}
+
+#generate-btn, #save-timetable-btn {
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+#generate-btn {
+    background-color: #1b1b1b;
+    color: white;
+}
+#generate-btn:hover { background-color: #000; }
+
+#save-timetable-btn {
+    background-color: #ffcd4a;
+    color: #212529;
+}
+#save-timetable-btn:hover { background-color: #ffc32b; }
+
+.timetable-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 버튼과 인덱스 양쪽 정렬 */
+    width: 100%;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.nav-arrow {
+    background-color: #ffcd4a;
+    color: #212529;
+    border: none;
+    padding: 5px 12px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.nav-arrow:hover { background-color: #ffc32b; }
+
+
+/* --- 4. 하단 강의 목록 (이전과 동일) --- */
+.current-courses-section {
+    margin-top: 20px;
+    border-top: 2px solid #e9ecef;
+    padding-top: 15px;
+}
+.current-courses-section h4 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 600;
+}
+.current-course-list .placeholder {
+    color: #fff;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 20px 0;
+}
+.current-course-item {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+.current-course-item .course-title {
+    font-weight: 600;
+    color: #212529;
+}
+.current-course-item .course-details {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+.current-course-item {
+    /* ✅ Flexbox를 사용하여 버튼과 텍스트를 정렬합니다. */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+/* 목록에서 강의 제거 버튼 스타일 */
+.remove-from-list-btn {
+    flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background-color: #dc3545; /* 빨간색 배경 */
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    padding-bottom: 2px;
+}
+.remove-from-list-btn:hover {
+    background-color: #c82333;
+}

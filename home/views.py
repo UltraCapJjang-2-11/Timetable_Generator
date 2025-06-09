@@ -1176,9 +1176,9 @@ def save_timetable(request):
         print(f"사용자 ID: {user_id}")
         
         # 시간표 제목 자동 생성
-        if not title:
+        if not title or title == '새 시간표':
             count = SavedTimetable.objects.filter(user_id=user_id).count()
-            title = f"2025년 1학기 시간표 #{count + 1}"
+            title = f"시간표 {count + 1}"
         
         # 학점 계산
         total_credits = sum(course.get('credit', 0) for course in courses)
@@ -1277,6 +1277,7 @@ def save_timetable(request):
         return JsonResponse({
             'success': True,
             'timetable_id': timetable.id,
+            'title': timetable.title,
             'message': '시간표가 성공적으로 저장되었습니다.'
         })
         

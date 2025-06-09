@@ -141,6 +141,12 @@ async function saveCurrentTimetable() {
             body: JSON.stringify(timetableData)
         });
         const result = await response.json();
+        
+        // 저장 성공시 서버에서 생성된 제목으로 업데이트
+        if (response.ok && result.success && result.title && timetableState.currentTimetable) {
+            timetableState.currentTimetable.title = result.title;
+        }
+        
         return {
             success: response.ok && result.success,
             message: response.ok && result.success ? "시간표가 성공적으로 저장되었습니다!" : `저장 실패: ${result.error || "알 수 없는 오류"}`

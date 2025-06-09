@@ -266,9 +266,14 @@ function handleTimetableActionRequest(e) {
     const params = buildApiParams();
     setupSseConnection(`/generate_timetable_stream/?${params.toString()}`, (success) => {
         if (success) {
+            // 생성과 수정에 따라 다른 메시지 표시
+            const message = constraints.is_modification 
+                ? "시간표가 수정되었습니다! 마음에 드시나요?" 
+                : "시간표가 생성되었습니다! 마음에 드시나요?";
+            
             document.dispatchEvent(new CustomEvent('sendBotMessage', {
                 detail: {
-                    message: "시간표가 생성(수정)되었습니다! 마음에 드시나요?",
+                    message: message,
                     buttons: [{ title: "저장하기", action: handleSaveRequest }]
                 }
             }));

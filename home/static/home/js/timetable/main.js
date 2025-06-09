@@ -237,8 +237,9 @@ function handleTimetableActionRequest(e) {
                 !excludeCoursesLower.some(exName => course.name.toLowerCase().trim().includes(exName))
             );
             constraints.existing_courses = fixedCourses.map(course => String(course.id));
+        } else {
+            constraints.existing_courses = [];
         }
-        constraints.existing_courses = fixedCourses.map(course => String(course.id));
     } else {
         // 새로운 시간표 생성의 경우: 모든 제약조건을 새로 설정
         constraints.is_modification = false;

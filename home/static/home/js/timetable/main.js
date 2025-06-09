@@ -343,31 +343,23 @@ function handleRemoveCourse(e) {
     applyTimetableToMiddlePanel(); // re-render and re-dispatch event
 }
 
-// 현재 미리보기 중인 강의 ID를 추적
+// 새로운 간단한 미리보기 시스템
 let currentPreviewCourse = null;
 
-// 강의 시간 미리보기 표시 함수
-function handlePreviewCourse(e) {
-    const course = e.detail.course;
+// 강의 미리보기 표시 함수
+function showCoursePreview(course) {
     if (!course || !course.schedules) return;
 
-    // 같은 강의를 다시 미리보기하려는 경우 중복 처리 방지
+    // 이미 같은 강의가 미리보기 중이면 무시
     if (currentPreviewCourse && currentPreviewCourse.id === course.id) {
         return;
     }
 
-    // 기존 미리보기가 있다면 먼저 지우기
-    if (currentPreviewCourse) {
-        handleClearPreview();
-    }
-
-    // 현재 미리보기 강의 설정
+    // 현재 미리보기 설정
     currentPreviewCourse = course;
 
-    // Timetable.js의 colorPalette과 동일한 색상 배열
+    // 색상 배열
     const colorPalette = ['#f28b82', '#fbbc04', '#fff475', '#ccff90', '#a7ffeb', '#cbf0f8', '#aecbfa', '#d7aefb', '#fdcfe8'];
-    
-    // 현재 시간표에 있는 강의 수를 기준으로 다음 색상을 결정
     const currentCourseCount = timetableState.currentTimetable ? timetableState.currentTimetable.courses.length : 0;
     const previewColor = colorPalette[currentCourseCount % colorPalette.length];
 
@@ -375,34 +367,68 @@ function handlePreviewCourse(e) {
         const dayIndex = { "월": 0, "화": 1, "수": 2, "목": 3, "금": 4 }[schedule.day] ?? -1;
         if (dayIndex === -1) return;
 
-        // times는 "3,4" 같은 문자열이므로 다시 배열로 변환
         const timeSlots = schedule.times.split(',').map(t => parseInt(t, 10) + 8);
 
         timeSlots.forEach(slot => {
             const cell = document.querySelector(`.timetable-cell[data-hour="${slot}"][data-day="${dayIndex}"]`);
             if (cell) {
-                // 기존 강의가 있는 셀인지 확인 (lecture 클래스가 있는 div가 있으면 기존 강의 존재)
                 const hasExistingLecture = cell.querySelector('.lecture') !== null;
                 
-                // 미리보기를 위한 CSS 클래스 추가
-                cell.classList.add('preview-cell');
+                cell.classList.add('course-preview');
+                cell.dataset.previewCourse = course.id;
                 
-                // RGB 변환
                 const rgb = hexToRgb(previewColor);
                 if (rgb) {
                     if (hasExistingLecture) {
-                        // 기존 강의가 있는 경우: 테두리만 표시하고 배경색은 유지
                         cell.style.border = `3px solid ${previewColor}`;
                         cell.style.boxShadow = `0 0 8px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`;
-                        // 기존 배경색은 그대로 유지 (덮어쓰지 않음)
                     } else {
-                        // 빈 셀인 경우: 전체 배경색으로 오버레이
                         cell.style.backgroundColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`;
                         cell.style.border = `2px solid ${previewColor}`;
                     }
                 }
             }
         });
+    });
+}
+
+// 강제로 모든 미리보기를 제거하는 함수 (더 강력한 버전)
+function forceClearAllPreviews() {
+    currentPreviewCourse = null;
+    
+    // 모든 미리보기 관련 클래스와 스타일을 제거
+    document.querySelectorAll('.course-preview').forEach(cell => {
+        cell.classList.remove('course-preview');
+        delete cell.dataset.previewCourse;
+        
+        // 모든 인라인 스타일 제거
+        cell.style.border = '';
+        cell.style.boxShadow = '';
+        cell.style.backgroundColor = '';
+    });
+    
+    // 기존 방식으로도 한 번 더 정리
+    clearCoursePreview();
+}
+
+// 강의 미리보기 제거 함수
+function clearCoursePreview() {
+    currentPreviewCourse = null;
+    
+    document.querySelectorAll('.course-preview').forEach(cell => {
+        cell.classList.remove('course-preview');
+        delete cell.dataset.previewCourse;
+        
+        const hasExistingLecture = cell.querySelector('.lecture') !== null;
+        
+        if (hasExistingLecture) {
+            cell.style.border = '';
+            cell.style.boxShadow = '';
+        } else {
+            cell.style.backgroundColor = '';
+            cell.style.border = '';
+            cell.style.boxShadow = '';
+        }
     });
 }
 
@@ -416,29 +442,32 @@ function hexToRgb(hex) {
     } : null;
 }
 
-// 모든 미리보기를 지우는 함수
-function handleClearPreview() {
-    // 현재 미리보기 상태 초기화
-    currentPreviewCourse = null;
+// 새로운 이벤트 핸들러들
+function handleClearAllPreviews() {
+    forceClearAllPreviews();
+}
 
-    // 'preview-cell' 클래스를 가진 모든 셀을 찾아서 클래스와 인라인 스타일을 제거합니다.
-    document.querySelectorAll('.preview-cell').forEach(cell => {
-        cell.classList.remove('preview-cell');
-        
-        // 기존 강의가 있는 셀인지 확인
-        const hasExistingLecture = cell.querySelector('.lecture') !== null;
-        
-        if (hasExistingLecture) {
-            // 기존 강의가 있는 셀: 테두리와 그림자만 제거, 배경색은 유지
-            cell.style.border = '';
-            cell.style.boxShadow = '';
-        } else {
-            // 빈 셀: 모든 스타일 제거
-            cell.style.backgroundColor = '';
-            cell.style.border = '';
-            cell.style.boxShadow = '';
-        }
-    });
+function handleShowCoursePreview(e) {
+    const course = e.detail.course;
+    showCoursePreview(course);
+}
+
+function handleHideCoursePreview(e) {
+    // 시간표 영역으로 마우스가 이동했는지 확인
+    const mouseEvent = e.originalEvent || e;
+    const relatedTarget = mouseEvent.relatedTarget;
+    
+    if (relatedTarget && (
+        relatedTarget.closest('.middle-panel') || 
+        relatedTarget.closest('.timetable') ||
+        relatedTarget.classList.contains('course-preview')
+    )) {
+        // 시간표 영역으로 이동한 경우 미리보기 유지
+        return;
+    }
+    
+    // 다른 곳으로 이동한 경우만 제거
+    clearCoursePreview();
 }
 
 // 강의 고정 상태를 토글하는 함수
@@ -478,11 +507,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // 시간표 영역에 간단한 마우스 이벤트 추가
+    const timetableContainer = document.querySelector('.middle-panel');
+    if (timetableContainer) {
+        timetableContainer.addEventListener('mouseleave', () => {
+            forceClearAllPreviews();
+        });
+    }
+
+    // 새로운 미리보기 이벤트 리스너
+    document.addEventListener('clearAllPreviews', handleClearAllPreviews);
+    document.addEventListener('showCoursePreview', handleShowCoursePreview);
+    document.addEventListener('hideCoursePreview', handleHideCoursePreview);
+    
     document.addEventListener('requestTimetableAction', handleTimetableActionRequest);
     document.addEventListener('requestTimetableSave', handleSaveRequest);
     document.addEventListener('addCourseToView', handleAddCourse);
     document.addEventListener('removeCourseFromView', handleRemoveCourse);
-    document.addEventListener('previewCourse', handlePreviewCourse);
-    document.addEventListener('clearPreview', handleClearPreview);
     document.addEventListener('togglePinCourse', handleTogglePin);
 });

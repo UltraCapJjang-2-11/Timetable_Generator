@@ -116,26 +116,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            let previewTimeout = null;
-
+            // 새로운 간단한 미리보기 시스템
             courseItem.addEventListener('mouseenter', () => {
-                // 기존 타이머가 있다면 취소
-                if (previewTimeout) {
-                    clearTimeout(previewTimeout);
-                    previewTimeout = null;
-                }
+                // 항상 모든 기존 미리보기를 먼저 제거
+                document.dispatchEvent(new CustomEvent('clearAllPreviews'));
                 
-                document.dispatchEvent(new CustomEvent('previewCourse', {
+                // 새로운 미리보기 표시
+                document.dispatchEvent(new CustomEvent('showCoursePreview', {
                     detail: { course: course.toObject() }
                 }));
             });
 
-            // 마우스가 강의 카드에서 나갔을 때 - 약간의 지연을 둬서 안정성 확보
-            courseItem.addEventListener('mouseleave', () => {
-                previewTimeout = setTimeout(() => {
-                    document.dispatchEvent(new CustomEvent('clearPreview'));
-                    previewTimeout = null;
-                }, 100); // 100ms 지연
+            courseItem.addEventListener('mouseleave', (e) => {
+                // 시간표 영역이나 다른 강의 카드로 이동했는지 확인
+                const relatedTarget = e.relatedTarget;
+                
+                const isMovingToTimetable = relatedTarget && (
+                    relatedTarget.closest('.middle-panel') || 
+                    relatedTarget.closest('.timetable')
+                );
+                
+                const isMovingToOtherCourse = relatedTarget && 
+                    relatedTarget.closest('.course-item');
+                
+                if (!isMovingToTimetable && !isMovingToOtherCourse) {
+                    // 시간표나 다른 강의가 아닌 곳으로 이동한 경우만 미리보기 제거
+                    document.dispatchEvent(new CustomEvent('hideCoursePreview', {
+                        detail: { course: course.toObject() }
+                    }));
+                }
             });
 
             // 이벤트 리스너 할당 로직은 이전과 동일하게 유지됩니다.

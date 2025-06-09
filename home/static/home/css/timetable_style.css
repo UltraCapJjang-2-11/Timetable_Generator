@@ -92,7 +92,7 @@ body {
 }
 
 /* 강의 시간 미리보기 스타일 */
-.timetable td.preview-cell {
+.timetable td.course-preview {
     transform: scale(1.02); /* 살짝 확대되는 효과 */
     z-index: 5;
     transition: all 0.15s ease; /* 부드러운 전환 효과 */

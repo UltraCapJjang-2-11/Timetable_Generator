@@ -93,10 +93,11 @@ body {
 
 /* 강의 시간 미리보기 스타일 */
 .timetable td.preview-cell {
-    background-color: #ffe880; /* 기존 추가 버튼과 유사한 반투명 노란색 */
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.3); /* 안쪽 그림자 효과 */
-    transform: scale(1.1); /* 살짝 확대되는 효과 */
-    z-index: 10;
+    transform: scale(1.02); /* 살짝 확대되는 효과 */
+    z-index: 5;
+    transition: all 0.15s ease; /* 부드러운 전환 효과 */
+    position: relative;
+    box-sizing: border-box; /* 테두리가 셀 크기에 포함되도록 */
 }
 
 .timetable td.lecture {

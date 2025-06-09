@@ -313,10 +313,33 @@ function handleRemoveCourse(e) {
     applyTimetableToMiddlePanel(); // re-render and re-dispatch event
 }
 
+// 현재 미리보기 중인 강의 ID를 추적
+let currentPreviewCourse = null;
+
 // 강의 시간 미리보기 표시 함수
 function handlePreviewCourse(e) {
     const course = e.detail.course;
     if (!course || !course.schedules) return;
+
+    // 같은 강의를 다시 미리보기하려는 경우 중복 처리 방지
+    if (currentPreviewCourse && currentPreviewCourse.id === course.id) {
+        return;
+    }
+
+    // 기존 미리보기가 있다면 먼저 지우기
+    if (currentPreviewCourse) {
+        handleClearPreview();
+    }
+
+    // 현재 미리보기 강의 설정
+    currentPreviewCourse = course;
+
+    // Timetable.js의 colorPalette과 동일한 색상 배열
+    const colorPalette = ['#f28b82', '#fbbc04', '#fff475', '#ccff90', '#a7ffeb', '#cbf0f8', '#aecbfa', '#d7aefb', '#fdcfe8'];
+    
+    // 현재 시간표에 있는 강의 수를 기준으로 다음 색상을 결정
+    const currentCourseCount = timetableState.currentTimetable ? timetableState.currentTimetable.courses.length : 0;
+    const previewColor = colorPalette[currentCourseCount % colorPalette.length];
 
     course.schedules.forEach(schedule => {
         const dayIndex = { "월": 0, "화": 1, "수": 2, "목": 3, "금": 4 }[schedule.day] ?? -1;
@@ -328,18 +351,63 @@ function handlePreviewCourse(e) {
         timeSlots.forEach(slot => {
             const cell = document.querySelector(`.timetable-cell[data-hour="${slot}"][data-day="${dayIndex}"]`);
             if (cell) {
-                // ✅ 미리보기를 위한 특별한 CSS 클래스를 추가합니다.
+                // 기존 강의가 있는 셀인지 확인 (lecture 클래스가 있는 div가 있으면 기존 강의 존재)
+                const hasExistingLecture = cell.querySelector('.lecture') !== null;
+                
+                // 미리보기를 위한 CSS 클래스 추가
                 cell.classList.add('preview-cell');
+                
+                // RGB 변환
+                const rgb = hexToRgb(previewColor);
+                if (rgb) {
+                    if (hasExistingLecture) {
+                        // 기존 강의가 있는 경우: 테두리만 표시하고 배경색은 유지
+                        cell.style.border = `3px solid ${previewColor}`;
+                        cell.style.boxShadow = `0 0 8px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`;
+                        // 기존 배경색은 그대로 유지 (덮어쓰지 않음)
+                    } else {
+                        // 빈 셀인 경우: 전체 배경색으로 오버레이
+                        cell.style.backgroundColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`;
+                        cell.style.border = `2px solid ${previewColor}`;
+                    }
+                }
             }
         });
     });
 }
 
+// 헥스 색상을 RGB로 변환하는 유틸리티 함수
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
 // 모든 미리보기를 지우는 함수
 function handleClearPreview() {
-    // 'preview-cell' 클래스를 가진 모든 셀을 찾아서 클래스를 제거합니다.
+    // 현재 미리보기 상태 초기화
+    currentPreviewCourse = null;
+
+    // 'preview-cell' 클래스를 가진 모든 셀을 찾아서 클래스와 인라인 스타일을 제거합니다.
     document.querySelectorAll('.preview-cell').forEach(cell => {
         cell.classList.remove('preview-cell');
+        
+        // 기존 강의가 있는 셀인지 확인
+        const hasExistingLecture = cell.querySelector('.lecture') !== null;
+        
+        if (hasExistingLecture) {
+            // 기존 강의가 있는 셀: 테두리와 그림자만 제거, 배경색은 유지
+            cell.style.border = '';
+            cell.style.boxShadow = '';
+        } else {
+            // 빈 셀: 모든 스타일 제거
+            cell.style.backgroundColor = '';
+            cell.style.border = '';
+            cell.style.boxShadow = '';
+        }
     });
 }
 

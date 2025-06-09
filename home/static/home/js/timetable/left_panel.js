@@ -116,15 +116,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
+            let previewTimeout = null;
+
             courseItem.addEventListener('mouseenter', () => {
+                // 기존 타이머가 있다면 취소
+                if (previewTimeout) {
+                    clearTimeout(previewTimeout);
+                    previewTimeout = null;
+                }
+                
                 document.dispatchEvent(new CustomEvent('previewCourse', {
                     detail: { course: course.toObject() }
                 }));
             });
 
-            // 마우스가 강의 카드에서 나갔을 때
+            // 마우스가 강의 카드에서 나갔을 때 - 약간의 지연을 둬서 안정성 확보
             courseItem.addEventListener('mouseleave', () => {
-                document.dispatchEvent(new CustomEvent('clearPreview'));
+                previewTimeout = setTimeout(() => {
+                    document.dispatchEvent(new CustomEvent('clearPreview'));
+                    previewTimeout = null;
+                }, 100); // 100ms 지연
             });
 
             // 이벤트 리스너 할당 로직은 이전과 동일하게 유지됩니다.

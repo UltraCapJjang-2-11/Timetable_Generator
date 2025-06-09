@@ -71,20 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="course-title">${course.name}</div>
                     <div class="course-details">${course.instructor} / ${course.credits}학점 / ${course.categoryName}</div>
                 </div>
-                <input id="inpLock-${course.id}" type="checkbox" class="pin-toggle-checkbox" ${course.isPinned ? 'checked' : ''}>
-                <label class="btn-lock" for="inpLock-${course.id}">
-                    <svg width="36" height="40" viewBox="0 0 36 40">
-                        <path class="lockb" d="M27 27C27 34.1797 21.1797 40 14 40C6.8203 40 1 34.1797 1 27C1 19.8203 6.8203 14 14 14C21.1797 14 27 19.8203 27 27ZM15.6298 26.5191C16.4544 25.9845 17 25.056 17 24C17 22.3431 15.6569 21 14 21C12.3431 21 11 22.3431 11 24C11 25.056 11.5456 25.9845 12.3702 26.5191L11 32H17L15.6298 26.5191Z"></path>
-                        <path class="lock" d="M6 21V10C6 5.58172 9.58172 2 14 2V2C18.4183 2 22 5.58172 22 10V21"></path>
-                        <path class="bling" d="M29 20L31 22"></path>
-                        <path class="bling" d="M31.5 15H34.5"></path>
-                        <path class="bling" d="M29 10L31 8"></path>
+                <button type="button" class="pin-toggle-btn btn btn-outline-danger ${course.isPinned ? 'active': ''}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pin" viewBox="0 0 16 16">
+                        <path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"></path>
                     </svg>
-                </label>
+                    ${course.isPinned ? '고정됨': '고정'}
+                </button>
             `;
 
-            // 자물쇠 토글에 이벤트 리스너 추가
-            itemDiv.querySelector('.pin-toggle-checkbox').addEventListener('change', () => {
+            // 압정 버튼에 이벤트 리스너 추가
+            itemDiv.querySelector('.pin-toggle-btn').addEventListener('click', () => {
                 document.dispatchEvent(new CustomEvent('togglePinCourse', {
                     detail: { courseId: course.id }
                 }));

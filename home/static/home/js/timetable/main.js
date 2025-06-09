@@ -415,10 +415,19 @@ function forceClearAllPreviews() {
         cell.classList.remove('course-preview');
         delete cell.dataset.previewCourse;
         
-        // 모든 인라인 스타일 제거
-        cell.style.border = '';
-        cell.style.boxShadow = '';
-        cell.style.backgroundColor = '';
+        const hasExistingLecture = cell.querySelector('.lecture') !== null;
+        
+        // 기존 강의가 있는 셀의 경우 배경색은 유지하고 테두리와 그림자만 제거
+        if (hasExistingLecture) {
+            cell.style.border = '';
+            cell.style.boxShadow = '';
+            // 배경색은 제거하지 않음 - 기존 강의의 색상 유지
+        } else {
+            // 빈 셀의 경우에만 모든 스타일 제거
+            cell.style.backgroundColor = '';
+            cell.style.border = '';
+            cell.style.boxShadow = '';
+        }
     });
     
     // 기존 방식으로도 한 번 더 정리
@@ -435,10 +444,13 @@ function clearCoursePreview() {
         
         const hasExistingLecture = cell.querySelector('.lecture') !== null;
         
+        // 기존 강의가 있는 셀의 경우, 원래 배경색을 유지하고 테두리와 그림자만 제거
         if (hasExistingLecture) {
             cell.style.border = '';
             cell.style.boxShadow = '';
+            // 배경색은 제거하지 않음 - 기존 강의의 색상 유지
         } else {
+            // 빈 셀의 경우에만 모든 스타일 제거
             cell.style.backgroundColor = '';
             cell.style.border = '';
             cell.style.boxShadow = '';

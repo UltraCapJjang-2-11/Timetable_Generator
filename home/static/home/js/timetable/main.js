@@ -283,9 +283,34 @@ function handleTimetableActionRequest(e) {
 
 async function handleSaveRequest() {
     const result = await saveCurrentTimetable();
-    document.dispatchEvent(new CustomEvent('sendBotMessage', {
-        detail: { message: result.message }
-    }));
+    
+    // 시간표 생성 중처럼 잠시 표시되는 알림
+    showProgressMessage(result.message, result.success);
+}
+
+function showProgressMessage(message, isSuccess = true) {
+    const overlay = document.getElementById('progress-overlay');
+    const messageText = document.getElementById('progress-text');
+    const progressBar = document.getElementById('progress-bar');
+    const progressCount = document.getElementById('progress-count');
+    
+    // 메시지 설정
+    messageText.textContent = message;
+    
+    // 진행 바 숨기고 카운트 텍스트도 숨김
+    progressBar.style.display = 'none';
+    progressCount.style.display = 'none';
+    
+    // 오버레이 표시
+    overlay.style.display = 'block';
+    
+    // 2초 후 자동으로 사라짐 (시간표 생성 완료 시와 동일)
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        // 다시 진행 바와 카운트 표시 (다음 시간표 생성을 위해)
+        progressBar.style.display = 'block';
+        progressCount.style.display = 'block';
+    }, 2000);
 }
 
 function handleAddCourse(e) {

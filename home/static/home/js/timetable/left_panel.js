@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="course-title-line">
                                     <span class="course-name">${course.name}</span>
                                     <span class="course-code">(${course.code}-${course.section})</span>
+                                    <span class="bg-success-subtle text-secondary-emphasis fw-bold" disabled style="font-size:1.0rem">${course.targetYear}</span>
                                 </div>
                                 <div class="course-detail-line">
                                     <span class="professor-name bg-secondary-subtle text-secondary-emphasis">${course.instructor || '미지정'}</span>
@@ -130,10 +131,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const addBtn = courseItem.querySelector('.add-course-btn');
             const detailsBtn = courseItem.querySelector('.details-btn');
 
-
-
             addBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                course.isPinned = true; // 시간표에 고정
                 document.dispatchEvent(new CustomEvent('addCourseToView', {
                     detail: { course: course }
                 }));
@@ -230,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addBtn.disabled = false;
 
             addBtn.onclick = function() {
+                course.isPinned = true // 시간표에 고정
                 document.dispatchEvent(new CustomEvent('addCourseToView', {
                     detail: { course: course }
                 }));

@@ -11,9 +11,9 @@ import { timetableState } from './state.js';
  */
 
 const constraints = {
-    total_credits: 18,
-    major_credits: 9,
-    elective_credits: 9,
+    total_credits: 0,
+    major_credits: 0,
+    elective_credits: 0,
     required_courses: [],
     free_days: [],
     avoid_times: [],
@@ -27,6 +27,8 @@ const constraints = {
 };
 let timetables = [];  // 생성된 Timetable 객체의 배열
 let currentIndex = 0;  // 현재 렌더링(선택된)시간표의 인덱스
+// 시간표 생성 시 고정 상태를 유지하기 위한 Set 변수
+let pinnedCourseIdsToPreserve = new Set();
 
 /**
  * ----------------------------------------------------------------
@@ -89,6 +91,17 @@ function setupSseConnection(url, onComplete) {
                 const courses = Course.createFromApiData(timetableCourseData);
                 return new Timetable(courses); // Course 배열로 Timetable 인스턴스 생성
             });
+
+            // '고정' 상태를 복원
+            if (pinnedCourseIdsToPreserve.size > 0) {
+                timetables.forEach(timetable => {
+                    timetable.courses.forEach(course => {
+                        if (pinnedCourseIdsToPreserve.has(course.id)) {
+                            course.isPinned = true;
+                        }
+                    });
+                });
+            }
 
             currentIndex = 0;
             if (constraints.is_modification) {
@@ -182,6 +195,25 @@ function handleGenerateButtonClick() {
     constraints.free_days = Array.from(document.querySelectorAll(".day-options input:checked")).map(cb => cb.value);
     constraints.existing_courses = [];
 
+    // 현재 시간표에서 고정된(pinned) 강의들의 ID를 수집합니다.
+    if (timetableState.currentTimetable) {
+        constraints.existing_courses = timetableState.currentTimetable.courses
+            .filter(course => course.isPinned)
+            .map(course => course.id);
+    } else {
+        constraints.existing_courses = [];
+    }
+
+    // 현재 고정된 강의 ID들을 저장합니다.
+    pinnedCourseIdsToPreserve.clear(); // 이전 기록 초기화
+    if (timetableState.currentTimetable) {
+        timetableState.currentTimetable.courses.forEach(course => {
+            if (course.isPinned) {
+                pinnedCourseIdsToPreserve.add(course.id);
+            }
+        });
+    }
+
     const params = buildApiParams();
     setupSseConnection(`/generate_timetable_stream/?${params.toString()}`);
 }
@@ -255,6 +287,7 @@ function handleAddCourse(e) {
     // detail에서 Course 객체를 직접 받지 않고, 순수 객체를 받아 Course 인스턴스로 변환합니다.
     const courseToAdd = e.detail.course;
 
+
     if (!timetableState.currentTimetable) {
         // 현재 시간표가 없으면, 이 강의 하나만 있는 새 시간표를 만듭니다.
         const newTimetable = new Timetable([courseToAdd]);
@@ -310,6 +343,19 @@ function handleClearPreview() {
     });
 }
 
+// 강의 고정 상태를 토글하는 함수
+function handleTogglePin(e) {
+    const courseIdToToggle = e.detail.courseId;
+    if (!timetableState.currentTimetable) return;
+
+    // Timetable 모델의 메서드를 사용하여 상태 변경
+    timetableState.currentTimetable.togglePin(courseIdToToggle);
+
+    // 변경된 상태를 right_panel에 즉시 반영하기 위해 이벤트를 다시 발생
+    document.dispatchEvent(new CustomEvent('timetableRendered', {
+        detail: { timetable: timetableState.currentTimetable }
+    }));
+}
 
 /**
  * ----------------------------------------------------------------
@@ -341,4 +387,5 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('removeCourseFromView', handleRemoveCourse);
     document.addEventListener('previewCourse', handlePreviewCourse);
     document.addEventListener('clearPreview', handleClearPreview);
+    document.addEventListener('togglePinCourse', handleTogglePin);
 });

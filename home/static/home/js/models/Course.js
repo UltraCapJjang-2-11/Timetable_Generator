@@ -18,8 +18,9 @@ export class Course {
         this.instructor = data.instructor_name || '';
         this.capacity = data.capacity || 0;
         this.deptName = data.dept_name || '';
-        this.categoryName = data.category_name || '';
+        this.categoryName = data.category_name || data.category || '';
         this.semester = data.semester || '';
+        this.isPinned = false;
 
         const scheduleData = data.schedules || [];
         this.schedules = scheduleData.map(s => {
@@ -36,6 +37,8 @@ export class Course {
             };
         });
     }
+
+
 
     /**
      * UI에 표시할 시간표 문자열을 반환합니다.

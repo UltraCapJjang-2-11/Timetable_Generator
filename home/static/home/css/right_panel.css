@@ -14,7 +14,7 @@
 }
 
 /* --- 2. 좌측 제약조건 영역 --- */
-.goal-settings h3, .day-off-settings h3 {
+.goal-inputs h3, .day-off-settings h3 {
     font-size: 1.1rem; /* h3 폰트 크기 통일 */
     margin-bottom: 15px;
     font-weight: 600;
@@ -24,6 +24,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
 }
 
 .goal-inputs label, .total-credits-display label {
@@ -78,7 +79,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 40px;
+    margin-top: 60px;
 }
 
 #generate-btn, #save-timetable-btn {
@@ -137,6 +138,7 @@
     color: #333;
     font-weight: 600;
 }
+
 .current-course-list .placeholder {
     color: #fff;
     font-size: 0.9rem;
@@ -144,6 +146,9 @@
     padding: 20px 0;
 }
 .current-course-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     background-color: #fff;
     border: 1px solid #dee2e6;
     padding: 8px 12px;
@@ -161,18 +166,8 @@
     margin-top: 2px;
 }
 
-.current-course-item {
-    /* ✅ Flexbox를 사용하여 버튼과 텍스트를 정렬합니다. */
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin-bottom: 6px;
-    font-size: 0.9rem;
+.current-course-item .course-content {
+    flex-grow: 1; /* 강의 제목이 남은 공간을 모두 차지하도록 */
 }
 
 /* 목록에서 강의 제거 버튼 스타일 */

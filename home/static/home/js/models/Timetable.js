@@ -120,6 +120,17 @@ export class Timetable {
     }
 
     /**
+     * ID를 이용해 특정 강의의 고정(pinned) 상태를 토글합니다.
+     * @param {number} courseId 고정 상태를 변경할 강의의 ID
+     */
+    togglePin(courseId) {
+        const course = this.courses.find(c => c.id === courseId);
+        if (course) {
+            course.isPinned = !course.isPinned;
+        }
+    }
+
+    /**
      * 이 Timetable 인스턴스를 API 전송에 적합한 순수 객체로 변환합니다.
      * @returns {object}
      */

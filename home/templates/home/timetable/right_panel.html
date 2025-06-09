@@ -1,19 +1,35 @@
 <div class="right-panel">
     <div class="row">
         <div class="col-md-7">
-            <div class="goal-settings">
+            <div class="goal-inputs">
                 <h3>목표 학점 설정</h3>
-                <div class="goal-inputs">
-                    <div class="total-credits-display">
-                        <label for="total-credits-display">총 목표 학점:</label>
-                        <span id="total-credits-display">0</span>
-                    </div>
+                <div class="total-credits-display">
+                    <label for="total-credits-display">총 목표 학점:</label>
+                    <span id="total-credits-display">0</span>
+                </div>
 
+                <div class="credit-input-group">
                     <label for="major-credits">전공 학점:</label>
-                    <input type="number" id="major-credits" min="0" max="24" value="0">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-8">
+                            <input type="number" id="major-credits" class="form-control" min="0" max="24" value="0">
+                        </div>
+                        <div class="col-4">
+                            <button id="pinned-major-credits" class="btn btn-sm btn-outline-danger fw-bold w-100 active" style="font-size:1.1rem">0</button>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="credit-input-group">
                     <label for="elective-credits">교양 학점:</label>
-                    <input type="number" id="elective-credits" min="0" max="24" value="0">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-8">
+                            <input type="number" id="elective-credits" class="form-control" min="0" max="24" value="0">
+                        </div>
+                        <div class="col-4">
+                            <button id="pinned-elective-credits" class="btn btn-sm btn-outline-danger fw-bold w-100 active" style="font-size:1.1rem">0</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="day-off-settings">

@@ -106,24 +106,46 @@ function initChatbot() {
 
     let hasShownWelcome = false;
 
-    chatToggle.addEventListener("click", () => {
-        chatWidget.style.display = "flex";
-        chatToggle.style.display = "none";
+    // 챗봇 토글 버튼 클릭 이벤트
+    chatToggle.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        chatWidget.classList.add('visible');
+        chatToggle.classList.add('hidden');
+        chatWidget.style.setProperty('display', 'flex', 'important');
+        chatToggle.style.setProperty('display', 'none', 'important');
+        
         if (!hasShownWelcome) {
             showWelcomeMessage();
             hasShownWelcome = true;
         }
     });
     
-    closeBtn?.addEventListener("click", () => {
-        chatWidget.style.display = "none";
-        chatToggle.style.display = "flex";
-    });
+    // 챗봇 닫기 버튼 이벤트
+    if (closeBtn) {
+        closeBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            chatWidget.classList.remove('visible');
+            chatToggle.classList.remove('hidden');
+            chatWidget.style.setProperty('display', 'none', 'important');
+            chatToggle.style.setProperty('display', 'flex', 'important');
+        });
+    }
     
-    sendBtn?.addEventListener("click", handleSendMessage);
-    input?.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") handleSendMessage();
-    });
+    // 메시지 전송 버튼 이벤트
+    if (sendBtn) {
+        sendBtn.addEventListener("click", handleSendMessage);
+    }
+    
+    // 엔터키 이벤트
+    if (input) {
+        input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") handleSendMessage();
+        });
+    }
 
     // 외부에서 챗봇에 메시지를 보내는 이벤트를 리스닝
     document.addEventListener('sendBotMessage', e => {
@@ -131,6 +153,9 @@ function initChatbot() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", initChatbot);
-
-// Updated: 2024-12-19 
+// DOM이 준비되면 초기화
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initChatbot);
+} else {
+    initChatbot();
+} 

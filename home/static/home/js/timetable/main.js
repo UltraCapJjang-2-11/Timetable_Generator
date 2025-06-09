@@ -130,6 +130,11 @@ async function saveCurrentTimetable() {
         return { success: false, message: "저장할 시간표가 없습니다. 먼저 시간표를 생성해주세요." };
     }
 
+    // 이미 저장된 시간표인지 확인
+    if (timetableState.currentTimetable.isSaved) {
+        return { success: false, message: "이미 저장되어 있는 시간표입니다." };
+    }
+
     // 저장할 데이터 Format 생성
     const timetableData = timetableState.currentTimetable.toSaveFormat();
 
@@ -142,9 +147,12 @@ async function saveCurrentTimetable() {
         });
         const result = await response.json();
         
-        // 저장 성공시 서버에서 생성된 제목으로 업데이트
-        if (response.ok && result.success && result.title && timetableState.currentTimetable) {
-            timetableState.currentTimetable.title = result.title;
+        // 저장 성공시 서버에서 생성된 제목으로 업데이트하고 저장 상태 설정
+        if (response.ok && result.success && timetableState.currentTimetable) {
+            if (result.title) {
+                timetableState.currentTimetable.title = result.title;
+            }
+            timetableState.currentTimetable.isSaved = true;
         }
         
         return {
@@ -310,13 +318,13 @@ function showProgressMessage(message, isSuccess = true) {
     // 오버레이 표시
     overlay.style.display = 'block';
     
-    // 2초 후 자동으로 사라짐 (시간표 생성 완료 시와 동일)
+    // 1초 후 자동으로 사라짐
     setTimeout(() => {
         overlay.style.display = 'none';
         // 다시 진행 바와 카운트 표시 (다음 시간표 생성을 위해)
         progressBar.style.display = 'block';
         progressCount.style.display = 'block';
-    }, 2000);
+    }, 700);
 }
 
 function handleAddCourse(e) {

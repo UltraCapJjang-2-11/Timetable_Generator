@@ -15,6 +15,7 @@ export class Timetable {
     constructor(courses = [], options = {}) {
         this.courses = courses; // Course 객체의 배열
         this.title = options.title || '새 시간표';
+        this.isSaved = options.isSaved || false; // 저장 상태를 나타내는 플래그
 
         // 생성 시점에 주요 정보를 미리 계산하여 속성으로 저장
         this.totalCredits = this.calculateTotalCredits();
@@ -89,6 +90,8 @@ export class Timetable {
         // 학점 정보 등 다시 계산
         this.totalCredits = this.calculateTotalCredits();
         this.majorCredits = this.calculateCreditsByMajor();
+        // 시간표 내용이 변경되었으므로 저장 상태 리셋
+        this.isSaved = false;
         return true;
     }
 
@@ -101,6 +104,8 @@ export class Timetable {
         // 학점 정보 등 다시 계산
         this.totalCredits = this.calculateTotalCredits();
         this.majorCredits = this.calculateCreditsByMajor();
+        // 시간표 내용이 변경되었으므로 저장 상태 리셋
+        this.isSaved = false;
     }
 
     /**

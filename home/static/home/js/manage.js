@@ -34,13 +34,7 @@ function selectChat(lectureName) {
         if (e.key === "Enter") sendMessage();
     });
 
-    // 1회 자동 안내 메시지
-    if (!visitedLectures[lectureName]) {
-        visitedLectures[lectureName] = true;
-        setTimeout(() => {
-            addBotMessage("안녕하세요! 이 강의에 대한 궁금한 점이 있다면 편하게 물어보세요 :)");
-        }, 500);
-    }
+    // 1회 자동 안내 메시지 제거함
 
     function sendMessage() {
         const text = input.value.trim();
@@ -87,15 +81,6 @@ function selectChat(lectureName) {
     }
 
     function getBotReply(userText) {
-        const lower = userText.toLowerCase();
-        if (lower.includes("시간표")) {
-            return "시간표를 만들고 싶으시면 '시간표 생성' 버튼을 눌러보세요!";
-        } else if (lower.includes("추천") || lower.includes("과목")) {
-            return "관심 분야나 원하는 공강 요일이 있다면 말씀해주세요 :)";
-        } else if (lower.includes("안녕") || lower.includes("hello")) {
-            return "안녕하세요! Timey에요 :) 무엇을 도와드릴까요?";
-        } else {
-            return "죄송해요, 아직 그건 잘 모르겠어요.\n'시간표', '추천', '안녕' 같은 키워드를 써보실래요?";
-        }
+        return null; // 봇 메시지 우선 삭제해놓음
     }
 }

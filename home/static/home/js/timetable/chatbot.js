@@ -9,6 +9,8 @@ function getCookie(name) {
 
 function addMessageToChat(text, type, buttons = null) {
     const chatBody = document.querySelector(".ai-chat-body");
+    if (!chatBody) return;
+    
     const bubble = document.createElement("div");
     bubble.className = `chat-bubble ${type}`;
     bubble.textContent = text;
@@ -29,13 +31,15 @@ function addMessageToChat(text, type, buttons = null) {
     chatBody.scrollTop = chatBody.scrollHeight;
 }
 
-// --- Event Dispatchers (Decoupling) ---
-function dispatchTimetableActionEvent(detail) {
-    document.dispatchEvent(new CustomEvent('requestTimetableAction', { detail }));
-}
+function showWelcomeMessage() {
+    addMessageToChat(`안녕하세요! 저는 시간표 생성 도우미 Timey입니다! 😊
 
-function dispatchSaveEvent() {
-    document.dispatchEvent(new CustomEvent('requestTimetableSave'));
+원하는 시간표를 만들어 드릴게요. 다음과 같이 말씀해주세요:
+
+• '전공 12학점, 교양 6학점으로 시간표 만들어줘'
+• '월요일 공강으로 시간표 만들어줘'  
+• '데이터베이스 과목 포함해서 시간표 만들어줘'
+• '오후 수업 빼고 시간표 만들어줘'`, "bot");
 }
 
 // --- Core Chatbot Logic ---
@@ -74,13 +78,13 @@ async function handleSendMessage() {
 
             switch (customData.event_type) {
                 case 'initiate_timetable_generation_sse':
-                    dispatchTimetableActionEvent(customData);
+                    document.dispatchEvent(new CustomEvent('requestTimetableAction', { detail: customData }));
                     break;
                 case 'exclude_and_regenerate_timetable':
-                    dispatchTimetableActionEvent({ ...customData, is_modification: true });
+                    document.dispatchEvent(new CustomEvent('requestTimetableAction', { detail: { ...customData, is_modification: true } }));
                     break;
                 case 'save_timetable':
-                    dispatchSaveEvent();
+                    document.dispatchEvent(new CustomEvent('requestTimetableSave'));
                     break;
             }
         });
@@ -91,21 +95,31 @@ async function handleSendMessage() {
 }
 
 // --- Initialization ---
-export function initChatbot() {
+function initChatbot() {
     const chatToggle = document.getElementById("ai-chat-toggle");
     const chatWidget = document.getElementById("ai-chat-widget");
     const closeBtn = document.getElementById("ai-close-btn");
     const sendBtn = document.querySelector(".ai-chat-input button");
     const input = document.querySelector(".ai-chat-input input");
 
-    chatToggle?.addEventListener("click", () => {
+    if (!chatToggle || !chatWidget) return;
+
+    let hasShownWelcome = false;
+
+    chatToggle.addEventListener("click", () => {
         chatWidget.style.display = "flex";
         chatToggle.style.display = "none";
+        if (!hasShownWelcome) {
+            showWelcomeMessage();
+            hasShownWelcome = true;
+        }
     });
+    
     closeBtn?.addEventListener("click", () => {
         chatWidget.style.display = "none";
         chatToggle.style.display = "flex";
     });
+    
     sendBtn?.addEventListener("click", handleSendMessage);
     input?.addEventListener("keypress", (e) => {
         if (e.key === "Enter") handleSendMessage();
@@ -116,3 +130,7 @@ export function initChatbot() {
         addMessageToChat(e.detail.message, "bot", e.detail.buttons);
     });
 }
+
+document.addEventListener("DOMContentLoaded", initChatbot);
+
+// Updated: 2024-12-19 

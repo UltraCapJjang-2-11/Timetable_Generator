@@ -1,4 +1,3 @@
-import { initChatbot } from './chatbot.js'; // 챗봇 모듈 임포트
 import { Course } from '../models/Course.js';
 import { Timetable } from '../models/Timetable.js';
 import { timetableState } from './state.js';
@@ -432,7 +431,6 @@ function handleTogglePin(e) {
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-    initChatbot();
 
     document.getElementById("generate-btn")?.addEventListener("click", handleGenerateButtonClick);
     document.getElementById("save-timetable-btn")?.addEventListener("click", handleSaveRequest);

@@ -3,18 +3,24 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 99999;
+    z-index: 999999;
     width: 55px;
     height: 55px;
     background: #FFD700;
     color: white;
     font-size: 24px;
     border-radius: 50%;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#ai-chat-toggle:hover {
+    background: #FFC107;
+    transform: scale(1.1);
 }
 
 #ai-chat-widget {
@@ -27,8 +33,8 @@
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-    z-index: 99999;
-    display: flex;
+    z-index: 999999;
+    display: none !important;
     flex-direction: column;
     font-family: 'Noto Sans KR', sans-serif;
     overflow: hidden;

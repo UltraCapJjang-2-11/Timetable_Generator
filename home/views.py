@@ -399,6 +399,29 @@ def get_effective_general_category(course) -> str:
     return ""
 
 
+def get_simplified_category_name(course):
+    """
+    강의의 카테고리를 상위 분류로 통일하는 함수
+    교양 과목의 경우 level 2(세부분류)를 level 1(상위분류)로 변경
+    예: "인간과문화" -> "일반교양"
+    """
+    if not course.category:
+        return None
+    
+    category = course.category
+    
+    # 카테고리 레벨이 2이고, 부모의 부모가 "교양"인 경우
+    if (category.category_level == 2 and 
+        category.parent_category and 
+        category.parent_category.parent_category and 
+        category.parent_category.parent_category.category_name == "교양"):
+        # 부모 카테고리(level 1)의 이름을 반환
+        return category.parent_category.category_name
+    
+    # 그 외의 경우는 원래 카테고리 이름 반환
+    return category.category_name
+
+
 # ------------------------------------
 # 2. 미이수 전공필수 과목 추출 함수 (변경 없음)
 def extract_missing_required_major_courses(user_dept_id, completed_courses):
@@ -776,7 +799,7 @@ def generate_timetable_stream(request):
                 'instructor_name': course.instructor_name,
                 'capacity': course.capacity,
                 'dept_name': course.dept.dept_name if course.dept else '',
-                'category': course.category.category_name,
+                'category': get_simplified_category_name(course),
                 'semester': "2025 1학기",
                 'schedule': schedule_list,
                 'location': locations[0] if locations else "",

@@ -69,9 +69,24 @@ class CourseSerializer(serializers.ModelSerializer):
         """
         Courses 객체(obj)의 category(ForeignKey)를 통해
         Category 모델의 category_name을 가져옵니다.
+        교양 과목의 경우 상위 분류로 통일합니다.
         """
         # obj.category가 None일 경우를 대비하여 안전하게 처리
-        return obj.category.category_name if obj.category else None
+        if not obj.category:
+            return None
+        
+        category = obj.category
+        
+        # 카테고리 레벨이 2이고, 부모의 부모가 "교양"인 경우
+        if (category.category_level == 2 and 
+            category.parent_category and 
+            category.parent_category.parent_category and 
+            category.parent_category.parent_category.category_name == "교양"):
+            # 부모 카테고리(level 1)의 이름을 반환
+            return category.parent_category.category_name
+        
+        # 그 외의 경우는 원래 카테고리 이름 반환
+        return category.category_name
 
     def get_semester(self, obj):
         """

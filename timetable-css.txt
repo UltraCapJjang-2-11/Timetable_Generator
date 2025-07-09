@@ -1,0 +1,142 @@
+/* 설문조사 오버레이 스타일 (시작)*/
+#survey-overlay {
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
+  backdrop-filter: blur(3px);
+  padding: 30px;
+}
+
+.survey-container {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  padding: 40px 40px 120px 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.survey-step {
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+}
+.survey-step.active {
+  display: flex;
+}
+
+input[type="number"] {
+  padding: 10px;
+  font-size: 1rem;
+  width: 48%;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.weekday-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.weekday-options input[type="checkbox"] {
+  display: none;
+}
+.weekday-options label {
+  padding: 10px 16px;
+  background-color: #eee;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+}
+.weekday-options input[type="checkbox"]:checked + label {
+  background-color: #ffc107;
+  color: white;
+  font-weight: bold;
+  border-color: #ffca28;
+}
+
+.survey-timetable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+}
+.survey-timetable th, .survey-timetable td {
+  text-align: center;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+.survey-timetable th {
+  background-color: #f5f5f5;
+}
+.survey-timetable td:first-child {
+  width: 70px;
+  font-weight: bold;
+}
+
+.survey-cell {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.survey-cell:hover {
+  background-color: #ffeaa7;
+}
+.survey-cell.selected {
+  background-color: #ffc107;
+  color: white;
+  font-weight: bold;
+  border: 1px solid #ffa000;
+}
+
+.tag-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.tag-options span {
+  background: #eee;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.tag-options span.selected {
+  background: #ffc107;
+  color: white;
+  font-weight: bold;
+}
+
+.survey-footer {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+}
+.next-btn {
+  background: black;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.next-btn:hover {
+  background: #333;
+}
+/* 설문조사 오버레이 스타일 (끝)*/

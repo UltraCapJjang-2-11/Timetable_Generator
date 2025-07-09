@@ -1,0 +1,122 @@
+<div id="survey-overlay">
+  <div class="survey-container">
+    
+    <!-- STEP 1 -->
+    <div class="survey-step active" data-step="1">
+      <h3>1. 수강할 전공 학점과 교양 학점을 입력해주세요.</h3>
+      <input type="number" id="major-credit-input" placeholder="전공 학점" min="0" max="24">
+      <input type="number" id="elective-credit-input" placeholder="교양 학점" min="0" max="24">
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="survey-step" data-step="2">
+      <h3>2. 희망하는 공강 요일을 선택해주세요.</h3>
+      <div class="weekday-options">
+        <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
+        <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
+        <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
+        <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
+        <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
+        <input type="checkbox" id="none" value="없음"><label for="none">없음</label>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="survey-step" data-step="3">
+      <h3>3. 제외하고 싶은 시간을 선택해주세요.</h3>
+      <table class="survey-timetable">
+        <thead>
+          <tr><th></th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th></tr>
+        </thead>
+        <tbody id="survey-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="survey-step" data-step="4">
+      <h3>4. 선호하는 교양 과목의 특징을 선택해주세요.</h3>
+      <div class="tag-options">
+        <span>#조별과제가 없는</span>
+        <span>#발표가 없는</span>
+        <span>#과제가 없는</span>
+        <span>#별점이 높은</span>
+        <span>#너그러운 성적</span>
+        <span>#운동</span>
+        <span>#언어</span>
+        <span>#과학</span>
+        <span>#토익</span>
+        <span>#문화생활</span>
+      </div>
+    </div>
+
+    <!-- Footer: 버튼 -->
+    <div class="survey-footer">
+      <button class="next-btn">다음</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const steps = document.querySelectorAll(".survey-step");
+  const nextBtn = document.querySelector(".next-btn");
+  let currentStep = 0;
+
+  // 시간표 셀 생성
+  const tbody = document.getElementById("survey-tbody");
+  for (let hour = 9; hour <= 18; hour++) {
+    const row = document.createElement("tr");
+    const timeCell = document.createElement("td");
+    timeCell.textContent = `${hour}:00`;
+    row.appendChild(timeCell);
+
+    for (let day = 0; day < 5; day++) {
+      const cell = document.createElement("td");
+      cell.classList.add("survey-cell");
+      cell.setAttribute("data-hour", hour);
+      cell.setAttribute("data-day", day);
+      cell.addEventListener("click", () => {
+        cell.classList.toggle("selected");
+      });
+      row.appendChild(cell);
+    }
+    tbody.appendChild(row);
+  }
+
+  // 태그 선택
+  document.querySelectorAll(".tag-options span").forEach(tag => {
+    tag.addEventListener("click", () => {
+      tag.classList.toggle("selected");
+    });
+  });
+
+  // 다음 버튼
+  nextBtn.addEventListener("click", () => {
+    if (currentStep < steps.length - 1) {
+      steps[currentStep].classList.remove("active");
+      currentStep++;
+      steps[currentStep].classList.add("active");
+
+      if (currentStep === steps.length - 1) {
+        nextBtn.textContent = "제출";
+      }
+    } else {
+      // 최종 제출
+      const major = document.getElementById("major-credit-input").value;
+      const elective = document.getElementById("elective-credit-input").value;
+      const freeDays = Array.from(document.querySelectorAll(".weekday-options input:checked")).map(cb => cb.value);
+      const blocked = Array.from(document.querySelectorAll(".survey-cell.selected")).map(cell => ({
+        day: cell.dataset.day,
+        hour: cell.dataset.hour
+      }));
+      const tags = Array.from(document.querySelectorAll(".tag-options span.selected")).map(tag => tag.textContent);
+
+      console.log({ major, elective, freeDays, blocked, tags });
+
+      // 닫기
+      document.getElementById("survey-overlay").style.display = "none";
+    }
+  });
+});
+</script>

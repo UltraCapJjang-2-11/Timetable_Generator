@@ -668,10 +668,18 @@ def manage_view(request):
     timetables_json = json.dumps(timetables_data, ensure_ascii=False)
     
     print(f"JSON 데이터 크기: {len(timetables_json)} 문자")
+
+    current_user = {
+        'user_id': request.user.id if request.user.is_authenticated else 0,
+        'username': request.user.username if request.user.is_authenticated else '익명',
+        'is_authenticated': bool(request.user.is_authenticated),
+    }
+    current_user_json = json.dumps(current_user, ensure_ascii=False)
     
     return render(request, "home/manage.html", {
         'timetables': timetables_data,
-        'timetables_json': timetables_json
+        'timetables_json': timetables_json,
+        'current_user_json': current_user_json,
     })
 
 

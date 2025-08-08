@@ -84,3 +84,43 @@ function selectChat(lectureName) {
         return null; // 봇 메시지 우선 삭제해놓음
     }
 }
+
+// Bind click on timetable cards to show timetable and sync dropdown
+(function bindTimetableCardClicks(){
+  document.addEventListener('DOMContentLoaded', function(){
+    console.log('DOM loaded, binding timetable card clicks...');
+    const cards = document.querySelectorAll('.timetable-card');
+    console.log(`Found ${cards.length} timetable cards`);
+    
+    cards.forEach(card => {
+      card.addEventListener('click', function(){
+        const idAttr = this.getAttribute('data-timetable-id');
+        console.log('Timetable card clicked, ID attribute:', idAttr);
+        const id = idAttr ? Number(idAttr) : null;
+        if (!id) {
+          console.error('No valid ID found on timetable card');
+          return;
+        }
+        
+        console.log('Processing timetable ID:', id);
+        // sync dropdown
+        const sel = document.getElementById('saved-timetable-select');
+        if (sel) {
+          console.log('Setting dropdown value to:', String(id));
+          sel.value = String(id);
+          sel.dispatchEvent(new Event('change'));
+        } else {
+          console.error('Dropdown select not found');
+        }
+        
+        // show overlay timetable view
+        if (typeof showTimetableById === 'function') {
+          console.log('Calling showTimetableById...');
+          showTimetableById(id);
+        } else {
+          console.error('showTimetableById function not found');
+        }
+      });
+    });
+  });
+})();

@@ -21,6 +21,7 @@
             <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
             <div class="nav-links">
                 <a href="{% url 'dashboard' %}">Home<span></span></a>
+                <a href="{% url 'manage' %}">Manage<span></span></a>
                 <a href="{% url 'mypage' %}">MyPage<span></span></a>
                 <a href="{% url 'timetable' %}">TimeTable<span></span></a>
                 <a href="{% url 'logout' %}">Logout<span></span></a>
@@ -44,15 +45,9 @@
       </div>
 
       <div class="container">
-          <div class="cube">
-              <div class="front"></div>
-              <div class="back"></div>
-              <div class="right"></div>
-              <div class="left"></div>
-              <div class="top"></div>
-              <div class="bottom"></div>
-          </div>
+        <a href="{% url 'timetable' %}" class="timetable-button animate__animated animate__fadeInUp">시간표 제작 바로가기</a>
       </div>
+
 
     </div>
    
@@ -61,4 +56,4 @@
     <script src="{% static 'home/js/dashboard_script.js' %}"></script>
   
 </body>
-</html>
+</html> 

@@ -83,9 +83,72 @@
       </div>
     </div>
 
+    <!-- 설문조사 오버레이 -->
+    <div id="survey-overlay">
+        <div class="survey-container">
+            
+            <!-- STEP 1 -->
+            <div class="survey-step active" data-step="1">
+                <h3>1. 수강할 전공 학점과 교양 학점을 입력해주세요.</h3>
+                <div class="credit-inputs">
+                    <input type="number" id="major-credit-input" placeholder="전공 학점" min="0" max="24">
+                    <input type="number" id="elective-credit-input" placeholder="교양 학점" min="0" max="24">
+                </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="survey-step" data-step="2">
+                <h3>2. 희망하는 공강 요일을 선택해주세요.</h3>
+                <div class="weekday-options">
+                    <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
+                    <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
+                    <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
+                    <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
+                    <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
+                    <input type="checkbox" id="none" value="없음"><label for="none">없음</label>
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="survey-step" data-step="3">
+                <h3>3. 제외하고 싶은 시간을 선택해주세요.</h3>
+                <table class="survey-timetable">
+                    <thead>
+                        <tr><th></th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th></tr>
+                    </thead>
+                    <tbody id="survey-tbody"></tbody>
+                </table>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="survey-step" data-step="4">
+                <h3>4. 선호하는 교양 과목의 특징을 선택해주세요.</h3>
+                <div class="tag-options">
+                    <span>#조별과제가 없는</span>
+                    <span>#발표가 없는</span>
+                    <span>#과제가 없는</span>
+                    <span>#별점이 높은</span>
+                    <span>#너그러운 성적</span>
+                    <span>#운동</span>
+                    <span>#언어</span>
+                    <span>#과학</span>
+                    <span>#토익</span>
+                    <span>#문화생활</span>
+                </div>
+            </div>
+
+            <!-- Footer: 버튼 -->
+            <div class="survey-footer">
+                <button class="next-btn">다음</button>
+            </div>
+
+        </div>
+    </div>
+
     {% include "home/timetable/chatbot.html" %}
 
     <script src="{% static 'home/js/timetable/chatbot.js' %}"></script>
+    <script src="{% static 'home/js/timetable/survey.js' %}"></script>
     <script type="module" src="{% static 'home/js/timetable/main.js' %}"></script>
     <script type="module" src="{% static 'home/js/timetable/right_panel.js' %}"></script>
     <script type="module" src="{% static 'home/js/timetable/left_panel.js' %}"></script>

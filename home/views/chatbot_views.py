@@ -20,7 +20,7 @@ RASA_WEBHOOK_ENDPOINT = "http://localhost:5005/webhooks/rest/webhook"  # Rasa �
 def parse_constraints(request):
     """
     자연어 텍스트를 파싱하여 시간표 제약조건을 추출하는 뷰
-    Rasa 서버와 통신하여 자연어 처리를 수행합니다.
+    Rasa 서버와 통신하여 자연어 처리를 수행함.
     """
     data = json.loads(request.body)
     user_text = data.get("text", "")
@@ -52,7 +52,7 @@ def parse_constraints(request):
 
 def extract_constraints_from_rasa_response(rasa_response):
     """
-    Rasa NLU 응답에서 시간표 제약조건을 추출합니다.
+    Rasa NLU 응답에서 시간표 제약조건을 추출.
     
     Args:
         rasa_response: Rasa 서버의 NLU 응답

@@ -2,7 +2,7 @@
 
 ## 📋 개요
 
-기존 1,383줄의 거대한 `views.py` 파일을 기능별로 분리함
+기존 1,383줄의 `views.py` 파일을 기능별로 분리함
 
 ## 🔄 변경 사항
 
@@ -44,7 +44,7 @@ home/
 ### 2. `home/utils.py` (공통 유틸리티)
 **역할**: 여러 뷰에서 공통으로 사용되는 헬퍼 함수들
 **포함 기능**:
-- `get_effective_general_category()`: 교양 카테고리 매핑
+- `get_effective_gen eral_category()`: 교양 카테고리 매핑
 - `get_simplified_category_name()`: 카테고리 명칭 통일
 - `apply_time_constraints()`: 시간 제약조건 적용
 - `extract_number()`: 텍스트에서 숫자 추출

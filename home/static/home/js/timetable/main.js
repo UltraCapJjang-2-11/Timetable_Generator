@@ -233,6 +233,7 @@ function handleGenerateButtonClick() {
 
 function handleTimetableActionRequest(e) {
     const parsedData = e.detail;
+    console.log('handleTimetableActionRequest 호출됨:', parsedData);
     
     if (parsedData.is_modification) {
         // 시간표 수정의 경우: 기존 제약조건 + 새로운 제약조건
@@ -509,6 +510,18 @@ function handleTogglePin(e) {
         detail: { timetable: timetableState.currentTimetable }
     }));
 }
+
+/**
+ * ----------------------------------------------------------------
+ * 설문조사 데이터 처리 (백업)
+ * ----------------------------------------------------------------
+ */
+
+// 설문조사 완료 시 호출되는 백업 전역 함수 (survey.js에서 직접 처리하지만 혹시를 위해 유지)
+window.handleSurveyComplete = function(surveyData) {
+    console.log('main.js - 설문조사 백업 처리 함수 호출:', surveyData);
+    // survey.js에서 이미 처리하므로 여기서는 로그만 출력
+};
 
 /**
  * ----------------------------------------------------------------

@@ -4,4 +4,5 @@ from .auth_views import *
 from .chatbot_views import *
 from .timetable_views import *
 from .review_views import *
-from .dashboard_views import * 
+from .dashboard_views import *
+from .chat_views import * 

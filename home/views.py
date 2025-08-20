@@ -22,6 +22,7 @@ from .views.dashboard_views import (
     index_view, course_serach_test_view, dashboard_view, 
     upload_pdf_view, mypage_view
 )
+from .views.chat_views import get_chat_history
 
 # 하위 호환성을 위해 기존 import 유지
 from .utils import *

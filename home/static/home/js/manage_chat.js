@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Connect socket - 수정된 연결 설정
   console.log('Attempting to connect to Socket.IO server...');
   const socket = io('/', {
-    path: '/socket.io/',
+    path: '/socket.io',
     transports: ['polling', 'websocket'],
     reconnection: true,
     reconnectionAttempts: 5,
@@ -77,17 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const bodyEl = entry.panelEl.querySelector('.lecture-chat-body');
     if (!bodyEl) return;
 
-    const timeEl = document.createElement('div');
-    timeEl.className = 'chat-time';
-    timeEl.textContent = getCurrentTime();
-    bodyEl.appendChild(timeEl);
-
-    const bubble = document.createElement('div');
-    bubble.className = data && data.username ? 'chat-bubble other' : 'chat-bubble bot';
-    bubble.textContent = `${data.username || '익명'}: ${data.message || ''}`;
-    bodyEl.appendChild(bubble);
-
-    bodyEl.scrollTop = bodyEl.scrollHeight;
+    const isSelf = data && (data.user_id === (window.currentUser && Number(window.currentUser.user_id)));
+    appendMessage(openRooms.get(room), !!isSelf, data && data.user_id, data && data.username, data && data.message, new Date());
   });
 
   function getCurrentTime() {
@@ -97,6 +88,81 @@ document.addEventListener('DOMContentLoaded', function() {
     const period = hours < 12 ? '오전' : '오후';
     const hour12 = hours % 12 === 0 ? 12 : hours % 12;
     return `오늘 ${period} ${hour12}:${minutes}`;
+  }
+
+  // Kakao-style formatters and render helpers
+  function formatKakaoTime(dt) {
+    const hours = dt.getHours();
+    const minutes = String(dt.getMinutes()).padStart(2, '0');
+    const period = hours < 12 ? '오전' : '오후';
+    const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+    return `${period} ${hour12}:${minutes}`;
+  }
+
+  function formatKakaoDate(dt) {
+    const y = dt.getFullYear();
+    const m = dt.getMonth() + 1;
+    const d = dt.getDate();
+    return `${y}. ${m}. ${d}.`;
+  }
+
+  function dateKey(dt) {
+    return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+  }
+
+  function ensureDateSeparator(entry, dt) {
+    if (!entry || !entry.panelEl) return;
+    const key = dateKey(dt);
+    if (entry.lastDateKey !== key) {
+      const sep = document.createElement('div');
+      sep.className = 'chat-date-sep';
+      sep.textContent = formatKakaoDate(dt);
+      const bodyEl = entry.panelEl.querySelector('.lecture-chat-body');
+      if (bodyEl) bodyEl.appendChild(sep);
+      entry.lastDateKey = key;
+      entry.lastSenderKey = null; // 날짜가 바뀌면 이름 라벨을 다시 표시
+    }
+  }
+
+  function appendMessage(entry, isSelf, userId, username, text, dt) {
+    if (!entry || !entry.panelEl) return;
+    const bodyEl = entry.panelEl.querySelector('.lecture-chat-body');
+    if (!bodyEl) return;
+
+    const when = dt instanceof Date ? dt : new Date();
+    ensureDateSeparator(entry, when);
+
+    const row = document.createElement('div');
+    row.className = `chat-row ${isSelf ? 'self' : 'other'}`;
+
+    // 타인 메시지에서 발신자 라벨 표시(연속 동일 발신자면 생략)
+    const senderKey = isSelf ? `self:${(window.currentUser && Number(window.currentUser.user_id)) || 0}` : `user:${userId || username || '익명'}`;
+    if (!isSelf && entry.lastSenderKey !== senderKey) {
+      const nameEl = document.createElement('div');
+      nameEl.className = 'chat-sender';
+      nameEl.textContent = username || '익명';
+      bodyEl.appendChild(nameEl);
+    }
+    entry.lastSenderKey = senderKey;
+
+    const bubble = document.createElement('div');
+    bubble.className = isSelf ? 'chat-bubble user' : 'chat-bubble other';
+    bubble.textContent = isSelf ? (text || '') : (text || '');
+
+    const timeEl = document.createElement('span');
+    timeEl.className = 'msg-time';
+    timeEl.textContent = formatKakaoTime(when);
+
+    if (isSelf) {
+      row.appendChild(timeEl);
+      row.appendChild(bubble);
+    } else {
+      row.appendChild(bubble);
+      row.appendChild(timeEl);
+    }
+
+    bodyEl.appendChild(row);
+    bodyEl.scrollTop = bodyEl.scrollHeight;
   }
 
   function hashStr(str) {
@@ -211,21 +277,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const entry = { panelEl: panel, headerCountEl: countEl, course };
     openRooms.set(roomKey, entry);
 
+    // 과거 메시지 로딩
+    (async () => {
+      try {
+        const params = new URLSearchParams();
+        if (course && course.course_id != null && String(course.course_id) !== '') {
+          params.set('course_id', String(course.course_id));
+        } else {
+          params.set('room', roomKey);
+        }
+        params.set('limit', '50');
+        const res = await fetch(`/api/chat/history/?${params.toString()}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+        });
+        if (!res.ok) throw new Error(`History API HTTP ${res.status}`);
+        const data = await res.json();
+        const msgs = Array.isArray(data.messages) ? data.messages : [];
+        for (const m of msgs) {
+          const dt = m.created_at ? new Date(m.created_at) : new Date();
+          const isSelf = (m.user_id === (window.currentUser && Number(window.currentUser.user_id)));
+          appendMessage(entry, !!isSelf, m.user_id, m.username, m.message, dt);
+        }
+      } catch (e) {
+        console.error('Failed to load chat history:', e);
+      }
+    })();
+
     function doSend() {
       const text = (input.value || '').trim();
       if (!text) return;
 
-      const t = document.createElement('div');
-      t.className = 'chat-time';
-      t.textContent = getCurrentTime();
-      body.appendChild(t);
-
-      const bubble = document.createElement('div');
-      bubble.className = 'chat-bubble user';
-      bubble.textContent = text;
-      body.appendChild(bubble);
-
-      body.scrollTop = body.scrollHeight;
+      appendMessage(entry, true, (window.currentUser && Number(window.currentUser.user_id)) || 0, (window.currentUser && window.currentUser.username) || '익명', text, new Date());
       input.value = '';
 
       if (course && course.course_id != null && String(course.course_id) !== '') {

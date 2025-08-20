@@ -4,6 +4,7 @@ from typing import Dict, Set, DefaultDict
 from collections import defaultdict
 
 import socketio
+from asgiref.sync import sync_to_async
 
 # Async Socket.IO server (ASGI)
 sio = socketio.AsyncServer(
@@ -24,6 +25,26 @@ room_user_counts: DefaultDict[str, int] = defaultdict(int)
 async def _broadcast_user_count(room: str):
     count = room_user_counts.get(room, 0)
     await sio.emit("user_count", {"room": room, "count": count}, room=room)
+
+
+async def _persist_chat_message(room: str, course_id, user_id, username: str, message: str):
+    """메시지를 DB에 저장합니다. Django ORM은 동기이므로 sync_to_async로 래핑합니다."""
+    try:
+        # 지연 import (ASGI 초기화 순서 안전)
+        from home.models import ChatMessage
+
+        def _create():
+            return ChatMessage.objects.create(
+                room=room,
+                course_id=course_id,
+                user_id=user_id,
+                username=username or '익명',
+                message=message,
+            )
+
+        await sync_to_async(_create, thread_sensitive=True)()
+    except Exception:
+        logging.getLogger(__name__).exception("Failed to persist chat message")
 
 
 @sio.event
@@ -117,6 +138,22 @@ async def chat_message(sid, data):
         "user_id": user.get("user_id"),
         "username": user.get("username") or "익명",
     }
+
+    # 메시지 영속화 (course_id 미제공 시 room에서 파생)
+    cid = course_id
+    if cid is None and isinstance(room, str) and room.startswith("course_"):
+        try:
+            cid = int(room.split("_", 1)[1])
+        except Exception:
+            cid = None
+    await _persist_chat_message(
+        room=room,
+        course_id=cid,
+        user_id=user.get("user_id"),
+        username=user.get("username") or "익명",
+        message=message,
+    )
+
     # Do not send the message back to the sender; clients render own message locally
     await sio.emit("chat_message", payload, room=room, skip_sid=sid)
 

@@ -1,0 +1,177 @@
+{
+  "rulesets": [
+    {
+      "ruleset_name": "2020학년도 소프트웨어학과 졸업요건",
+      "department_name": "소프트웨어학과",
+      "target_year": 2020,
+      "required_total_credits": 140,
+      "rules": [
+        {
+          "category_name": "전공",
+          "min_credits": 84,
+          "max_credits": null,
+          "description": "전공 84학점 이상 이수"
+        },
+        {
+          "category_name": "전공필수",
+          "min_credits": 30,
+          "max_credits": null,
+          "description": "전공필수 30학점 이상 이수"
+        },
+        {
+          "category_name": "전공선택",
+          "min_credits": 54,
+          "max_credits": null,
+          "description": "전공선택 54학점 이상 이수"
+        },
+        {
+          "category_name": "교양",
+          "min_credits": 43,
+          "max_credits": 56,
+          "description": "교양 43학점 이상 이수 (최대 56학점까지 인정)"
+        },
+        {
+          "category_name": "개신기초교양",
+          "min_credits": 18,
+          "max_credits": null,
+          "description": "개신기초교양 18학점 이수"
+        },
+        {
+          "category_name": "인성과비판적사고",
+          "min_credits": 3,
+          "max_credits": null,
+          "description": "개신기초교양 '인성과 비판적 사고' 영역 3학점 이수"
+        },
+        {
+          "category_name": "의사소통",
+          "min_credits": 3,
+          "max_credits": null,
+          "description": "개신기초교양 '의사소통' 영역 3학점 이수"
+        },
+        {
+          "category_name": "영어",
+          "min_credits": 6,
+          "max_credits": null,
+          "description": "개신기초교양 '영어' 영역 6학점 이수"
+        },
+        {
+          "category_name": "정보문해",
+          "min_credits": 6,
+          "max_credits": null,
+          "description": "개신기초교양 '정보문해' 영역 6학점 이수"
+        },
+        {
+          "category_name": "일반교양",
+          "min_credits": 9,
+          "max_credits": null,
+          "description": "일반교양 9학점 이상 이수"
+        },
+        {
+          "category_name": "확대교양",
+          "min_credits": 3,
+          "max_credits": null,
+          "description": "확대교양 3학점 이상 이수"
+        },
+        {
+          "category_name": "자연이공계기초과학",
+          "min_credits": 13,
+          "max_credits": null,
+          "description": "자연이공계기초과학 13학점 이상 이수"
+        },
+        {
+          "category_name": "일선",
+          "min_credits": 0,
+          "max_credits": null,
+          "description": "일반선택 0학점 이상 이수"
+        }
+      ]
+    },
+    {
+      "ruleset_name": "2021학년도 소프트웨어학과 졸업요건",
+      "department_name": "소프트웨어학과",
+      "target_year": 2021,
+      "required_total_credits": 140,
+      "rules": [
+        {
+          "category_name": "전공",
+          "min_credits": 84,
+          "max_credits": null,
+          "description": "전공 84학점 이상 이수"
+        },
+        {
+          "category_name": "전공필수",
+          "min_credits": 30,
+          "max_credits": null,
+          "description": "전공필수 30학점 이상 이수"
+        },
+        {
+          "category_name": "전공선택",
+          "min_credits": 54,
+          "max_credits": null,
+          "description": "전공선택 54학점 이상 이수"
+        },
+        {
+          "category_name": "교양",
+          "min_credits": 43,
+          "max_credits": 56,
+          "description": "교양 43학점 이상 이수 (최대 56학점까지 인정)"
+        },
+        {
+          "category_name": "개신기초교양",
+          "min_credits": 18,
+          "max_credits": null,
+          "description": "개신기초교양 18학점 이수"
+        },
+        {
+          "category_name": "인성과비판적사고",
+          "min_credits": 3,
+          "max_credits": null,
+          "description": "개신기초교양 '인성과 비판적 사고' 영역 3학점 이수"
+        },
+        {
+          "category_name": "의사소통",
+          "min_credits": 3,
+          "max_credits": null,
+          "description": "개신기초교양 '의사소통' 영역 3학점 이수"
+        },
+        {
+          "category_name": "영어",
+          "min_credits": 6,
+          "max_credits": null,
+          "description": "개신기초교양 '영어' 영역 6학점 이수"
+        },
+        {
+          "category_name": "정보문해",
+          "min_credits": 6,
+          "max_credits": null,
+          "description": "개신기초교양 '정보문해' 영역 6학점 이수"
+        },
+        {
+          "category_name": "일반교양",
+          "min_credits": 9,
+          "max_credits": null,
+          "description": "일반교양 9학점 이상 이수"
+        },
+        {
+          "category_name": "확대교양",
+          "min_credits": 3,
+          "max_credits": null,
+          "description": "확대교양 3학점 이상 이수"
+        },
+        {
+          "category_name": "자연이공계기초과학",
+          "min_credits": 13,
+          "max_credits": null,
+          "description": "자연이공계기초과학 13학점 이상 이수"
+        },
+        {
+          "category_name": "일선",
+          "min_credits": 0,
+          "max_credits": null,
+          "description": "일반선택 0학점 이상 이수"
+        }
+      ]
+    }
+
+  ]
+}

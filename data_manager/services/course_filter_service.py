@@ -214,16 +214,13 @@ class CourseFilterService:
         credit=None,
         course_name=None,
         year=2025,
-        term='1학기'
+        term='2학기'
     ):
         """
         여러 조건을 동시에 받아서 필터링 체이닝.
         학년도(year)와 학기(term)가 주어지면, 해당 학기의 강의만 반환.
         """
         queryset = self.get_all_courses()
-
-        year = 2025
-        term = '1학기'
 
         if college_name:
             queryset = self.filter_by_college(queryset, college_name)

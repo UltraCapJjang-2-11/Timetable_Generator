@@ -1,23 +1,8 @@
 {% load static %}
-{% load org_tags %}
-{% load category_tags %}
 <div class="left-panel p-3 border-end overflow-auto">
 
     {# 교과목 분류(카테고리) 선택하는 드롭다운 #}
-    {% category_dropdown %}
-
-    {# 전공 선택시 나타나는 학과(부) 드롭다운 #}
-    <div id="org-container" style="display:none;">
-        {% org_dropdowns %}
-    </div>
-
-    {# 강의명을 통한 검색 컨테이너 #}
-    <div id="course-name-search-container" class="d-flex flex-row align-items-baseline gap-3 mb-3">
-        <div class="d-flex flex-column flex-grow-1">
-            <label for="course_name_search" class="form-label fw-bold">강의명 검색</label>
-            <input type="text" id="course_name_search" class="form-control" placeholder="강의명 입력">
-        </div>
-    </div>
+    {% include  'home/dropdown/_category_dropdown.html' %}
 
     {# 검색 버튼 #}
     <button id="search-button" class="btn btn-warning w-50 mb-3">검색</button>

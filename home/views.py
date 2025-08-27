@@ -7,15 +7,16 @@ from django.db.models.functions import Upper
 from django.http import JsonResponse, StreamingHttpResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
-from data_manager.course.course_filter_service import CourseFilterService
+from data_manager.services.course_filter_service import CourseFilterService
 from data_manager.models import *
 from .forms import CustomUserCreationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
+from django.urls import reverse_lazy
 
 from .services.gpt_service import extract_graduation_info_from_text
 from .services.graduation_file_service import save_graduation_data_to_db
+from data_manager.services.graduation_engine import GraduationEngine
 from .services.pdf_service import pdf_to_text
 from django.views.decorators.csrf import csrf_exempt
 
@@ -223,6 +224,12 @@ def parse_time_range(time_text):
 class CustomLoginView(LoginView):
     template_name = 'home/login.html'
     authentication_form = AuthenticationForm
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        # ?next= 우선, 없으면 대시보드로 이동
+        
+        return self.get_redirect_url() or reverse_lazy('dashboard')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -231,144 +238,175 @@ class CustomLoginView(LoginView):
             context['register_form'] = CustomUserCreationForm()
         return context
 
-def signup(request):
-    if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "회원가입이 완료되었습니다. 로그인 해주세요.")
-            return redirect('login')
-        else:
-            messages.error(request, "회원가입 정보를 확인해주세요.")
-    else:
-        form = CustomUserCreationForm()
-
-    login_form = AuthenticationForm()
-    return render(request, 'home/login.html', {
-        'signup_form': form,
-        'login_form': login_form
-    })
-
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('/')
 
 def index_view(request):
     # 로그인 여부를 판단하고, 로그인 페이지 혹은 대쉬보드 페이지로 이동
     if request.user.is_authenticated:
         return render(request, 'home/dashboard.html')
     else:
-        return redirect('/login')
+        return render(request, 'home/index.html')
 
 def course_serach_test_view(request):
     return render(request, 'home/search_test.html')
 
 def timetable_view(request):
-
-    service = CourseFilterService()
-
-    # 25년도 1학기
-    year = 2025
-    term = "1학기"
-
-    major_required = service.course_search(year = year, term = term, category_name='전공필수').order_by('course_name')
-    major_elective = service.course_search(year = year, term = term, category_name='전공선택').order_by('course_name')
-    general_elective = service.course_search(year = year, term = term, category_name='교양').order_by('course_name')
-    free_elective = service.course_search(year = year, term = term, category_name='일선').order_by('course_name')
-    teaching_required = service.course_search(year = year, term = term, category_name='교직').order_by('course_name')
-
-    return render(request, "home/timetable/timetable.html", {
-        'major_required': major_required,
-        'major_elective': major_elective,
-        'general_elective': general_elective,
-        'free_elective': free_elective,
-        'teaching_required': teaching_required,
-    })
+    return render(request, "home/timetable/timetable.html")
 
 def dashboard_view(request):
     return render(request, 'home/dashboard.html')
 
-def upload_pdf_view(request):
-    if request.method == "POST":
-        pdf_file = request.FILES.get("graduation_pdf")
-        if not pdf_file:
-            return JsonResponse({"error": "파일이 업로드되지 않았습니다."}, status=400)
-        file_path = os.path.join(settings.BASE_DIR, "user_uploads", pdf_file.name)
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, "wb+") as dest:
-            for chunk in pdf_file.chunks():
-                dest.write(chunk)
-        text = pdf_to_text(file_path)
-        # print("debug text:", text)
-        parsed_data = extract_graduation_info_from_text(text)
-        user_id = request.user.id if request.user.is_authenticated else 1
-        record = save_graduation_data_to_db(parsed_data, user_id)
-        return redirect('mypage')
-
 def mypage_view(request):
-    user_id = request.user.id if request.user.is_authenticated else 1
-    record = GraduationRecord.objects.filter(user_id=user_id).last()
     context = {}
-    if record:
-        context['user_student_id'] = getattr(record, 'user_student_id', "")
-        context['user_name'] = getattr(record, 'user_name', "")
-        context['user_major'] = getattr(record, 'user_major', "")
-        context['user_year'] = getattr(record, 'user_year', "")
-        context['total_credits'] = getattr(record, 'total_credits', 0)
-        context['major_credits'] = getattr(record, 'major_credits', 0)
-        context['general_credits'] = getattr(record, 'general_credits', 0)
-        context['free_credits'] = getattr(record, 'free_credits', 0)
-        context['total_requirement'] = getattr(record, 'total_requirement', 0)
-        context['major_requirement'] = getattr(record, 'major_requirement', 0)
-        context['general_requirement'] = getattr(record, 'general_requirement', 0)
-        context['free_requirement'] = getattr(record, 'free_requirement', 0)
+
+    # 사용자 학사 정보는 UserProfile에서 가져오기
+    user_profile = None
+    if request.user.is_authenticated:
+        user_profile = UserProfile.objects.filter(user=request.user).select_related('department').first()
+
+    context['user_student_id'] = getattr(user_profile, 'user_student_id', "") if user_profile else ""
+    context['user_name'] = getattr(user_profile, 'user_name', "") if user_profile else ""
+    context['user_major'] = (user_profile.department.dept_name if getattr(user_profile, 'department', None) else "") if user_profile else ""
+    # 학년 표기: 숫자면 "n학년"으로, 없으면 빈 문자열
+    if user_profile and getattr(user_profile, 'current_grade', None) is not None:
         try:
-            context['major_requirement_data'] = json.loads(record.major_requirement or '{}')
-        except:
-            context['major_requirement_data'] = {}
-        try:
-            context['general_requirement'] = json.loads(record.general_requirement or '{}')
-        except:
-            context['general_requirement'] = {}
-        try:
-            context['detailed_credits'] = json.loads(record.detailed_credits or '{}')
-        except:
-            context['detailed_credits'] = {}
-        try:
-            missing_subjects = json.loads(record.missing_major_subjects or '[]')
-            context['missing_subjects'] = missing_subjects if isinstance(missing_subjects, list) else []
-            
-            # missing_subjects를 alerts로 변환
-            alerts = []
-            for item in context['missing_subjects']:
-                if isinstance(item, dict) and 'type' in item and 'description' in item:
-                    alerts.append(f"{item['type']}: {item['description']}")
-            context['alerts'] = alerts
-        except:
-            context['missing_subjects'] = []
-            context['alerts'] = []
-        try:
-            completed_courses = json.loads(record.completed_courses or '[]')
-            context['completed_courses'] = completed_courses if isinstance(completed_courses, list) else []
-        except:
-            context['completed_courses'] = []
-        try:
-            missing_general_sub_raw = json.loads(record.missing_general_sub or '{}')
-            context['missing_general_sub'] = missing_general_sub_raw if isinstance(missing_general_sub_raw, dict) else {}
-        except:
-            context['missing_general_sub'] = {}
-        context['missing_total'] = max(0, context['total_requirement'] - context['total_credits'])
+            context['user_year'] = f"{int(user_profile.current_grade)}학년"
+        except Exception:
+            context['user_year'] = str(user_profile.current_grade)
     else:
-        context.update({
-            'user_student_id': "", 'user_name': "", 'user_major': "", 'user_year': "",
-            'total_credits': 0, 'major_credits': 0, 'general_credits': 0, 'free_credits': 0,
-            'total_requirement': 0, 'major_requirement_data': {}, 'free_requirement': 0,
-            'missing_total': 0, 'missing_major': 0, 'missing_major_essential': 0,
-            'missing_major_elective': 0, 'missing_general': 0, 'missing_free': 0,
-            'missing_subjects': [], 'completed_courses': [], 'missing_general_sub': {},
-            'detailed_credits': {}, 'general_requirement': {}, 'alerts': [],
-            'error_message': "졸업 정보를 찾을 수 없습니다. 성적표 PDF를 업로드해주세요."
-        })
+        context['user_year'] = ""
+
+    # 사용자 이수내역(Transcript)과 졸업엔진 결과(알림/요건) 제공 =====
+    # Course History 집계
+    try:
+        course_history = []
+        transcripts = []
+        if user_profile:
+            transcripts = list(
+                Transcript.objects.filter(user_profile=user_profile)
+                .select_related('course__semester', 'course__category')
+            )
+            for t in transcripts:
+                c = t.course
+                sem = getattr(c, 'semester', None)
+                year = getattr(sem, 'year', None)
+                term = getattr(sem, 'term', '')
+                # 카테고리 간소화 명칭 활용
+                course_type = get_simplified_category_name(c) if callable(get_simplified_category_name) else (c.category.category_name if c.category else '')
+                course_history.append({
+                    'year': year if year is not None else 0,
+                    'term': term or '',
+                    'course_code': c.course_code,
+                    'course_name': c.course_name,
+                    'credit': int(getattr(c, 'credits', 0)),
+                    'course_type': course_type,
+                    'grade': t.grade,
+                })
+        context['course_history_json'] = json.dumps(course_history, ensure_ascii=False)
+    except Exception:
+        context['course_history_json'] = json.dumps([], ensure_ascii=False)
+
+    # 졸업 요건 엔진 실행 및 알림/요건 트리 생성
+    try:
+        requirements_tree = []
+        engine_alerts = []
+        if user_profile and transcripts:
+            engine = GraduationEngine(user_profile=user_profile, transcripts=transcripts)
+            # 알림(remark) 수집
+            try:
+                results = engine.run()
+                for r in results:
+                    # r는 RuleResult dataclass (is_satisfied, remark 등 포함)
+                    if getattr(r, 'remark', '') and not getattr(r, 'is_satisfied', True):
+                        engine_alerts.append(r.remark)
+            except Exception:
+                pass
+
+            # 계층형 요건 트리 구성: 규칙 카테고리 및 조상 노드만 표시
+            try:
+                categories_map = engine.categories_map or {}
+                credits_by_category = engine.processed_data.get('credits_by_category', {}) if hasattr(engine, 'processed_data') else {}
+                rules_qs = engine.ruleset.rules.select_related('category').all() if getattr(engine, 'ruleset', None) else []
+                required_by_cat_id = {}
+                rule_cat_ids = set()
+                for rule in rules_qs:
+                    cid = rule.category.category_id
+                    rule_cat_ids.add(cid)
+                    # 동일 카테고리의 규칙이 여러 개면 필요한 최소 학점을 합산
+                    required_by_cat_id[cid] = required_by_cat_id.get(cid, 0) + int(getattr(rule, 'min_credits', 0) or 0)
+
+                # 표시 대상 카테고리 집합(규칙 카테고리 + 모든 조상)
+                display_ids = set()
+                for cid in rule_cat_ids:
+                    current = categories_map.get(cid)
+                    while current:
+                        display_ids.add(current.category_id)
+                        parent_id = getattr(current, 'parent_category_id', None)
+                        if not parent_id:
+                            break
+                        current = categories_map.get(parent_id)
+
+                # children 매핑 구성
+                children_by_parent = {}
+                for cid in display_ids:
+                    cat = categories_map.get(cid)
+                    if not cat:
+                        continue
+                    parent_id = getattr(cat, 'parent_category_id', None)
+                    if parent_id in display_ids:
+                        children_by_parent.setdefault(parent_id, []).append(cid)
+
+                # 노드 생성
+                def build_node(cid):
+                    cat = categories_map.get(cid)
+                    if not cat:
+                        return None
+                    earned = float(credits_by_category.get(cid, 0.0))
+                    required = required_by_cat_id.get(cid)
+                    node = {
+                        'id': cid,
+                        'name': cat.category_name,
+                        'level': int(getattr(cat, 'category_level', 0) or 0),
+                        'earned': round(earned, 2),
+                        'required': int(required) if required is not None else None,
+                        'children': []
+                    }
+                    # 정렬된 자식 노드 구성
+                    child_ids = sorted(children_by_parent.get(cid, []), key=lambda x: (getattr(categories_map.get(x), 'category_level', 0) or 0, categories_map.get(x).category_name if categories_map.get(x) else ''))
+                    for child_id in child_ids:
+                        child_node = build_node(child_id)
+                        if child_node:
+                            node['children'].append(child_node)
+                    return node
+
+                # 루트(표시 대상 중 상위) 추출 및 트리 생성
+                root_ids = []
+                for cid in display_ids:
+                    cat = categories_map.get(cid)
+                    parent_id = getattr(cat, 'parent_category_id', None) if cat else None
+                    if parent_id not in display_ids:
+                        root_ids.append(cid)
+                root_ids.sort(key=lambda x: (getattr(categories_map.get(x), 'category_level', 0) or 0, categories_map.get(x).category_name if categories_map.get(x) else ''))
+
+                for root_id in root_ids:
+                    node = build_node(root_id)
+                    if node:
+                        requirements_tree.append(node)
+            except Exception:
+                requirements_tree = []
+
+        # 기존 alerts에 엔진 알림 병합
+        if engine_alerts:
+            context['alerts'] = list(context.get('alerts', []) or []) + engine_alerts
+
+        context['requirements_tree_json'] = json.dumps(requirements_tree, ensure_ascii=False)
+    except Exception:
+        context['requirements_tree_json'] = json.dumps([], ensure_ascii=False)
+
+    print(context)
+
     return render(request, 'home/mypage.html', context)
 
 

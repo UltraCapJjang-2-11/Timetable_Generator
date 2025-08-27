@@ -1,0 +1,26 @@
+<div id="pdf-viewer-container" class="border rounded d-flex flex-column h-100" style="background-color: #f8f9fa;">
+
+    <div id="viewer-header" class="p-2 border-bottom bg-light text-center">
+        <div class="d-flex justify-content-between align-items-center">
+            <span id="viewer-zoom-indicator" class="badge bg-secondary" style="min-width: 50px;">100%</span>
+
+            <div class="d-flex align-items-center">
+                <button id="viewer-prev-btn" class="btn btn-sm btn-outline-secondary" disabled>
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <span id="viewer-page-indicator" class="mx-2 small text-muted">0 / 0</span>
+                <button id="viewer-next-btn" class="btn btn-sm btn-outline-secondary" disabled>
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+
+            <span style="min-width: 50px;"></span>
+        </div>
+    </div>
+
+    <div id="viewer-body" class="flex-grow-1" style="overflow: hidden; cursor: grab;">
+        <p id="viewer-placeholder" class="text-center text-muted mt-5">PDF를 업로드하면 여기에 미리보기가 표시됩니다.</p>
+        <div id="image-container" class="h-100 d-flex align-items-center justify-content-center">
+            </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="card">
+    <div class="card-body p-4 p-md-5">
+        <h3 class="card-title text-center mb-2">졸업 조건 확인</h3>
+        <p class="card-subtitle text-center text-muted mb-4">성적표의 졸업 기준과 실제 기준이 다를 수 있으니, 본인에게 적용되는 기준을 선택해주세요.</p>
+        <hr>
+        <div class="p-3 bg-light rounded-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="text-muted mb-0">졸업 요건 충족도</h6>
+                <span id="ruleset-name" class="badge bg-primary"></span>
+            </div>
+            <div class="table-responsive">
+                <table id="graduation-matrix" class="table table-sm table-bordered align-middle mb-2">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 180px;">카테고리</th>
+                            <th class="text-end" style="width: 120px;">요구 학점</th>
+                            <th class="text-end" style="width: 120px;">이수 학점</th>
+                            <th class="text-center" style="width: 120px;">충족</th>
+                        </tr>
+                    </thead>
+                    <tbody id="graduation-matrix-body"></tbody>
+                </table>
+            </div>
+            <div>
+                <div class="small text-muted mb-1">부족 항목</div>
+                <ul id="graduation-remarks" class="small text-danger mb-0"></ul>
+            </div>
+        </div>
+
+        
+
+        <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-secondary prev-btn">이전 단계</button>
+            <button type="button" id="submit-btn" class="btn btn-primary">이 내용으로 가입 완료</button>
+        </div>
+    </div>
+</div>

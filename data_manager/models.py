@@ -1,23 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-############################################
-# 1. University (Universities 테이블)
-############################################
+
+# University (ex. 충북대학교)
 class University(models.Model):
     university_id = models.AutoField(primary_key=True)
     university_name = models.CharField(max_length=255)
 
     class Meta:
         db_table = 'Universities'
-        managed = False
 
     def __str__(self):
         return self.university_name
 
 
-############################################
-# 2. College (Colleges 테이블)
-############################################
+# College (ex. 전자정보대학)
 class College(models.Model):
     college_id = models.AutoField(primary_key=True)
     university = models.ForeignKey(
@@ -29,15 +26,12 @@ class College(models.Model):
 
     class Meta:
         db_table = 'Colleges'
-        managed = False
 
     def __str__(self):
         return self.college_name
 
 
-############################################
-# 3. Department (Departments 테이블)
-############################################
+# Department (ex. 소프트웨어학부)
 class Department(models.Model):
     dept_id = models.AutoField(primary_key=True)
     university = models.ForeignKey(
@@ -55,15 +49,12 @@ class Department(models.Model):
 
     class Meta:
         db_table = 'Departments'
-        managed = False
 
     def __str__(self):
         return f"[{self.dept_id}] {self.dept_name}"
 
 
-############################################
-# 4. Major (Major 테이블)
-############################################
+# Major (ex. 인공지능전공)
 class Major(models.Model):
     major_id = models.AutoField(primary_key=True)
     dept = models.ForeignKey(
@@ -75,15 +66,12 @@ class Major(models.Model):
 
     class Meta:
         db_table = 'Major'
-        managed = False
 
     def __str__(self):
         return self.major_name
 
 
-############################################
-# 5. Category (Category 테이블)
-############################################
+# Category (ex. 전공)
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     parent_category = models.ForeignKey(
@@ -98,15 +86,12 @@ class Category(models.Model):
 
     class Meta:
         db_table = 'Category'
-        managed = False
 
     def __str__(self):
         return self.category_name
 
 
-############################################
-# 6. Semester (SEMESTER 테이블)
-############################################
+# Semester
 class Semester(models.Model):
     semester_id = models.AutoField(primary_key=True)
     year = models.IntegerField()
@@ -118,15 +103,12 @@ class Semester(models.Model):
 
     class Meta:
         db_table = 'SEMESTER'
-        managed = False
 
     def __str__(self):
         return f"{self.year} {self.term}"
 
 
-############################################
-# 7. Course (Courses 테이블)
-############################################
+# Course
 class Courses(models.Model):
     course_id = models.AutoField(primary_key=True)
     dept = models.ForeignKey(
@@ -155,10 +137,10 @@ class Courses(models.Model):
     course_code = models.CharField(max_length=50)
     section = models.CharField(max_length=10)
     credits = models.IntegerField()
-    target_year = models.CharField(max_length=10)
-    grade_type = models.CharField(max_length=50)
-    foreign_course = models.CharField(max_length=50, null=True, blank=True)
-    instructor_name = models.CharField(max_length=255)
+    target_year = models.CharField(max_length=50)
+    grade_type = models.CharField(max_length=20, null=True, blank=True)
+    foreign_course = models.CharField(max_length=20, null=True, blank=True)
+    instructor_name = models.CharField(max_length=255, null=True, blank=True)
     lecture_hours = models.DecimalField(max_digits=4, decimal_places=1)
     lecture_times = models.DecimalField(max_digits=4, decimal_places=1)
     lab_hours = models.DecimalField(max_digits=4, decimal_places=1)
@@ -169,15 +151,13 @@ class Courses(models.Model):
 
     class Meta:
         db_table = 'Courses'
-        managed = False
+        unique_together = (('course_code', 'semester_id', 'section'),)
 
     def __str__(self):
         return f"[{self.course_id}] {self.course_code}-{self.section} / {self.course_name}"
 
 
-############################################
-# 8. CourseSchedule (COURSE_SCHEDULES 테이블)
-############################################
+# CourseSchedule
 class CourseSchedule(models.Model):
     schedule_id = models.AutoField(primary_key=True)
     course = models.ForeignKey(
@@ -191,15 +171,12 @@ class CourseSchedule(models.Model):
 
     class Meta:
         db_table = 'course_schedules'
-        managed = False
 
     def __str__(self):
         return f"[{self.schedule_id}] {self.course} - {self.day} at {self.location}"
 
 
-############################################
-# 9. GraduationRequirement (GraduationRequirements 테이블)
-############################################
+# GraduationRequirement
 class GraduationRequirement(models.Model):
     requirement_id = models.AutoField(primary_key=True)
     dept = models.ForeignKey(
@@ -220,63 +197,148 @@ class GraduationRequirement(models.Model):
 
     class Meta:
         db_table = 'GraduationRequirements'
-        managed = False
 
     def __str__(self):
         return f"GradReq {self.requirement_id} for Dept {self.dept.dept_id}"
 
 
-############################################
-# 10. Student (Students 테이블)
-############################################
-class Student(models.Model):
-    student_id = models.AutoField(primary_key=True)
-    auth_user_id = models.IntegerField()  # 필요시 auth.User와 연동 가능
-    dept = models.ForeignKey(
-        Department,
-        on_delete=models.CASCADE,
-        db_column='dept_id'
+# UserProfile
+class UserProfile(models.Model):
+    """
+    Django의 기본 User 모델을 확장하여 학사 정보를 저장
+    """
+    # Django의 기본 User 모델과 1:1로 연결합니다.
+    # User가 삭제되면 UserProfile도 함께 삭제됩니다.
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+
+    # 사용자가 온보딩 중 어디까지 진행했는지를 나타내는 상태 플레그
+    ONBOARDING_STATUS_CHOICES = [
+        ('ACCOUNT_CREATED', '계정 생성 완료'),
+        ('PDF_UPLOADED', 'PDF 업로드 완료'),
+        ('INFO_CONFIRMED', '학사 정보 확인 완료'),
+        ('COMPLETED', '온보딩 최종 완료'),
+    ]
+
+    # 대학
+    college = models.ForeignKey(
+        'College',
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="단과대학"
     )
-    admission_year = models.IntegerField()
-    completed_semester = models.IntegerField(default=0)
+
+    # 학과(전공)
+    department = models.ForeignKey(
+        'Department',
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="학과(전공)"
+    )
+    # 부전공
+    minor = models.ForeignKey(
+        'Department',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='minor_profiles',
+        verbose_name="부전공"
+    )
+    # 다전공
+    double_major = models.ForeignKey(
+        'Department',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='double_major_profiles',
+        verbose_name="다전공"
+    )
+
+    # # 5. 과정 (e.g., 학부, 대학원)
+    # ACADEMIC_LEVEL_CHOICES = [
+    #     ('UG', '학부'),
+    #     ('GR', '대학원'),
+    # ]
+    # academic_level = models.CharField(
+    #     max_length=2,
+    #     choices=ACADEMIC_LEVEL_CHOICES,
+    #     default='UG',
+    #     verbose_name="과정"
+    # )
+
+    # 적용 졸업 요건
+    rule_set = models.ForeignKey(
+        'RuleSet',
+        on_delete=models.SET_NULL,  # RuleSet이 삭제되더라도 UserProfile은 유지
+        null=True,  # 아직 할당되지 않은 사용자가 있을 수 있음
+        blank=True,  # 관리자 페이지 등에서 비워둘 수 있도록 허용
+        verbose_name="적용 규칙 묶음"
+    )
+
+    admission_year = models.PositiveSmallIntegerField(
+        verbose_name="입학년도",
+        help_text="교과 적용 연도로 사용됩니다.",
+        null=True, blank=True
+    )
+    current_grade = models.PositiveSmallIntegerField(
+        verbose_name="학년",
+        null=True, blank=True
+    )
+    completed_semesters = models.PositiveSmallIntegerField(
+        verbose_name="이수 학기",
+        null=True, blank=True
+    )
+
+    user_name = models.CharField(
+        max_length=255,
+        null=True, blank=True,
+        verbose_name="사용자 이름"
+    )
+
+    user_student_id = models.CharField(
+        max_length=255,
+        null=True, blank=True,
+        verbose_name="사용자 학번"
+    )
+
+    # 온보딩 상태 추적
+    onboarding_status = models.CharField(
+        max_length=20,
+        choices=ONBOARDING_STATUS_CHOICES,
+        default='ACCOUNT_CREATED'
+    )
 
     class Meta:
-        db_table = 'Students'
-        managed = False
+        db_table = 'UserProfile'
+        verbose_name = '사용자 프로필'
+        verbose_name_plural = '사용자 프로필'
 
     def __str__(self):
-        return f"Student {self.student_id}"
+        return self.user.username
 
 
-############################################
-# 11. TimeTable (TIME_TABLE 테이블)
-############################################
+# TimeTable
 class TimeTable(models.Model):
     timetable_id = models.AutoField(primary_key=True)
-    student = models.ForeignKey(
-        Student,
+    # 필드명을 user_profile로 명확히 하고, db_column 제거
+    user_profile = models.ForeignKey(
+        UserProfile,
         on_delete=models.CASCADE,
-        db_column='student_id'
     )
     semester = models.ForeignKey(
         Semester,
         on_delete=models.CASCADE,
-        db_column='semester_id'
     )
     title = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'TIME_TABLE'
-        managed = False
+        db_table = 'time_table'
 
     def __str__(self):
         return f"TimeTable {self.timetable_id} - {self.title}"
 
 
-############################################
-# 12. TimeTableDetail (TIME_TABLE_DETAIL 테이블)
-############################################
+# TimeTableDetail
 class TimeTableDetail(models.Model):
     detail_id = models.AutoField(primary_key=True)
     timetable = models.ForeignKey(
@@ -295,81 +357,50 @@ class TimeTableDetail(models.Model):
 
     class Meta:
         db_table = 'TIME_TABLE_DETAIL'
-        managed = False
+
         unique_together = (('timetable', 'course'),)
 
     def __str__(self):
         return f"TimeTableDetail {self.detail_id} - TimeTable {self.timetable.timetable_id} / Course {self.course.course_id}"
 
 
-############################################
-# 13. Transcript (Transcript 테이블)
-############################################
+# Transcript
 class Transcript(models.Model):
+    """
+    사용자(UserProfile)가 어떤 강의(Courses)를 어떤 성적으로 이수했는지를
+    기록하는 이수 내역 모델
+    """
     transcript_id = models.AutoField(primary_key=True)
-    student = models.ForeignKey(
-        Student,
+
+    # 어떤 사용자의 이수 내역인지 연결
+    user_profile = models.ForeignKey(
+        UserProfile,
         on_delete=models.CASCADE,
-        db_column='student_id'
+        related_name='transcripts'
     )
+
+    # 어떤 과목을 이수했는지 연결
     course = models.ForeignKey(
-        Courses,
-        on_delete=models.CASCADE,
-        db_column='course_id'
+        'Courses',
+        on_delete=models.PROTECT,  # 이수 내역이 있는 과목 정보는 함부로 삭제되지 않도록 보호
+        verbose_name="이수 과목"
     )
-    semester = models.ForeignKey(
-        Semester,
-        on_delete=models.CASCADE,
-        db_column='semester_id'
-    )
-    grade = models.CharField(max_length=2, default='NA')
-    retake_available = models.BooleanField(default=True)
+
+    # 해당 과목에서 받은 성적
+    grade = models.CharField(max_length=10, help_text="A+, B0, P, F 등")
 
     class Meta:
         db_table = 'Transcript'
-        managed = False
+        verbose_name = '사용자 이수 내역'
+        verbose_name_plural = '사용자 이수 내역 목록'
+        # 한 사용자가 동일한 과목을 중복해서 이수할 수 없도록 제약
+        unique_together = (('user_profile', 'course'),)
 
     def __str__(self):
-        return f"Transcript {self.transcript_id} - Student {self.student.student_id}, Course {self.course.course_id}"
+        return f"{self.user_profile.user.username} - {self.course.course_name} ({self.grade})"
 
 
-class CourseSumm(models.Model):
-    """
-    Courses 테이블의 course_id를 PK 및 FK로 참조하는
-    약한 엔티티(OneToOne) 모델입니다.
-    """
-    course = models.OneToOneField(
-        Courses,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        verbose_name="강의"
-    )
-    course_summarization = models.TextField(
-        verbose_name="강의 요약",
-        help_text="강의에 대한 간략한 설명을 입력하세요."
-    )
-    group_activity = models.CharField(
-        max_length=1,
-        choices=[
-            ('Y', '있음'),
-            ('N', '없음'),
-        ],
-        default='N',
-        verbose_name="조별 과제 여부",
-        help_text="조별 과제가 있는 경우 'Y', 없는 경우 'N'을 선택하세요."
-    )
-
-    class Meta:
-        db_table = 'course_summ'
-        verbose_name = '강의 요약 정보'
-        verbose_name_plural = '강의 요약 정보'
-        managed = False
-
-    def __str__(self):
-        return f"{self.course.course_name} 요약"
-
-
-## 14. Graduation_record 테이블 (임시)
+# Graduation_record 테이블 (임시)
 class GraduationRecord(models.Model):
     id = models.BigAutoField(primary_key=True)
     user_id = models.IntegerField()
@@ -407,12 +438,48 @@ class GraduationRecord(models.Model):
 
     class Meta:
         db_table = 'graduation_record'
-        managed = False
 
     def __str__(self):
         return f"{self.user_name or self.user_id} ({self.user_student_id})"
 
 
+# CourseSumm 테이블 - 강의계획서를 통해 요약된 강의 설명 정보 저장
+class CourseSumm(models.Model):
+    """
+    Courses 테이블의 course_id를 PK 및 FK로 참조하는
+    약한 엔티티(OneToOne) 모델입니다.
+    """
+    course = models.OneToOneField(
+        Courses,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        verbose_name="강의"
+    )
+    course_summarization = models.TextField(
+        verbose_name="강의 요약",
+        help_text="강의에 대한 간략한 설명을 입력하세요."
+    )
+    group_activity = models.CharField(
+        max_length=1,
+        choices=[
+            ('Y', '있음'),
+            ('N', '없음'),
+        ],
+        default='N',
+        verbose_name="조별 과제 여부",
+        help_text="조별 과제가 있는 경우 'Y', 없는 경우 'N'을 선택하세요."
+    )
+
+    class Meta:
+        db_table = 'course_summ'
+        verbose_name = '강의 요약 정보'
+        verbose_name_plural = '강의 요약 정보'
+
+    def __str__(self):
+        return f"{self.course.course_name} 요약"
+
+
+# CourseReviewSummary 테이블 - 사용자의 강의평을 요약한 정보 저장
 class CourseReviewSummary(models.Model):
     summary_id = models.AutoField(primary_key=True)
     course_code = models.CharField("강의코드", max_length=20)
@@ -430,7 +497,6 @@ class CourseReviewSummary(models.Model):
         db_table = 'course_review_summaries'
         verbose_name = "강의별 요약 통계"
         verbose_name_plural = "강의별 요약 통계"
-        managed = False
 
     def __str__(self):
         return f"{self.course_code} - {self.instructor_name}"
@@ -449,8 +515,8 @@ class CourseReviewSummary(models.Model):
         item_labels = {
             "grade": {
                 "many": "너그러움",  # 사용자의 설명: many(너그러움)
-                "normal": "보통",    # 사용자의 설명: normal(보통)
-                "none": "깐깐함"     # 사용자의 설명: none(깐깐함)
+                "normal": "보통",  # 사용자의 설명: normal(보통)
+                "none": "깐깐함"  # 사용자의 설명: none(깐깐함)
             },
             "assign": {
                 "many": "많음",
@@ -463,7 +529,7 @@ class CourseReviewSummary(models.Model):
                 "none": "없음"
             }
         }
-        
+
         # 항목 표시 순서 정의 (예: 긍정적 -> 중립 -> 부정적 순서로)
         item_order = ['many', 'normal', 'none']
 
@@ -471,16 +537,16 @@ class CourseReviewSummary(models.Model):
 
         for category_key, items_data in self.dist_json.items():
             if not isinstance(items_data, dict):
-                continue # items_data가 dict가 아니면 건너뛰기
+                continue  # items_data가 dict가 아니면 건너뛰기
 
             category_display_label = category_labels.get(category_key, category_key.replace("_", " ").title())
-            
+
             # 해당 카테고리의 전체 응답 수 계산
             total_count_for_category = sum(items_data.values())
-            
+
             processed_items = []
             if total_count_for_category > 0:
-                for item_key in item_order: # 정의된 순서대로 처리
+                for item_key in item_order:  # 정의된 순서대로 처리
                     if item_key in items_data:
                         count = items_data[item_key]
                         item_display_label = item_labels.get(category_key, {}).get(item_key, item_key.title())
@@ -489,19 +555,20 @@ class CourseReviewSummary(models.Model):
                             'label': item_display_label,
                             'key': item_key,
                             'count': count,
-                            'percentage': round(percentage, 1) # 소수점 첫째 자리까지
+                            'percentage': round(percentage, 1)  # 소수점 첫째 자리까지
                         })
-            
-            if processed_items: # 처리된 항목이 있을 경우에만 추가
+
+            if processed_items:  # 처리된 항목이 있을 경우에만 추가
                 formatted_data.append({
                     'category_label': category_display_label,
                     'items': processed_items,
                     'total_responses': total_count_for_category
                 })
-                
+
         return formatted_data
 
 
+# UserReview 테이블 - 사용자의 강의평가 정보 저장
 class UserReview(models.Model):
     user_review_id = models.AutoField(primary_key=True)
     summary = models.ForeignKey(
@@ -510,9 +577,12 @@ class UserReview(models.Model):
         on_delete=models.CASCADE,
         related_name="reviews"
     )
-    # student 모델을 사용 중이라면 아래 라인을 활성화하고 import 도 맞춰주세요.
-    # student = models.ForeignKey(Student, verbose_name="학생", null=True, blank=True, on_delete=models.SET_NULL)
-    student_id = models.IntegerField("학생 ID", null=True, blank=True)
+
+    user_profile = models.ForeignKey(
+        UserProfile,
+        verbose_name="작성자 프로필",
+        on_delete=models.CASCADE  # 사용자가 탈퇴하면 강의평도 함께 삭제
+    )
 
     rating = models.DecimalField("별점", max_digits=2, decimal_places=1)
     comment_text = models.TextField("리뷰 본문", null=True, blank=True)
@@ -529,10 +599,74 @@ class UserReview(models.Model):
         db_table = 'user_review'
         verbose_name = "개별 강의평"
         verbose_name_plural = "개별 강의평"
-        managed = False
 
     def __str__(self):
         return f"{self.summary} / {self.rating}점"
+
+
+class TranscriptFile(models.Model):
+    user_profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    original_filename = models.CharField(max_length=255)
+    pdf_file = models.FileField(upload_to='transcripts/pdfs/')
+    # 모든 이미지 경로와 파싱된 JSON을 저장할 필드들
+    original_images = models.JSONField(default=list)
+    student_info_image = models.CharField(max_length=255, null=True, blank=True)
+    course_history_image = models.CharField(max_length=255, null=True, blank=True)
+    credit_summary_image = models.CharField(max_length=255, null=True, blank=True)
+    parsed_data = models.JSONField(null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'TranscriptFile'
+
+    def __str__(self):
+        return f"{self.user_profile.user.username} - {self.original_filename}"
+
+
+# RuleSet (규칙 묶음) 모델
+# 특정 학과의 졸업 요건을 저장하는 모델 (ex. 소프트웨어학과 2020년 졸업요건)
+class RuleSet(models.Model):
+    ruleset_id = models.AutoField(primary_key=True)
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        db_column='department_id'
+    )
+    ruleset_name = models.CharField(max_length=255, verbose_name="규칙 묶음 이름")
+    target_year = models.IntegerField(verbose_name="적용 학년도(입학년도)")
+    required_total_credits = models.IntegerField(default=140, verbose_name="요구 총 학점")
+
+    class Meta:
+        db_table = 'RuleSet'
+
+    def __str__(self):
+        return self.ruleset_name
+
+
+# Rule (개별 규칙) 모델
+# 개별 졸업 요건 (ex. 개신기초교양 9학점 이상)을 저장하는 모델
+class Rule(models.Model):
+    rule_id = models.AutoField(primary_key=True)
+    ruleset = models.ForeignKey(
+        RuleSet,
+        on_delete=models.CASCADE,
+        related_name='rules',
+        db_column='ruleset_id'
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        db_column='category_id'
+    )
+    min_credits = models.IntegerField(default=0, verbose_name="최소 이수 학점")
+    max_credits = models.IntegerField(null=True, blank=True, verbose_name="최대 인정 학점")
+    description = models.CharField(max_length=255, verbose_name="규칙 설명")
+
+    class Meta:
+        db_table = 'Rule'
+
+    def __str__(self):
+        return f"[{self.ruleset.ruleset_name}] {self.description}"
 
 from django.utils import timezone
 
@@ -551,7 +685,7 @@ class SavedTimetable(models.Model):
     class Meta:
         db_table = 'saved_timetables'
         ordering = ['-created_at']
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.title} (사용자 ID: {self.user_id})"
@@ -573,7 +707,7 @@ class SavedTimetableCourse(models.Model):
 
     class Meta:
         db_table = 'saved_timetable_courses'
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.course_name} ({self.timetable.title})"
@@ -590,7 +724,7 @@ class SavedTimetableSchedule(models.Model):
 
     class Meta:
         db_table = 'saved_timetable_schedules'
-        managed = False
+        managed = True
 
     def __str__(self):
         return f"{self.timetable_course.course_name} - {self.day_of_week} {self.start_time}-{self.end_time}"

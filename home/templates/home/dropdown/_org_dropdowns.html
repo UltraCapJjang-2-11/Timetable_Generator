@@ -13,7 +13,12 @@
   </div>
 </div>
 
-{# context 에서 넘어온 리스트들을 JSON으로 #}
-{{ colleges    | json_script:"colleges-data"    }}
-{{ departments | json_script:"departments-data" }}
-{{ majors      | json_script:"majors-data"      }}
+{% load static %}
+<script type="module">
+import { initializeOrgDropdowns } from '{% static "home/js/dropdown/org_dropdown.js" %}';
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeOrgDropdowns);
+} else {
+  initializeOrgDropdowns();
+}
+</script>

@@ -90,35 +90,6 @@
 
   <!-- 사용자 정보 -->
   <div class="row mb-4 upload-section">
-    <!-- 업로드 버튼과 설명 -->
-    <div class="upload-button-container">
-      <div class="d-flex align-items-center gap-3">
-        <form id="uploadForm" method="POST" action="{% url 'upload_graduation' %}" enctype="multipart/form-data" style="display: inline;">
-          {% csrf_token %}
-          <button type="button" class="upload-button" onclick="document.getElementById('graduation_pdf').click();">
-            <svg
-              id="UploadToCloud"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              height="16px"
-              width="16px"
-              class="upload-icon"
-            >
-              <path d="M0 0h24v24H0V0z" fill="none"></path>
-              <path
-                class="color000000 svgShape"
-                fill="#000000"
-                d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l4.65-4.65c.2-.2.51-.2.71 0L17 13h-3z"
-              ></path>
-            </svg>
-            Upload PDF
-          </button>
-          <input id="graduation_pdf" name="graduation_pdf" type="file" accept=".pdf" onchange="autoSubmit()">
-        </form>
-        <p class="text-muted mb-0">업로드된 파일을 바탕으로, 졸업 요건 정보를 확인할 수 있습니다.</p>
-      </div>
-    </div>
-    
     <div class="col-md-6">
       <div class="card notification-card">
         <div class="tools">
@@ -171,10 +142,40 @@
 
 
 
-  <!-- 졸업 요건 이수 현황 섹션 -->
+  <!-- 이수 과목 및 졸업 요건 섹션 -->
   <div class="row mb-4">
     <div class="col-md-12">
-      <h4>졸업 요건 이수 현황</h4>
+      <h4>이수 과목 현황</h4>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="p-3">
+              <div class="summary-box mb-3">
+                <h6 class="text-muted">전체 요약</h6>
+                <p class="mb-1"><strong>총 이수 학점:</strong> <span id="mypage-total-credits">0</span></p>
+                <p class="mb-0"><strong>전체 평점 평균:</strong> <span id="mypage-total-gpa">0.00</span></p>
+              </div>
+              <h6 class="text-muted">학기 목록</h6>
+              <ul id="mypage-semester-list" class="list-group" style="max-height: 250px; overflow-y: auto;"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="card">
+            <div class="p-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="summary-box">
+                  <h5 id="mypage-semester-title">학기를 선택하세요</h5>
+                  <p class="mb-0 text-muted">이수 학점: <span id="mypage-semester-credits">0</span> | 평점 평균: <span id="mypage-semester-gpa">0.00</span></p>
+                </div>
+              </div>
+              <div id="mypage-course-list" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h4 class="mt-4">졸업 요건 이수 현황</h4>
       <div class="row">
         <div class="col-md-6">
           <table class="table table-bordered">
@@ -184,133 +185,21 @@
                 <th>이수 학점</th>
                 <th>졸업 기준</th>
                 <th>미이수</th>
+                <th>충족</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- 총 학점 -->
-              <tr>
-                <td>총 학점</td>
-                <td>{{ total_credits }}</td>
-                <td>{{ total_requirement }}</td>
-                <td>{{ total_requirement|subtract:total_credits }}</td>
-              </tr>
-              <!-- 전공 (필수) -->
-              <tr>
-                <td>전공 (필수)</td>
-                <td>
-                  {% if detailed_credits %}
-                    {{ detailed_credits|dict_get:"전공"|dict_get:"전공필수"|dict_get:"earned" }}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if major_requirement_data %}
-                    {{ major_requirement_data|dict_get:"전공필수" }}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if detailed_credits and major_requirement_data %}
-                    {% with req=major_requirement_data|dict_get:"전공필수" earned=detailed_credits|dict_get:"전공"|dict_get:"전공필수"|dict_get:"earned" %}
-                      {{ req|subtract:earned }}
-                    {% endwith %}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-              </tr>
-              <!-- 전공 (선택) -->
-              <tr>
-                <td>전공 (선택)</td>
-                <td>
-                  {% if detailed_credits %}
-                    {{ detailed_credits|dict_get:"전공"|dict_get:"전공선택"|dict_get:"earned" }}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if major_requirement_data %}
-                    {{ major_requirement_data|dict_get:"전공선택" }}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>
-                  {% if detailed_credits and major_requirement_data %}
-                    {% with req=major_requirement_data|dict_get:"전공선택" earned=detailed_credits|dict_get:"전공"|dict_get:"전공선택"|dict_get:"earned" %}
-                      {{ req|subtract:earned }}
-                    {% endwith %}
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-              </tr>
-              <!-- 교양 (전체) -->
-              <tr>
-                <td>교양</td>
-                <td>{{ general_credits }}</td>
-                <td>전체: {{ general_requirement.required.minimum }} ~ {{ general_requirement.required.maximum }}</td>
-                <td>{{ general_requirement.required.minimum|subtract:general_credits }}</td>
-              </tr>
-              <!-- 교양 세부 내역 -->
-              {% if detailed_credits %}
-                {% with general_required=detailed_credits|dict_get:"교양"|dict_get:"required" breakdown=detailed_credits|dict_get:"교양"|dict_get:"breakdown" %}
-                  {% if breakdown %}
-                    <tr>
-                      <td colspan="4">
-                        <strong>교양 세부 내역</strong>
-                        <table class="table table-sm sub-table">
-                          <thead class="table-light">
-                            <tr>
-                              <th>세부 항목</th>
-                              <th>졸업 기준</th>
-                              <th>이수 학점</th>
-                              <th>미이수</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {% for key, val in breakdown|dict_items %}
-                              <tr>
-                                <td>{{ key }}</td>
-                                <td>{{ general_required|dict_get:key }}</td>
-                                <td>{{ val.earned }}</td>
-                                <td>{{ general_required|dict_get:key|subtract:val.earned }}</td>
-                              </tr>
-                            {% endfor %}
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  {% endif %}
-                {% endwith %}
-              {% endif %}
-              <!-- 일반선택 -->
-              <tr>
-                <td>일반선택</td>
-                <td>{{ free_credits }}</td>
-                <td>{{ free_requirement }}</td>
-                <td>{{ free_requirement|subtract:free_credits }}</td>
-              </tr>
-              <!-- 졸업 -->
-              <tr class="table-light">
-                <td>졸업</td>
-                <td colspan="2">총 졸업 학점: {% if detailed_credits %}{{ detailed_credits|dict_get:"졸업"|dict_get:"total" }}{% else %}-{% endif %}</td>
-                <td>{% if detailed_credits %}{{ detailed_credits|dict_get:"졸업"|dict_get:"earned" }}{% else %}-{% endif %}</td>
-              </tr>
-              
+            <tbody id="requirements-table-body">
+              <!-- JS로 동적 렌더링 -->
             </tbody>
           </table>
         </div>
         <div class="col-md-6">
-          <!-- 차트 렌더링용 컨테이너 -->
-          <div class="chart-container"
-               data-major="{{ major_credits }}"
-               data-general="{{ general_credits }}"
-               data-free="{{ free_credits }}">
-            <canvas id="graduationChart"></canvas>
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="chart-container">
+                <canvas id="semesterGpaChart"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -325,20 +214,11 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Chart.js (mypage.js에서 사용) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- 데이터 바인딩 -->
+<script id="course-history-data" type="application/json">{{ course_history_json|safe }}</script>
+<script id="requirements-tree-data" type="application/json">{{ requirements_tree_json|safe }}</script>
 <!-- 별도 JS 파일 (mypage.js) -->
 <script src="{% static 'home/js/mypage.js' %}"></script>
-
-<script>
-function autoSubmit() {
-    const fileInput = document.getElementById('graduation_pdf');
-    const form = document.getElementById('uploadForm');
-    
-    if (fileInput.files.length > 0) {
-        // 파일이 선택되면 자동으로 폼 제출
-        form.submit();
-    }
-}
-</script>
 
 </body>
 </html>

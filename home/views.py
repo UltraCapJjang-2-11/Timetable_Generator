@@ -1,15 +1,3 @@
-"""
-메인 views.py 파일 - 기존 뷰들을 새로운 구조로 리팩토링함
-
-이 파일은 기존 views.py를 대체하며, 각 기능별로 분리된 뷰 모듈들을 import하여 사용합니다.
-- 인증 관련: views.auth_views
-- 챗봇 관련: views.chatbot_views  
-- 시간표 관련: views.timetable_views
-- 리뷰 관련: views.review_views
-- 대시보드 관련: views.dashboard_views
-- 공통 유틸리티: utils.py
-"""
-
 # 기존 뷰들을 새로운 구조로 import
 from .views.auth_views import CustomLoginView, signup, logout_view
 from .views.chatbot_views import parse_constraints, extract_constraints_from_rasa_response

@@ -55,7 +55,12 @@ async function uploadAndProcessFile() {
   formData.append('pdf_file', selectedFile);
   try {
     const data = await api.processPdf(formData);
+    console.log('서버 응답:', data);
+    
     if (data.status === 'success') {
+      console.log('이미지 URLs:', data.image_urls);
+      console.log('원본 이미지 URLs:', data.image_urls.original);
+      
       // 상태 저장
       setPdfResult(data);
       // 패널 전환
@@ -65,12 +70,17 @@ async function uploadAndProcessFile() {
       const viewerContainer = containerRef.querySelector('#pdf-viewer-container');
       if (viewer && viewer.destroy) viewer.destroy();
       viewer = new PdfViewer(viewerContainer);
-      viewer.init(data.image_urls.original || []);
+      
+      const originalUrls = data.image_urls.original || [];
+      console.log('뷰어에 전달할 URL들:', originalUrls);
+      viewer.init(originalUrls);
+      
       // 안내 텍스트
       containerRef.querySelector('#analysis-result-text').textContent = '✓ 분석이 완료되었습니다.';
       const nextBtn = containerRef.querySelector('#next-btn');
       if (nextBtn) nextBtn.textContent = '다음 단계로';
     } else {
+      console.error('서버 오류:', data);
       alert(`오류: ${data.message || '알 수 없는 오류가 발생했습니다.'}`);
     }
   } catch (err) {

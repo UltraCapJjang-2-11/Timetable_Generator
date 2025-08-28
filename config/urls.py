@@ -28,6 +28,7 @@ urlpatterns = [
     path('accounts/login/', CustomLoginView.as_view(), name='login'),
 ]
 
-# 개발 환경에서 정적 파일 서빙
+# 개발 환경에서 정적 파일 및 미디어 파일 서빙
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -180,13 +180,22 @@ class ProcessPdfView(View):
 
         # --- 5. 최종 응답 ---
         # 프론트엔드에서 사용할 수 있도록 전체 경로를 URL로 변환
+        def path_to_url(path):
+            if not path:
+                return None
+            # 절대 경로를 상대 경로로 변환
+            relative_path = os.path.relpath(path, settings.MEDIA_ROOT)
+            # Windows 경로 구분자를 웹 URL용으로 변환
+            relative_path = relative_path.replace('\\', '/')
+            return settings.MEDIA_URL + relative_path
+        
         response_data = {
             'status': 'success',
             'parsed_data': record.parsed_data,
             'image_urls': {
-                'original': [settings.MEDIA_URL + p for p in record.original_images],
-                'student_info': settings.MEDIA_URL + record.student_info_image if record.student_info_image else None,
-                'course_history': settings.MEDIA_URL + record.course_history_image if record.course_history_image else None,
+                'original': [path_to_url(p) for p in record.original_images],
+                'student_info': path_to_url(record.student_info_image),
+                'course_history': path_to_url(record.course_history_image),
             }
         }
         return JsonResponse(response_data)

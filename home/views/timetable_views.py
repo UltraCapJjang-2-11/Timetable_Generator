@@ -169,12 +169,7 @@ def generate_timetable_stream(request):
         student_dept_id = dept_obj.dept_id if dept_obj else None
         print("DEBUG: student_dept_id =", student_dept_id)
         
-        # 학과 정보가 없는 경우 기본값으로 소프트웨어학부 설정 (테스트용)
-        if student_dept_id is None:
-            default_dept = Department.objects.filter(dept_name__icontains='소프트웨어').first()
-            if default_dept:
-                student_dept_id = default_dept.dept_id
-                print("DEBUG: 기본 학과로 설정됨 - student_dept_id =", student_dept_id)
+
 
         # 완료한 과목 목록 처리
         completed_courses = []
@@ -241,23 +236,9 @@ def generate_timetable_stream(request):
                     if course_year > current_year:
                         continue
 
-                # 소프트웨어학과/학부 예외 처리
-                if student_dept_id == 48:  # 소프트웨어학과
-                    student_dept_id = 50  # 소프트웨어학부
-
-                # 학과 매칭 로직 개선 - 학과 정보가 있을 때만 필터링
-                if student_dept_id and course.dept_id:
-                    # 정확히 일치하지 않으면 제외
-                    if course.dept_id != student_dept_id:
-                        # 단, 소프트웨어 관련 학과들은 서로 호환 가능하도록 처리
-                        student_dept_name = Department.objects.filter(dept_id=student_dept_id).first()
-                        course_dept_name = Department.objects.filter(dept_id=course.dept_id).first()
-                        
-                        if (student_dept_name and course_dept_name and
-                            '소프트웨어' in student_dept_name.dept_name and '소프트웨어' in course_dept_name.dept_name):
-                            pass  # 소프트웨어 관련 학과끼리는 허용
-                        else:
-                            continue
+                # 학과 매칭 - 학과 정보가 모두 있을 때만 필터링
+                if student_dept_id and course.dept_id and course.dept_id != student_dept_id:
+                    continue
 
             # 기본 필터
             if course.course_id in pre_added_ids:
@@ -275,12 +256,11 @@ def generate_timetable_stream(request):
                 continue
             if any("가상강의실" in (sch.location or "") for sch in course.courseschedule_set.all()):
                 continue
-            # 교양 강좌 세부 항목 확인 (임시로 비활성화)
-            # TODO: 졸업 요건 데이터가 올바르게 설정되면 다시 활성화
-            # if get_effective_general_category(course):
-            #     effective_cat = get_effective_general_category(course)
-            #     if missing_gen_sub.get(effective_cat, 0) == 0:
-            #         continue
+            # 교양 강좌 세부 항목 확인
+            if get_effective_general_category(course) and missing_gen_sub:
+                effective_cat = get_effective_general_category(course)
+                if missing_gen_sub.get(effective_cat, 0) == 0:
+                    continue
 
             candidates.append(course)
 
@@ -487,25 +467,13 @@ def generate_timetable_stream(request):
             if data.get('pre_added', False):
                 model.Add(x[data['id']] == 1)
 
-        # 학점 제약 조건 (범위 허용으로 완화)
-        total_credits_var = sum(data['credit'] * x[data['id']] for data in candidate_data)
-        major_credits_var = sum(data['credit'] * x[data['id']] for data in candidate_data if
-                               data['category'] in ['전공필수', '전공선택'])
-        elective_credits_var = sum(data['credit'] * x[data['id']] for data in candidate_data if 
-                                  get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or 
-                                  data['category'] not in ['전공필수', '전공선택'])
-        
-        # 총 학점은 목표 학점의 ±3학점 범위 허용
-        model.Add(total_credits_var >= target_total - 3)
-        model.Add(total_credits_var <= target_total + 3)
-        
-        # 전공 학점은 목표 학점의 ±3학점 범위 허용
-        model.Add(major_credits_var >= max(0, target_major - 3))
-        model.Add(major_credits_var <= target_major + 6)
-        
-        # 교양 학점은 목표 학점의 ±3학점 범위 허용
-        model.Add(elective_credits_var >= max(0, target_elective - 3))
-        model.Add(elective_credits_var <= target_elective + 6)
+        # 학점 제약 조건
+        model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data) == target_total)
+        model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if
+                      data['category'] in ['전공필수', '전공선택']) == target_major)
+        model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if 
+                      get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or 
+                      data['category'] not in ['전공필수', '전공선택']) == target_elective)
 
         # 시간표 충돌 제약
         slot_mapping = defaultdict(list)
@@ -563,20 +531,12 @@ def generate_timetable_stream(request):
             if data.get('pre_added', False):
                 model2.Add(x2[data['id']] == 1)
 
-        # Phase 2에서도 동일한 범위 제약 적용
-        total_credits_var2 = sum(data['credit'] * x2[data['id']] for data in candidate_data)
-        major_credits_var2 = sum(data['credit'] * x2[data['id']] for data in candidate_data if
-                                data['category'] in ['전공필수', '전공선택'])
-        elective_credits_var2 = sum(data['credit'] * x2[data['id']] for data in candidate_data if 
-                                   get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or 
-                                   data['category'] not in ['전공필수', '전공선택'])
-        
-        model2.Add(total_credits_var2 >= target_total - 3)
-        model2.Add(total_credits_var2 <= target_total + 3)
-        model2.Add(major_credits_var2 >= max(0, target_major - 3))
-        model2.Add(major_credits_var2 <= target_major + 6)
-        model2.Add(elective_credits_var2 >= max(0, target_elective - 3))
-        model2.Add(elective_credits_var2 <= target_elective + 6)
+        model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data) == target_total)
+        model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if
+                      data['category'] in ['전공필수', '전공선택']) == target_major)
+        model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if 
+                      get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or 
+                      data['category'] not in ['전공필수', '전공선택']) == target_elective)
 
         for (day, slot), ids in slot_mapping.items():
             model2.Add(sum(x2[cid] for cid in ids) <= 1)

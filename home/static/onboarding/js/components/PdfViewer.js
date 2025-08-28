@@ -92,7 +92,19 @@ export class PdfViewer {
     imageContainer.innerHTML = '';
 
     const img = document.createElement('img');
-    img.src = this.imageUrls[this.currentIndex];
+    const imageUrl = this.imageUrls[this.currentIndex];
+    
+    // 이미지 로드 오류 처리
+    img.onerror = () => {
+      console.error('이미지 로드 실패:', imageUrl);
+      imageContainer.innerHTML = '<p class="text-danger text-center mt-3">이미지를 불러올 수 없습니다.</p>';
+    };
+    
+    img.onload = () => {
+      console.log('이미지 로드 성공:', imageUrl);
+    };
+    
+    img.src = imageUrl;
     img.style.maxWidth = '100%';
     img.style.maxHeight = '100%';
     imageContainer.appendChild(img);

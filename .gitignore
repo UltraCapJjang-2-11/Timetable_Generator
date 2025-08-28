@@ -11,3 +11,4 @@ venv310/
 test_*.py
 .idea
 .log
+media/transcripts/

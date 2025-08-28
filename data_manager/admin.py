@@ -60,16 +60,16 @@ class GraduationRequirementAdmin(admin.ModelAdmin):
     list_filter = ('dept', 'applicable_year')
     search_fields = ('description',)
 
-@admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('student_id', 'auth_user_id', 'dept', 'admission_year', 'completed_semester')
-    list_filter = ('admission_year', 'completed_semester', 'dept')
-    search_fields = ('auth_user_id',)
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'college', 'department', 'minor', 'double_major', 'current_grade', 'completed_semesters')
+    list_filter = ('college', 'department')
+    search_fields = ('user__last_name',)
 
 @admin.register(TimeTable)
 class TimeTableAdmin(admin.ModelAdmin):
-    list_display = ('timetable_id', 'student', 'semester', 'title', 'created_at')
-    list_filter = ('student', 'semester')
+    list_display = ('timetable_id', 'user_profile', 'semester', 'title', 'created_at')
+    list_filter = ('user_profile', 'semester')
     search_fields = ('title',)
 
 @admin.register(TimeTableDetail)
@@ -78,21 +78,16 @@ class TimeTableDetailAdmin(admin.ModelAdmin):
     list_filter = ('timetable', 'course')
     search_fields = ('schedule_info',)
 
-@admin.register(Transcript)
-class TranscriptAdmin(admin.ModelAdmin):
-    list_display = ('transcript_id', 'student', 'course', 'semester', 'grade', 'retake_available')
-    list_filter = ('semester', 'grade', 'retake_available')
-    search_fields = ('grade',)
 
 @admin.register(GraduationRecord)
 class GraduationRecordAdmin(admin.ModelAdmin):
     # 목록 페이지에 표시할 컬럼
-    list_display = ('id', 'user_student_id','user_name','user_major','user_year','total_credits','major_credits',
+    list_display = ('id', 'user_id','user_name','user_major','user_year','total_credits','major_credits',
                     'general_credits','free_credits','created_at',)
     # 필터 사이드바
     list_filter = ('user_major','user_year','created_at',)
     # 검색 박스 대상 필드
-    search_fields = ('user_student_id','user_name',)
+    search_fields = ('user_id','user_name',)
 
 @admin.register(CourseSumm)
 class CourseSummAdmin(admin.ModelAdmin):
@@ -108,7 +103,6 @@ class CourseSummAdmin(admin.ModelAdmin):
             'fields': ('course', 'course_summarization', 'group_activity')
         }),
     )
-
 
 @admin.register(CourseReviewSummary)
 class CourseReviewSummaryAdmin(admin.ModelAdmin):

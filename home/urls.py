@@ -29,4 +29,5 @@ urlpatterns = [
     path('course/search/', CourseSearchView.as_view(), name='course-search'),
     path('reviews/', review_search_summary_view, name='review_search_page'),
     path('reviews/<int:summary_id>/', review_detail_page, name='review-detail-page'),
+    path('mypage/', mypage_view, name='mypage'),
 ]

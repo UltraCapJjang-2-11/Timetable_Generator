@@ -1,0 +1,40 @@
+<div class="card position-relative">
+    <div id="loading-overlay" class="position-absolute w-100 h-100 d-none justify-content-center align-items-center" style="background-color: rgba(255,255,255,0.8); z-index: 10;">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="ms-3 mb-0 fs-5">PDF를 처리 중입니다. 잠시만 기다려주세요...</p>
+    </div>
+    <div class="card-body p-4">
+        <h3 class="card-title text-center mb-1">성적 증명서 PDF 업로드</h3>
+        <p class="card-subtitle text-center text-muted mb-4">파일을 올리고 내용을 확인한 뒤, 다음 단계로 진행합니다.</p>
+        <div class="row" style="min-height: 400px;">
+            <div class="col-12">
+                <div id="upload-panel" class="d-flex flex-column">
+                    <div id="drop-zone" class="drop-zone text-center p-5 d-flex flex-column justify-content-center flex-grow-1">
+                        <i class="bi bi-cloud-arrow-up-fill fs-1 text-secondary"></i>
+                        <p class="mt-3 mb-0">파일을 이곳에 드래그 앤 드롭하세요.</p>
+                        <p class="text-muted">또는</p>
+                        <input type="file" id="file-input" class="d-none" accept=".pdf">
+                        <button type="button" id="file-browse-btn" class="btn btn-outline-primary">PC에서 파일 찾기</button>
+                        <div id="file-name-display" class="mt-3 text-success fw-bold"></div>
+                    </div>
+                    <div id="upload-button-container" class="d-grid mt-3">
+                         <button type="button" id="upload-process-btn" class="btn btn-primary" disabled>업로드 및 분석 시작</button>
+                    </div>
+                    <div class="text-muted small mt-2">PDF 업로드 없이 '다음(건너뛰기)'를 눌러 직접 입력할 수 있습니다.</div>
+                    <div id="analysis-result-text" class="text-center mt-3 fw-bold text-success"></div>
+                </div>
+
+                <div id="viewer-panel" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-muted small">업로드한 PDF 미리보기</div>
+                        <button type="button" id="reupload-btn" class="btn btn-sm btn-outline-secondary">다른 파일 업로드</button>
+                    </div>
+                    {% include 'onboarding/includes/_pdf_viewer.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-between mt-4">
+    <button type="button" id="next-btn" class="btn btn-primary next-btn">다음(건너뛰기)</button>
+</div>

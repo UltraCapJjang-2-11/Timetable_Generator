@@ -21,15 +21,16 @@ class SemesterSerializer(serializers.ModelSerializer):
         model = Semester
         fields = '__all__'
 
-class StudentSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Student
+        model = UserProfile
         fields = '__all__'
 
 class CourseScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseSchedule
         fields = ['day', 'times', 'location']
+
 
 class CourseSerializer(serializers.ModelSerializer):
     """
@@ -74,17 +75,17 @@ class CourseSerializer(serializers.ModelSerializer):
         # obj.category가 None일 경우를 대비하여 안전하게 처리
         if not obj.category:
             return None
-        
+
         category = obj.category
-        
+
         # 카테고리 레벨이 2이고, 부모의 부모가 "교양"인 경우
-        if (category.category_level == 2 and 
-            category.parent_category and 
-            category.parent_category.parent_category and 
-            category.parent_category.parent_category.category_name == "교양"):
+        if (category.category_level == 2 and
+                category.parent_category and
+                category.parent_category.parent_category and
+                category.parent_category.parent_category.category_name == "교양"):
             # 부모 카테고리(level 1)의 이름을 반환
             return category.parent_category.category_name
-        
+
         # 그 외의 경우는 원래 카테고리 이름 반환
         return category.category_name
 
@@ -134,4 +135,4 @@ class UserReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserReview
-        fields = ['user_review_id', 'summary', 'summary_details', 'student_id', 'rating', 'comment_text', 'semester_str', 'created_at', 'categories'] # semester_str, created_at, categories 추가
+        fields = ['user_review_id', 'summary', 'summary_details', 'rating', 'comment_text', 'semester_str', 'created_at', 'categories']

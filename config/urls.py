@@ -18,11 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from home.views.auth_views import CustomLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),  # home 앱과 연결
     path('data-manager/', include('data_manager.urls')),
+    path('onboarding/', include('onboarding.urls')),
+    path('accounts/login/', CustomLoginView.as_view(), name='login'),
 ]
 
 # 개발 환경에서 정적 파일 서빙

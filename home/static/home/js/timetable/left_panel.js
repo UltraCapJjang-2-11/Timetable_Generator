@@ -1,12 +1,10 @@
 import { Course } from "../models/Course.js";
-import { getCategoryDOMElements, getSelectedCategoryId } from "../dropdown/category_dropdown.js";
-import { getOrgDOMElements } from '../dropdown/org_dropdown.js';
+import { initializeCategoryDropdowns, buildCategorySearchParams } from "../dropdown/category_dropdown.js";
 import { timetableState } from "./state.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 각 모듈에서 필요한 DOM 요소를 가져옵니다.
-    const $categoryElements = getCategoryDOMElements();
-    const $orgElements = getOrgDOMElements();
+    // 드롭다운 초기화
+    try { initializeCategoryDropdowns(); } catch (_) {}
 
     // DOM 요소 캐싱
     const $panelElements = {
@@ -31,25 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
      * 강의 검색을 수행하고 결과를 표시합니다.
      */
     async function performSearch() {
-        // category_dropdown.js에서 선택된 카테고리 ID를 가져옵니다.
-        const categoryId = getSelectedCategoryId();
-        const courseName = $panelElements.courseNameSearch ? $panelElements.courseNameSearch.value.trim() : '';
-
-        if (!categoryId && !courseName) {
+        // 공용 드롭다운 유틸을 통해 검색 파라미터 구성
+        const params = buildCategorySearchParams();
+        if (!params.get('category_id') && !params.get('course_name')) {
             alert('교과목 분류를 선택하거나 강의명을 입력하세요.');
             return;
         }
 
-        const collegeName = $orgElements.orgCollege?.value.trim();
-        const deptName = $orgElements.orgDept?.value.trim();
-
-        const params = new URLSearchParams();
-        if (categoryId) params.append('category_id', categoryId);
-        if (courseName) params.append('course_name', courseName);
-        if (collegeName) params.append('college_name', collegeName);
-        if (deptName) params.append('dept_name', deptName);
-
-        const url = `/course/search/?${params.toString()}`;
+        const url = `/course/search/?${params.toString()}&year=2025&term=2학기`;
         $panelElements.courseListBody.innerHTML = '<tr><td colspan="4" class="text-center py-3">검색 중…</td></tr>';
 
         try {

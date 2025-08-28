@@ -6,7 +6,7 @@
 import json
 import re
 from collections import defaultdict
-from data_manager.course.course_filter_service import CourseFilterService
+from data_manager.services.course_filter_service import CourseFilterService
 from data_manager.models import Department
 
 

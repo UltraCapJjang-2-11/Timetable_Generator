@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from django.urls import reverse_lazy
 from ..forms import CustomUserCreationForm
 
 
@@ -15,6 +16,11 @@ class CustomLoginView(LoginView):
     """사용자 로그인 뷰"""
     template_name = 'home/login.html'
     authentication_form = AuthenticationForm
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        # ?next= 우선, 없으면 대시보드로 이동
+        return self.get_redirect_url() or reverse_lazy('dashboard')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -47,4 +53,4 @@ def signup(request):
 def logout_view(request):
     """사용자 로그아웃 뷰"""
     logout(request)
-    return redirect('login') 
+    return redirect('/') 

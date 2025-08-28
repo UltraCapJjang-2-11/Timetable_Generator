@@ -1,0 +1,131 @@
+{
+  "version_year": 2020,
+  "categories": [
+    {
+      "category_name": "전공",
+      "category_level": 0,
+      "children": [
+        {
+          "category_name": "전공필수",
+          "category_level": 1,
+          "children": []
+        },
+        {
+          "category_name": "전공선택",
+          "category_level": 1,
+          "children": []
+        }
+      ]
+    },
+    {
+      "category_name": "교양",
+      "category_level": 0,
+      "children": [
+        {
+          "category_name": "개신기초교양",
+          "category_level": 1,
+          "children": [
+            {
+              "category_name": "인성과비판적사고",
+              "category_level": 2,
+              "children": []
+            },
+            {
+              "category_name": "의사소통",
+              "category_level": 2,
+              "children": []
+            },
+            {
+              "category_name": "영어",
+              "category_level": 2,
+              "children": []
+            },
+            {
+              "category_name": "정보문해",
+              "category_level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "category_name": "일반교양",
+          "category_level": 1,
+          "children": [
+            {
+              "category_name": "인간과문화",
+              "category_level": 2,
+              "children": []
+            },
+            {
+              "category_name": "사회와역사",
+              "category_level": 2,
+              "children": []
+            },
+            {
+              "category_name": "자연과과학",
+              "category_level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "category_name": "자연이공계기초과학",
+          "category_level": 1,
+          "children": [
+            {
+              "category_name": "기초과학",
+              "category_level": 2,
+              "children": []
+            },
+            {
+              "category_name": "수학",
+              "category_level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "category_name": "확대교양",
+          "category_level": 1,
+          "children": [
+            {
+                "category_name": "미래융복합",
+                "category_level": 2,
+                "children": []
+            },
+            {
+                "category_name": "국제화",
+                "category_level": 2,
+                "children": []
+            },
+            {
+                "category_name": "진로와취업",
+                "category_level": 2,
+                "children": []
+            },
+            {
+                "category_name": "예술과체육",
+                "category_level": 2,
+                "children": []
+            },
+            {
+                "category_name": "국제화(외국인)",
+                "category_level": 2,
+                "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_name": "일선",
+      "category_level": 0,
+      "children": []
+    },
+    {
+      "category_name": "교직",
+      "category_level": 0,
+      "children": []
+    }
+  ]
+}

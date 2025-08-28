@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from ortools.sat.python import cp_model
 
-from data_manager.course.course_filter_service import CourseFilterService
+from data_manager.services.course_filter_service import CourseFilterService
 from data_manager.models import *
 from ..utils import (
     get_effective_general_category, get_simplified_category_name,
@@ -28,9 +28,9 @@ def timetable_view(request):
     """
     service = CourseFilterService()
 
-    # 25년도 2학기
+    # 25년도 1학기
     year = 2025
-    term = "2학기"
+    term = "1학기"
 
     # 각 카테고리별 강의 조회
     major_required = service.course_search(year=year, term=term, category_name='전공필수').order_by('course_name')
@@ -305,7 +305,7 @@ def generate_timetable_stream(request):
                 'capacity': course.capacity,
                 'dept_name': course.dept.dept_name if course.dept else '',
                 'category': get_simplified_category_name(course),
-                'semester': "2025 2학기",
+                'semester': "2025 1학기",
                 'schedule': schedule_list,
                 'location': locations[0] if locations else "",
                 'pre_added': course.course_id in pre_added_ids

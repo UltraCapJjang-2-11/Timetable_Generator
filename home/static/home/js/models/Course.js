@@ -18,7 +18,7 @@ export class Course {
         this.instructor = data.instructor_name || '';
         this.capacity = data.capacity || 0;
         this.deptName = data.dept_name || '';
-        this.categoryName = data.category_name || data.category || '';
+        this.categoryName = data.category_name || '';
         this.semester = data.semester || '';
         this.isPinned = false;
 

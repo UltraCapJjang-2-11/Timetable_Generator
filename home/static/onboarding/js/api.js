@@ -98,3 +98,14 @@ export const api = {
    */
   evaluateGraduation: () => getJson('/onboarding/evaluate-graduation/'),
 };
+
+export async function searchCoursesForHistory(params) {
+  // 수강 이력 모달은 unique=true로 대표 과목만 수집
+  const qp = new URLSearchParams(params);
+  qp.set('unique', 'true');
+  const url = `/course/search/?${qp.toString()}`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error(`검색 실패: ${res.status}`);
+  return await res.json();
+}
+

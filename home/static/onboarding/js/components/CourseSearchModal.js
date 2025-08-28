@@ -4,9 +4,9 @@
  * - 중복 방지를 위해 이미 추가된 과목은 담기 버튼을 비활성화합니다.
  */
 
-import { initializeCategoryDropdowns, buildCategorySearchParams } from '../../../home/js/category_dropdown.js';
-import { initializeOrgDropdowns } from '../../../home/js/org_dropdown.js';
-import { searchCoursesForHistory } from '../../../home/js/api.js';
+import { initializeCategoryDropdowns, buildCategorySearchParams } from '../../../home/js/dropdown/category_dropdown.js';
+import { initializeOrgDropdowns } from '../../../home/js/dropdown/org_dropdown.js';
+import { searchCoursesForHistory } from '../api.js';
 
 /**
  * 강의 검색 모달의 뷰-로직을 담당하는 클래스

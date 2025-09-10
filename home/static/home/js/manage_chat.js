@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!bodyEl) return;
 
     const isSelf = data && (data.user_id === (window.currentUser && Number(window.currentUser.user_id)));
-    appendMessage(openRooms.get(room), !!isSelf, data && data.user_id, data && data.username, data && data.message, new Date());
+    appendMessage(openRooms.get(room), !!isSelf, data && data.user_id, data && data.username, data && data.message, new Date(), data && data.first_name, data && data.last_name);
   });
 
   function getCurrentTime() {
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  function appendMessage(entry, isSelf, userId, username, text, dt) {
+  function appendMessage(entry, isSelf, userId, username, text, dt, firstName, lastName) {
     if (!entry || !entry.panelEl) return;
     const bodyEl = entry.panelEl.querySelector('.lecture-chat-body');
     if (!bodyEl) return;
@@ -132,34 +132,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const when = dt instanceof Date ? dt : new Date();
     ensureDateSeparator(entry, when);
 
-    const row = document.createElement('div');
-    row.className = `chat-row ${isSelf ? 'self' : 'other'}`;
-
     // 타인 메시지에서 발신자 라벨 표시(연속 동일 발신자면 생략)
     const senderKey = isSelf ? `self:${(window.currentUser && Number(window.currentUser.user_id)) || 0}` : `user:${userId || username || '익명'}`;
-    if (!isSelf && entry.lastSenderKey !== senderKey) {
-      const nameEl = document.createElement('div');
-      nameEl.className = 'chat-sender';
-      nameEl.textContent = username || '익명';
-      bodyEl.appendChild(nameEl);
+    
+    // 사용자 전체 이름 구성 (first_name + last_name 우선, 없으면 username)
+    let displayName;
+    if (!isSelf) {
+      if (firstName || lastName) {
+        displayName = `${lastName || ''}${firstName || ''}`.trim() || username || '익명';
+      } else {
+        displayName = username || '익명';
+      }
+      
+      if (entry.lastSenderKey !== senderKey) {
+        const nameEl = document.createElement('div');
+        nameEl.className = 'chat-sender';
+        nameEl.textContent = displayName;
+        bodyEl.appendChild(nameEl);
+      }
     }
     entry.lastSenderKey = senderKey;
 
+    const row = document.createElement('div');
+    row.className = `chat-row ${isSelf ? 'self' : 'other'}`;
+
+    // 상대방 메시지일 경우 프로필 아바타 추가
+    if (!isSelf) {
+      const avatar = document.createElement('div');
+      avatar.className = 'chat-avatar';
+      // 이름의 첫 글자를 아바타로 표시
+      const initial = displayName ? displayName.charAt(0).toUpperCase() : '?';
+      avatar.textContent = initial;
+      row.appendChild(avatar);
+    }
+
     const bubble = document.createElement('div');
     bubble.className = isSelf ? 'chat-bubble user' : 'chat-bubble other';
-    bubble.textContent = isSelf ? (text || '') : (text || '');
+    bubble.textContent = text || '';
 
     const timeEl = document.createElement('span');
     timeEl.className = 'msg-time';
     timeEl.textContent = formatKakaoTime(when);
 
-    if (isSelf) {
-      row.appendChild(timeEl);
-      row.appendChild(bubble);
-    } else {
-      row.appendChild(bubble);
-      row.appendChild(timeEl);
-    }
+    row.appendChild(bubble);
+    row.appendChild(timeEl);
 
     bodyEl.appendChild(row);
     bodyEl.scrollTop = bodyEl.scrollHeight;
@@ -297,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const m of msgs) {
           const dt = m.created_at ? new Date(m.created_at) : new Date();
           const isSelf = (m.user_id === (window.currentUser && Number(window.currentUser.user_id)));
-          appendMessage(entry, !!isSelf, m.user_id, m.username, m.message, dt);
+          appendMessage(entry, !!isSelf, m.user_id, m.username, m.message, dt, m.first_name, m.last_name);
         }
       } catch (e) {
         console.error('Failed to load chat history:', e);
@@ -308,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const text = (input.value || '').trim();
       if (!text) return;
 
-      appendMessage(entry, true, (window.currentUser && Number(window.currentUser.user_id)) || 0, (window.currentUser && window.currentUser.username) || '익명', text, new Date());
+      appendMessage(entry, true, (window.currentUser && Number(window.currentUser.user_id)) || 0, (window.currentUser && window.currentUser.username) || '익명', text, new Date(), window.currentUser && window.currentUser.first_name, window.currentUser && window.currentUser.last_name);
       input.value = '';
 
       if (course && course.course_id != null && String(course.course_id) !== '') {

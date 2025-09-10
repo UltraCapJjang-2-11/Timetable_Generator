@@ -1,16 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-@import url('https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css');
-
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-html, body {
-  font-family: 'Pretendard', 'Poppins', sans-serif !important;
-  scrollbar-gutter: stable; /* ✅ 스크롤바 유무에 상관없이 레이아웃 흔들리지 않음 */
+    font-family: 'Plus Jakarta Sans', Arial, Helvetica, sans-serif;
 }
 
 header {
@@ -30,25 +24,13 @@ header {
   justify-content: space-between; /* ✅ 로고 왼쪽 / 메뉴 오른쪽 정렬 */
   align-items: center; 
   position: relative; /* ✅ 상대 위치 설정 */
-  top: -2px; /* ✅ 전체적으로 위로 이동 */
-}
-
-/* ✅ 네비게이션 */
-.navigation {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: transparent; /* 기본은 투명 */
-  transition: background-color 0.3s ease, color 0.3s ease;
-  z-index: 1000;
+  top: -28px; /* ✅ 전체적으로 위로 이동 */
 }
 
 .logo img {
-  width: 200px !important; 
+  width: 120px !important; 
   height: auto !important; 
-  max-height: 100px !important; 
-  margin-left: 30px;
+  max-height: 80px !important; 
   display: block; 
   object-fit: contain; 
 }

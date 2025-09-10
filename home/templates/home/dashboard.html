@@ -10,8 +10,10 @@
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'home/css/dashboard_style.css' %}">
 
-    <!-- ✅ animate.css CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
 
 </head>
 <body>
@@ -33,27 +35,62 @@
     <div class="wrapper">
 
       <div class="text">
-          <h1 class="animate__animated animate__bounceInLeft">
-              <span class="highlight">F</span>ind
+          <h2 class="animate__animated animate__fadeInUp delay-0_2s">
+              스마트한 학업파트너, 마이플래닝
+          </h2>
+          <h1 class="animate__animated animate__fadeInUp delay-0_4s">
+              My<span class="highlight">planning</span>
           </h1>
-          <h1 class="animate__animated animate__bounceInLeft delay-0_4s">
-              <span class="highlight">I</span>ntelligent
-          </h1>
-          <h1 class="animate__animated animate__bounceInLeft delay-0_8s">
-              <span class="highlight">T</span>imeTable
+          <h1 class="animate__animated animate__fadeInUp delay-0_4s">
+              That's Perfect For you
           </h1>
       </div>
 
       <div class="container">
-        <a href="{% url 'timetable' %}" class="timetable-button animate__animated animate__fadeInUp">시간표 제작 바로가기</a>
+        <a href="{% url 'timetable' %}" class="timetable-button animate__animated animate__fadeInUp delay-0_8s">시간표 제작 바로가기</a>
       </div>
 
-
+      <div class="hero-visual animate__animated animate__fadeInUp delay-1_0s">
+        <img src="https://KSM017.github.io/ImageSource/assets/Laptop.png" alt="Laptop preview" loading="lazy" decoding="async">
+      </div>
     </div>
-   
+
+    <div class="info-section">
+     <!-- 큰 카드 대신 섹션 헤더 텍스트 -->
+     <div class="info-header fade-in-up">
+      <h3>About</h3>
+      <h2>MyPlanning</h2>
+      <h2>대학생활을 더 스마트하게</h2>
+      <h2>바꿔드립니다.</h2>
+      <p>최적의 시간표 설계부터 강의별 채팅방까지</p>
+      <p>스마트한 맞춤형 도구를 제공합니다.</p>
+     </div>
+
+     <!-- 작은 카드 3개 -->
+     <div class="info-card fade-in-up">
+      <h3>스마트 시간표</h3>
+      <p>간편하게 최적의 시간표를 설계</p>
+      <i class="fas fa-calendar-alt" style="font-size:100px; color:white; display:block; margin:40px auto 0;"></i>
+     </div>
+     <div class="info-card fade-in-up">
+      <h3>강의별 채팅방</h3>
+      <p>수강생만을 위한 전용 채팅방</p>
+      <i class="fas fa-comments" style="font-size:100px; color:white; display:block; margin:40px auto 0;"></i>
+     </div>
+     <div class="info-card fade-in-up">
+       <h3>졸업요건 가이드</h3>
+       <p>개인이수현황 기반 졸업요건 안내</p>
+        <i class="fas fa-graduation-cap" style="font-size:100px; color:white; display:block; margin:40px auto 0;"></i>
+     </div>
+     <!-- ✅ 맨 하단 버튼 추가 -->
+     <div class="info-footer fade-in-up">
+       <a href="#" class="more-button">더 알아보기</a>
+     </div>
+    </div>
+
    
     <!-- ✅ script.js 파일 연결 -->
     <script src="{% static 'home/js/dashboard_script.js' %}"></script>
   
 </body>
-</html> 
+</html>

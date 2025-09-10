@@ -131,12 +131,28 @@ async def chat_message(sid, data):
         await join_room(sid, {"room": room})
 
     user = sid_to_user.get(sid) or {}
+    
+    # Django User 모델에서 first_name, last_name 가져오기
+    first_name = ''
+    last_name = ''
+    user_id = user.get("user_id")
+    if user_id:
+        from django.contrib.auth.models import User
+        try:
+            django_user = await sync_to_async(User.objects.get)(id=user_id)
+            first_name = await sync_to_async(lambda: django_user.first_name)()
+            last_name = await sync_to_async(lambda: django_user.last_name)()
+        except User.DoesNotExist:
+            pass
+    
     payload = {
         "room": room,
         "course_id": course_id,
         "message": message,
-        "user_id": user.get("user_id"),
+        "user_id": user_id,
         "username": user.get("username") or "익명",
+        "first_name": first_name,
+        "last_name": last_name,
     }
 
     # 메시지 영속화 (course_id 미제공 시 room에서 파생)

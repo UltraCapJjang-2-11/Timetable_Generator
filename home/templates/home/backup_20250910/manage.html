@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>시간표 관리</title>
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/base_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'home/css/manage_style.css' %}">
+
+    <!-- ✅아이콘 무료 사이트-->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- ✅ 부트스트랩 CSS 추가 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <!-- ✅ header -->
+    <header>
+        <nav class="navigation">
+            <a href="{% url 'dashboard' %}" class="logo"><img src="https://github.com/KSM017/ImageSource/blob/main/002.png?raw=true" alt="로고"></a>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}">Home<span></span></a>
+                <a href="{% url 'manage' %}">Manage<span></span></a>
+                <a href="{% url 'mypage' %}">MyPage<span></span></a>
+                <a href="{% url 'timetable' %}">TimeTable<span></span></a>
+                <a href="#">Logout<span></span></a>
+            </div>
+        </nav>
+    </header> 
+    <!-- ✅ end header -->
+
+    <div class="manage-container">
+
+        <div class="mypage-container vertical-layout">
+              <section class="timetable-side">
+              <!-- ✅ 시간표 Section (기존 timetable-section 내용) -->
+               <h2>내 시간표</h2>
+               <div class="timetable-section">
+                    <div class="timetable-list">
+                        {% for timetable in timetables %}
+                        <div class="timetable-card" data-timetable-id="{{ timetable.id }}">
+                            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" class="timetable-icon">
+                                <g clip-rule="evenodd" fill-rule="evenodd" stroke="#ffc000" stroke-linecap="round" stroke-width="2">
+                                    <path d="m3 7h17c.5523 0 1 .44772 1 1v11c0 .5523-.4477 1-1 1h-16c-.55228 0-1-.4477-1-1z"></path>
+                                    <path d="m3 4.5c0-.27614.22386-.5.5-.5h6.29289c.13261 0 .25981.05268.35351.14645l2.8536 2.85355h-10z"></path>
+                                </g>
+                            </svg>
+                            <span class="timetable-label">{{ timetable.title }}</span>
+                            <span class="timetable-date">{{ timetable.created_at }}</span>
+                        </div>
+                        {% empty %}
+                        <p style="text-align: center; color: #666;">저장된 시간표가 없습니다.</p>
+                        {% endfor %}
+                        <a href="{% url 'timetable' %}" class="timetable-add">+</a>
+                    </div>
+                </div>
+              </section>
+
+              <section class="chatroom-side">
+                <!-- ✅ 강의별 채팅방 Section (개선) -->
+                <h2>강의별 채팅방</h2>
+                <div class="mb-2">
+                    <label class="form-label">저장된 시간표 선택</label>
+                    <select id="saved-timetable-select" class="form-select form-select-sm">
+                        <option value="">시간표를 선택하세요</option>
+                        {% for timetable in timetables %}
+                        <option value="{{ timetable.id }}">{{ timetable.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="chatroom-container">
+                    <!-- 왼쪽: 강의 목록 -->
+                    <div class="lecture-list">
+                        <ul id="lecture-list">
+                            <!-- 선택된 시간표의 과목들이 채워집니다 -->
+                        </ul>
+                    </div>
+
+                    <!-- 오른쪽: 채팅방 표시 영역 -->
+                    <div class="chatroom-view">
+                        <div id="chat-placeholder">
+                            <p>좌측 시간표를 선택하고 과목을 클릭하면 채팅방이 표시됩니다.</p>
+                            <!-- 여기에 채팅 UI가 삽입될 예정 -->
+                        </div>
+                    </div>
+                </div>
+              </section>
+
+        </div>
+
+        
+                     
+    </div>
+
+    <!-- JSON data for current user -->
+    <script id="current-user-json" type="application/json">{{ current_user_json|safe }}</script>
+    <!-- JSON data for timetables -->
+    <script id="timetables-json" type="application/json">{{ timetables_json|safe }}</script>
+
+    <!-- 풀스크린 시간표 컨테이너 -->
+    <div id="timetable-overlay" class="timetable-overlay hidden">
+        <button class="close-btn" onclick="hideTimetable()">×</button>
+        <h2 id="timetable-title"></h2>
+
+        <!-- 버튼 컨테이너 -->
+        <div class="timetable-buttons">
+            <button class="edit-btn" onclick="editTimetable()">수정하기</button>
+            <button class="delete-btn" onclick="deleteTimetable()">삭제하기</button>
+        </div>
+
+        <div class="middle-panel">
+            <div class="table-container">  <!-- 스크롤을 적용할 컨테이너 추가 -->
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th>시간</th>
+                            <th>월</th>
+                            <th>화</th>
+                            <th>수</th>
+                            <th>목</th>
+                            <th>금</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Socket.IO client -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+    <!-- ✅ 부트스트랩 JS 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ✅ scripts -->
+    <script src="{% static 'home/js/manage_page.js' %}"></script>
+    <script src="{% static 'home/js/manage.js' %}"></script>
+    <script src="{% static 'home/js/manage_chat.js' %}"></script>
+    
+</body>
+</html>

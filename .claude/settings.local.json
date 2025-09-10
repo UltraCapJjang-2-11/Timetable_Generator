@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/yunsihun/Downloads/**)",
+      "Bash(python manage.py:*)",
+      "Bash(source:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

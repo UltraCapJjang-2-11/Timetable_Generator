@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.utils.dateparse import parse_datetime
 from django.views.decorators.http import require_GET
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from ..models import ChatMessage
 
@@ -53,8 +54,16 @@ def get_chat_history(request):
     if order == 'desc':
         messages.reverse()
 
-    # 직렬화: datetime ISO 포맷 변환
+    # 직렬화: datetime ISO 포맷 변환 및 사용자 정보 추가
     for m in messages:
         m['created_at'] = m['created_at'].isoformat()
+        # 사용자의 first_name, last_name 가져오기
+        try:
+            user = User.objects.get(id=m['user_id'])
+            m['first_name'] = user.first_name
+            m['last_name'] = user.last_name
+        except User.DoesNotExist:
+            m['first_name'] = ''
+            m['last_name'] = ''
 
     return JsonResponse({'room': room, 'messages': messages}) 

@@ -204,5 +204,7 @@ class GraduationEngine:
         for rule in rules_to_evaluate:
             result = self._evaluate_rule(rule)
             results.append(result)
-
+        print("dd")
+        print(json.dump(results, indent=4, ensure_ascii=False))
+        
         return results

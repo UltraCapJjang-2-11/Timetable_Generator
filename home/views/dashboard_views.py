@@ -132,6 +132,9 @@ def mypage_view(request):
                     # r는 RuleResult dataclass (is_satisfied, remark 등 포함)
                     if getattr(r, 'remark', '') and not getattr(r, 'is_satisfied', True):
                         engine_alerts.append(r.remark)
+
+                # 졸업요건 진행상황을 DB에 저장
+                engine.save_to_db()
             except Exception:
                 pass
 

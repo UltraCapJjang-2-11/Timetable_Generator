@@ -443,6 +443,106 @@ class GraduationRecord(models.Model):
         return f"{self.user_name or self.user_id} ({self.user_student_id})"
 
 
+# UserGraduationProgress - 사용자별 졸업요건 진행상황 저장
+class UserGraduationProgress(models.Model):
+    """
+    사용자별 졸업요건 카테고리별 이수 진행상황을 저장하는 모델
+    GraduationEngine에서 계산된 결과를 저장하여 시간표 생성 시 활용
+    """
+    progress_id = models.AutoField(primary_key=True)
+
+    # 사용자 연결
+    user_profile = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        related_name='graduation_progress'
+    )
+
+    # 카테고리 연결 (교양, 전공필수, 전공선택 등)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE
+    )
+
+    # 이수 학점
+    earned_credits = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        verbose_name="이수 학점"
+    )
+
+    # 필요 학점 (졸업요건)
+    required_credits = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name="필요 학점"
+    )
+
+    # 충족 여부
+    is_satisfied = models.BooleanField(
+        default=False,
+        verbose_name="충족 여부"
+    )
+
+    # 부족 학점 (계산 필드로 저장)
+    shortage_credits = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        verbose_name="부족 학점"
+    )
+
+    # 카테고리 레벨 (계층 구조용)
+    category_level = models.IntegerField(
+        default=0,
+        verbose_name="카테고리 레벨"
+    )
+
+    # 부모 카테고리 ID (계층 구조용)
+    parent_category_id = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name="부모 카테고리 ID"
+    )
+
+    # 업데이트 시간
+    last_updated = models.DateTimeField(
+        auto_now=True,
+        verbose_name="마지막 업데이트"
+    )
+
+    class Meta:
+        db_table = 'user_graduation_progress'
+        verbose_name = '사용자 졸업요건 진행상황'
+        verbose_name_plural = '사용자 졸업요건 진행상황 목록'
+        unique_together = (('user_profile', 'category'),)
+        indexes = [
+            models.Index(fields=['user_profile', 'is_satisfied']),
+            models.Index(fields=['user_profile', 'shortage_credits']),
+        ]
+
+    def __str__(self):
+        return f"{self.user_profile.user.username} - {self.category.category_name} ({self.earned_credits}/{self.required_credits})"
+
+    def save(self, *args, **kwargs):
+        # 부족 학점 자동 계산
+        if self.required_credits is not None and self.required_credits > 0:
+            self.shortage_credits = max(0, float(self.required_credits) - float(self.earned_credits))
+            self.is_satisfied = self.shortage_credits == 0
+        else:
+            self.shortage_credits = 0
+            # required_credits가 없으면 earned_credits가 있으면 충족으로 간주
+            self.is_satisfied = float(self.earned_credits) > 0
+
+        # 카테고리 정보 저장
+        if self.category:
+            self.category_level = self.category.category_level or 0
+            self.parent_category_id = self.category.parent_category_id
+
+        super().save(*args, **kwargs)
+
+
 # CourseSumm 테이블 - 강의계획서를 통해 요약된 강의 설명 정보 저장
 class CourseSumm(models.Model):
     """

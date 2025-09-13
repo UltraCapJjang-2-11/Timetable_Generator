@@ -151,6 +151,18 @@ def generate_timetable_stream(request):
         # 3-3. 학생 정보 및 졸업 기록 로드
         student_id = request.user.id if request.user.is_authenticated else 1
         grad_record = GraduationRecord.objects.filter(user_id=student_id).last()
+
+        # UserProfile과 UserGraduationProgress 로드
+        user_profile = None
+        graduation_progress = []
+        if request.user.is_authenticated:
+            user_profile = UserProfile.objects.filter(user=request.user).first()
+            if user_profile:
+                graduation_progress = UserGraduationProgress.objects.filter(
+                    user_profile=user_profile,
+                    is_satisfied=False,
+                    shortage_credits__gt=0
+                ).select_related('category').order_by('-shortage_credits')
         
         try:
             if grad_record and grad_record.user_year:
@@ -164,9 +176,22 @@ def generate_timetable_stream(request):
             current_year = 3
         print("DEBUG: current_year =", current_year)
 
-        dept_name = grad_record.user_major if grad_record and grad_record.user_major else ""
-        dept_obj = Department.objects.filter(dept_name=dept_name).first()
-        student_dept_id = dept_obj.dept_id if dept_obj else None
+        # UserProfile에서 학과 정보 가져오기 (우선)
+        if user_profile and user_profile.department:
+            student_dept_id = user_profile.department.dept_id
+            dept_name = user_profile.department.dept_name
+            print(f"DEBUG: UserProfile에서 학과 정보 사용 - {dept_name} (ID: {student_dept_id})")
+        # GraduationRecord에서 가져오기 (fallback)
+        elif grad_record and grad_record.user_major:
+            dept_name = grad_record.user_major
+            dept_obj = Department.objects.filter(dept_name=dept_name).first()
+            student_dept_id = dept_obj.dept_id if dept_obj else None
+            print(f"DEBUG: GraduationRecord에서 학과 정보 사용 - {dept_name} (ID: {student_dept_id})")
+        else:
+            student_dept_id = None
+            dept_name = ""
+            print("DEBUG: 학과 정보 없음 - 학과 필터링 비활성화")
+
         print("DEBUG: student_dept_id =", student_dept_id)
         
 
@@ -199,6 +224,16 @@ def generate_timetable_stream(request):
             .annotate(upper_course_name=Upper('course_name'))
             .exclude(upper_course_name__in=[name.upper() for name in completed_courses])
         )
+
+        # 졸업요건 기반 과목 우선순위 계산을 위한 맵 생성
+        priority_map = {}
+        if graduation_progress:
+            for progress in graduation_progress:
+                # 미충족 카테고리별로 부족 학점에 비례한 우선순위 부여
+                category_id = progress.category_id
+                shortage = float(progress.shortage_credits)
+                priority_map[category_id] = min(shortage * 10, 100)  # 최대 100점
+                print(f"DEBUG: 졸업요건 우선순위 - {progress.category.category_name}: {shortage}학점 부족 (우선순위: {priority_map[category_id]}점)")
 
         candidates = []
         for course in candidate_qs:
@@ -236,9 +271,51 @@ def generate_timetable_stream(request):
                     if course_year > current_year:
                         continue
 
-                # 학과 매칭 - 학과 정보가 모두 있을 때만 필터링
-                if student_dept_id and course.dept_id and course.dept_id != student_dept_id:
-                    continue
+                # 학과 매칭 - 관련 학과를 포함하도록 개선
+                if course.category.category_name == "전공필수":
+                    if not student_dept_id:
+                        # 학생 학과 정보가 없으면 전공필수 제외
+                        print(f"DEBUG: 전공필수 '{course.course_name}' 제외 - 학생 학과 정보 없음")
+                        continue
+
+                    # 관련 학과 ID 목록 정의 (소프트웨어 관련)
+                    # 소프트웨어학과(3), 소프트웨어학부(9)만 관련
+                    related_dept_groups = [
+                        {3, 9},  # 소프트웨어 관련 학과만
+                    ]
+
+                    # 학생 학과와 과목 학과가 같은 그룹에 속하는지 확인
+                    is_related = False
+                    for group in related_dept_groups:
+                        if student_dept_id in group and course.dept_id in group:
+                            is_related = True
+                            break
+
+                    # 같은 학과이거나 관련 학과가 아니면 제외
+                    if course.dept_id != student_dept_id and not is_related:
+                        # 다른 학과의 전공필수 제외
+                        print(f"DEBUG: 전공필수 '{course.course_name}' 제외 - 관련없는 학과 과목 (과목 학과: {course.dept_id}, 학생 학과: {student_dept_id})")
+                        continue
+                    else:
+                        print(f"DEBUG: 전공필수 '{course.course_name}' 포함 - 같은/관련 학과 (과목 학과: {course.dept_id}, 학생 학과: {student_dept_id})")
+
+                elif course.category.category_name == "전공선택":
+                    # 전공선택도 관련 학과 포함
+                    if student_dept_id and course.dept_id:
+                        # 관련 학과 ID 목록
+                        related_dept_groups = [
+                            {3, 9},  # 소프트웨어 관련 학과만
+                        ]
+
+                        is_related = False
+                        for group in related_dept_groups:
+                            if student_dept_id in group and course.dept_id in group:
+                                is_related = True
+                                break
+
+                        if course.dept_id != student_dept_id and not is_related:
+                            print(f"DEBUG: 전공선택 '{course.course_name}' 제외 - 관련없는 학과 과목")
+                            continue
 
             # 기본 필터
             if course.course_id in pre_added_ids:
@@ -261,6 +338,21 @@ def generate_timetable_stream(request):
                 effective_cat = get_effective_general_category(course)
                 if missing_gen_sub.get(effective_cat, 0) == 0:
                     continue
+
+            # 졸업요건 기반 우선순위 점수 계산
+            priority_score = 0
+
+            # 과목의 카테고리가 미충족 졸업요건에 해당하는지 확인
+            if course.category_id in priority_map:
+                priority_score = priority_map[course.category_id]
+                print(f"DEBUG: '{course.course_name}' 졸업요건 우선순위 점수: {priority_score}")
+
+            # 전공필수 과목에 추가 가중치
+            if course.category and course.category.category_name == "전공필수":
+                priority_score += 30
+
+            # 과목 정보에 우선순위 점수 추가 (나중에 활용)
+            course.graduation_priority = priority_score
 
             candidates.append(course)
 
@@ -313,6 +405,10 @@ def generate_timetable_stream(request):
             # 교양 강좌: effective_category 추가
             if get_effective_general_category(course):
                 data_item['effective_category'] = get_effective_general_category(course)
+
+            # 졸업요건 우선순위 점수 추가
+            data_item['graduation_priority'] = getattr(course, 'graduation_priority', 0)
+
             candidate_data.append(data_item)
         
         print("DEBUG: candidate_data count =", len(candidate_data))
@@ -495,20 +591,32 @@ def generate_timetable_stream(request):
         for name, ids in name_groups.items():
             model.Add(sum(x[cid] for cid in ids) <= 1)
 
-        # 목적함수: 전공필수 우선, 동일학년 전공선택 우선
+        # 목적함수: 졸업요건 우선순위 기반 최적화
+        # 1. 졸업요건 충족도 (최우선)
+        graduation_priority = sum(
+            x[data['id']] * data.get('graduation_priority', 0)
+            for data in candidate_data
+        )
+
+        # 2. 전공필수 우선
         required_priority = sum(
             x[data['id']] for data in candidate_data
             if data['category'] == '전공필수' and (
                 data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) <= current_year)
             )
         )
-        elective_priority = 0.1 * sum(
+
+        # 3. 동일학년 전공선택 우선 (정수로 유지)
+        elective_priority = sum(
             x[data['id']] for data in candidate_data
             if data['category'] == '전공선택' and (
                 data['year'] == "전학년" or (data['year'][0].isdigit() and int(data['year'][0]) == current_year)
             )
         )
-        model.Maximize(required_priority + elective_priority)
+
+        # 졸업요건 충족도를 최우선으로 하여 최적화 (정수 스케일링 적용)
+        # Phase 2와 동일하게 스케일링: grad * 10000 + req * 100 + elec * 1
+        model.Maximize(graduation_priority * 10000 + required_priority * 100 + elective_priority * 1)
 
         # Phase 1: 최적 목적함수 값 찾기
         solver = cp_model.CpSolver()
@@ -516,9 +624,19 @@ def generate_timetable_stream(request):
         status = solver.Solve(model)
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
             return JsonResponse({"error": "해결책을 찾지 못했습니다."}, status=500)
-        
+
         best_value = solver.ObjectiveValue()
         print("DEBUG: Phase 1 Best objective =", best_value)
+
+        # 디버그: 목적함수 구성요소 출력
+        grad_val = sum(solver.Value(x[data['id']]) * data.get('graduation_priority', 0) for data in candidate_data)
+        req_val = sum(solver.Value(x[data['id']]) for data in candidate_data
+                     if data['category'] == '전공필수' and (data['year'] == "전학년" or (
+                         data['year'][0].isdigit() and int(data['year'][0]) <= current_year)))
+        elec_val = sum(solver.Value(x[data['id']]) for data in candidate_data
+                      if data['category'] == '전공선택' and (data['year'] == "전학년" or (
+                          data['year'][0].isdigit() and int(data['year'][0]) == current_year)))
+        print(f"DEBUG: Phase 1 components - Graduation: {grad_val}, Required: {req_val}, Elective: {elec_val}")
 
         # Phase 2: 최적값을 강제하고 모든 해 찾기
         model2 = cp_model.CpModel()
@@ -543,11 +661,23 @@ def generate_timetable_stream(request):
         for name, ids in name_groups.items():
             model2.Add(sum(x2[cid] for cid in ids) <= 1)
         
-        # 최적 목적함수 값 강제
-        model2.Add(sum(x2[data['id']] for data in candidate_data
-                      if data['category'] == '전공필수' and (data['year'] == "전학년" or (
-                          data['year'][0].isdigit() and int(data['year'][0]) <= current_year))) == int(best_value))
-        
+        # 최적 목적함수 값 강제 (Phase 1과 동일한 계산 사용)
+        # 1. 졸업요건 충족도
+        grad_sum = sum(x2[data['id']] * data.get('graduation_priority', 0) for data in candidate_data)
+
+        # 2. 전공필수 우선
+        req_sum = sum(x2[data['id']] for data in candidate_data
+                     if data['category'] == '전공필수' and (data['year'] == "전학년" or (
+                         data['year'][0].isdigit() and int(data['year'][0]) <= current_year)))
+
+        # 3. 동일학년 전공선택 우선
+        elec_sum = sum(x2[data['id']] for data in candidate_data
+                      if data['category'] == '전공선택' and (data['year'] == "전학년" or (
+                          data['year'][0].isdigit() and int(data['year'][0]) == current_year)))
+
+        # 전체 목적함수 값 강제 (Phase 1과 동일한 스케일링: grad * 10000 + req * 100 + elec * 1)
+        model2.Add(grad_sum * 10000 + req_sum * 100 + elec_sum * 1 == int(best_value))
+
         print("DEBUG: Phase 2 forcing optimal objective =", best_value)
 
         # 해 수집기

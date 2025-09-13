@@ -67,11 +67,14 @@ class CourseFilterService:
         category_name(예: '확대교양')에 해당하는 Category 및
         모든 하위 Category의 ID를 찾아서 필터링
         """
-        # 1) 루트 카테고리 가져오기
-        try:
-            root_category = Category.objects.get(category_name=category_name)
-        except Category.DoesNotExist:
+        # 1) 루트 카테고리 가져오기 - 여러 개가 있을 수 있으므로 filter 사용
+        root_categories = Category.objects.filter(category_name=category_name)
+
+        if not root_categories.exists():
             return queryset.none()
+
+        # 여러 카테고리가 있으면 가장 최신 version_year를 가진 것을 선택
+        root_category = root_categories.order_by('-version_year').first()
 
         # 2) 해당 카테고리의 모든 하위 카테고리 ID를 재귀적으로 구하기
         category_ids = self._get_all_subcategory_ids(root_category)

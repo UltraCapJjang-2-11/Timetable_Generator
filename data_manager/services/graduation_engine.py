@@ -6,7 +6,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from django.conf import settings
 from django.db.models import Max
-from data_manager.models import Category, Rule, RuleSet  # 필요한 모델들을 가져옵니다.
+from data_manager.models import Category, Rule, RuleSet, UserGraduationProgress  # 필요한 모델들을 가져옵니다.
 from .graduation_types import RuleResult
 
 
@@ -204,7 +204,88 @@ class GraduationEngine:
         for rule in rules_to_evaluate:
             result = self._evaluate_rule(rule)
             results.append(result)
-        print("dd")
-        print(json.dump(results, indent=4, ensure_ascii=False))
-        
+        # Debug output removed - was causing error
+
         return results
+
+    def save_to_db(self):
+        """
+        계산된 졸업요건 진행상황을 DB에 저장합니다.
+        UserGraduationProgress 테이블에 카테고리별 이수 현황을 저장
+        """
+        if not self.user_profile:
+            print("ERROR: user_profile이 없어 졸업요건을 저장할 수 없습니다.")
+            return
+
+        # 기존 데이터 삭제 (전체 업데이트)
+        UserGraduationProgress.objects.filter(user_profile=self.user_profile).delete()
+
+        # 저장할 진행상황 목록
+        progress_list = []
+
+        # 규칙이 있는 경우 규칙 기반 저장
+        if self.ruleset:
+            rules = self.ruleset.rules.select_related('category').all()
+
+            # 카테고리별 필요 학점 집계 (동일 카테고리의 여러 규칙 합산)
+            required_by_category = defaultdict(int)
+            for rule in rules:
+                if rule.category_id and rule.min_credits:
+                    required_by_category[rule.category_id] += int(rule.min_credits or 0)
+
+            # 모든 표시할 카테고리 수집 (규칙 카테고리 + 조상)
+            display_categories = set()
+            for category_id in required_by_category.keys():
+                current = self.categories_map.get(category_id)
+                while current:
+                    display_categories.add(current.category_id)
+                    parent_id = getattr(current, 'parent_category_id', None)
+                    if not parent_id:
+                        break
+                    current = self.categories_map.get(parent_id)
+
+            # 카테고리별 진행상황 생성
+            for category_id in display_categories:
+                category = self.categories_map.get(category_id)
+                if not category:
+                    continue
+
+                earned = float(self.processed_data.get('credits_by_category', {}).get(category_id, 0.0))
+                required = required_by_category.get(category_id)
+
+                progress = UserGraduationProgress(
+                    user_profile=self.user_profile,
+                    category=category,
+                    earned_credits=earned,
+                    required_credits=required,
+                    category_level=category.category_level or 0,
+                    parent_category_id=category.parent_category_id
+                )
+                progress_list.append(progress)
+
+        # 실제 이수한 카테고리도 저장 (규칙이 없더라도)
+        for category_id, earned_credits in self.processed_data.get('credits_by_category', {}).items():
+            if earned_credits > 0:
+                # 이미 추가된 카테고리는 스킵
+                if any(p.category_id == category_id for p in progress_list):
+                    continue
+
+                category = self.categories_map.get(category_id)
+                if category:
+                    progress = UserGraduationProgress(
+                        user_profile=self.user_profile,
+                        category=category,
+                        earned_credits=float(earned_credits),
+                        required_credits=None,  # 규칙이 없는 카테고리
+                        category_level=category.category_level or 0,
+                        parent_category_id=category.parent_category_id
+                    )
+                    progress_list.append(progress)
+
+        # 일괄 저장 (save() 메서드를 호출하여 shortage_credits 계산)
+        if progress_list:
+            for progress in progress_list:
+                progress.save()  # save() 메서드가 shortage_credits를 자동 계산
+            print(f"졸업요건 진행상황 {len(progress_list)}개 카테고리 저장 완료")
+
+        return progress_list

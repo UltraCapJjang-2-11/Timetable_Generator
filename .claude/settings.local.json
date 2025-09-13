@@ -7,7 +7,8 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(curl:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(kill:*)"
     ],
     "deny": [],
     "ask": []

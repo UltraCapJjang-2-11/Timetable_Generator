@@ -5,6 +5,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextBtn = document.querySelector(".next-btn");
     let currentStep = 0;
 
+    // 선호도 리스트 관리 객체
+    const preferenceManager = {
+        preferredInstructors: [],
+        avoidInstructors: [],
+        preferredCourses: [],
+        avoidCourses: [],
+
+        add: function(type, value) {
+            if (value && !this[type].includes(value)) {
+                this[type].push(value);
+                this.render(type);
+            }
+        },
+
+        remove: function(type, value) {
+            const index = this[type].indexOf(value);
+            if (index > -1) {
+                this[type].splice(index, 1);
+                this.render(type);
+            }
+        },
+
+        render: function(type) {
+            const listId = type.replace(/([A-Z])/g, '-$1').toLowerCase() + '-list';
+            const listElement = document.getElementById(listId);
+            if (listElement) {
+                listElement.innerHTML = this[type].map(item =>
+                    `<span class="preference-item">${item}<span class="remove-btn" data-type="${type}" data-value="${item}">✕</span></span>`
+                ).join('');
+            }
+        }
+    };
+
     // 시간표 셀 생성 (3단계용)
     const tbody = document.getElementById("survey-tbody");
     for (let hour = 9; hour <= 18; hour++) {
@@ -31,6 +64,41 @@ document.addEventListener("DOMContentLoaded", () => {
         tag.addEventListener("click", () => {
             tag.classList.toggle("selected");
         });
+    });
+
+    // 선호도 입력 필드 이벤트 리스너
+    const preferenceInputs = [
+        { id: 'preferred-instructor-input', type: 'preferredInstructors' },
+        { id: 'avoid-instructor-input', type: 'avoidInstructors' },
+        { id: 'preferred-course-input', type: 'preferredCourses' },
+        { id: 'avoid-course-input', type: 'avoidCourses' }
+    ];
+
+    preferenceInputs.forEach(({ id, type }) => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = input.value.trim();
+                    if (value) {
+                        preferenceManager.add(type, value);
+                        input.value = '';
+                    }
+                }
+            });
+        }
+    });
+
+    // 선호도 항목 삭제 이벤트 (이벤트 위임)
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-btn')) {
+            const type = e.target.getAttribute('data-type');
+            const value = e.target.getAttribute('data-value');
+            if (type && value) {
+                preferenceManager.remove(type, value);
+            }
+        }
     });
 
     // "없음" 체크박스 선택 시 다른 요일 선택 해제
@@ -108,6 +176,14 @@ document.addEventListener("DOMContentLoaded", () => {
             case 3: // 4단계: 교양 과목 특징 선택 (선택사항)
                 // 이 단계는 선택사항이므로 유효성 검사 없음
                 break;
+
+            case 4: // 5단계: 선호 교수 (선택사항)
+            case 5: // 6단계: 기피 교수 (선택사항)
+            case 6: // 7단계: 선호 과목 (선택사항)
+            case 7: // 8단계: 기피 과목 (선택사항)
+            case 8: // 9단계: 시간표 스타일 (선택사항)
+                // 모두 선택사항이므로 유효성 검사 없음
+                break;
         }
         return true;
     }
@@ -123,12 +199,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }));
         const tags = Array.from(document.querySelectorAll(".tag-options span.selected")).map(tag => tag.textContent);
 
+        // 시간표 스타일 선호도
+        const maxWalkingTime = parseInt(document.getElementById('max-walking-time').value) || 10;
+        const preferCompact = document.querySelector('input[name="compact"]:checked')?.value === 'yes';
+        const preferMorning = document.getElementById('prefer-morning')?.checked || false;
+        const preferAfternoon = document.getElementById('prefer-afternoon')?.checked || false;
+
         const surveyData = {
             majorCredit: parseInt(major),
             electiveCredit: parseInt(elective),
             freeDays: freeDays,
             blockedTimes: blocked,
-            preferences: tags
+            preferences: tags,
+            preferredInstructors: preferenceManager.preferredInstructors,
+            avoidInstructors: preferenceManager.avoidInstructors,
+            preferredCourses: preferenceManager.preferredCourses,
+            avoidCourses: preferenceManager.avoidCourses,
+            maxWalkingTime: maxWalkingTime,
+            preferCompact: preferCompact,
+            preferMorning: preferMorning,
+            preferAfternoon: preferAfternoon
         };
 
         console.log("설문조사 결과:", surveyData);

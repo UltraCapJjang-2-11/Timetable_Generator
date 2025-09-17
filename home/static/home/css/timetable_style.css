@@ -341,4 +341,86 @@ body {
 .next-btn:hover {
     background: #333;
 }
+
+/* 선호도 입력 스타일 */
+.preference-input-container {
+    margin: 20px 0;
+}
+
+.preference-input-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.preference-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.preference-item {
+    background: #007bff;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.preference-item .remove-btn {
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.preference-item .remove-btn:hover {
+    color: #ff6b6b;
+}
+
+.style-preferences {
+    margin: 20px 0;
+}
+
+.preference-group {
+    margin-bottom: 25px;
+}
+
+.preference-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.preference-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.radio-options, .checkbox-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.radio-options label, .checkbox-options label {
+    font-weight: normal;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.radio-options input[type="radio"],
+.checkbox-options input[type="checkbox"] {
+    margin-right: 5px;
+}
+
 /* 설문조사 오버레이 스타일 (끝) */

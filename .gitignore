@@ -9,7 +9,7 @@ db/target
 user_uploads/
 venv310/
 test_*.py
-.idea
-.log
+*.idea
+*.log
 media/transcripts/
 *.md

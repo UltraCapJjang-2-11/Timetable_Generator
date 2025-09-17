@@ -598,8 +598,131 @@ class CourseReviewSummary(models.Model):
         verbose_name = "강의별 요약 통계"
         verbose_name_plural = "강의별 요약 통계"
 
+
+# BuildingDistance - 건물 간 거리 정보 저장
+class BuildingDistance(models.Model):
+    """
+    충북대학교 캠퍼스 내 건물 간 이동 거리 및 시간 정보
+    """
+    distance_id = models.AutoField(primary_key=True)
+    from_building = models.CharField(
+        max_length=10,
+        verbose_name="출발 건물",
+        help_text="건물 번호 또는 코드 (예: N1, S21)"
+    )
+    to_building = models.CharField(
+        max_length=10,
+        verbose_name="도착 건물",
+        help_text="건물 번호 또는 코드 (예: N1, S21)"
+    )
+    walking_time = models.IntegerField(
+        verbose_name="도보 시간(분)",
+        help_text="평균 도보 이동 시간"
+    )
+    distance = models.IntegerField(
+        verbose_name="거리(m)",
+        help_text="건물 간 거리(미터)"
+    )
+
+    class Meta:
+        db_table = 'building_distances'
+        verbose_name = '건물 간 거리'
+        verbose_name_plural = '건물 간 거리 목록'
+        unique_together = (('from_building', 'to_building'),)
+        indexes = [
+            models.Index(fields=['from_building', 'to_building']),
+        ]
+
     def __str__(self):
-        return f"{self.course_code} - {self.instructor_name}"
+        return f"{self.from_building} → {self.to_building} ({self.walking_time}분)"
+
+
+# UserPreference - 사용자 시간표 선호도 설정
+class UserPreference(models.Model):
+    """
+    사용자별 시간표 생성 선호도 및 제약사항 저장
+    """
+    preference_id = models.AutoField(primary_key=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='timetable_preference'
+    )
+
+    # 선호/기피 교수 및 과목
+    preferred_instructors = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="선호 교수 목록",
+        help_text="선호하는 교수 이름 리스트"
+    )
+    preferred_courses = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="선호 과목 목록",
+        help_text="선호하는 과목명 리스트"
+    )
+    avoid_instructors = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="기피 교수 목록",
+        help_text="기피하는 교수 이름 리스트"
+    )
+    avoid_courses = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="기피 과목 목록",
+        help_text="기피하는 과목명 리스트"
+    )
+
+    # 이동거리 및 시간표 선호도
+    max_walking_time = models.IntegerField(
+        default=10,
+        verbose_name="최대 이동 시간(분)",
+        help_text="연속 수업 간 최대 허용 이동 시간"
+    )
+    prefer_compact_schedule = models.BooleanField(
+        default=False,
+        verbose_name="밀집 시간표 선호",
+        help_text="공강 시간을 최소화하는 시간표 선호 여부"
+    )
+    prefer_morning_classes = models.BooleanField(
+        default=False,
+        verbose_name="오전 수업 선호",
+        help_text="오전 시간대 수업 선호 여부"
+    )
+    prefer_afternoon_classes = models.BooleanField(
+        default=False,
+        verbose_name="오후 수업 선호",
+        help_text="오후 시간대 수업 선호 여부"
+    )
+
+    # 추가 선호도 설정
+    min_break_time = models.IntegerField(
+        default=10,
+        verbose_name="최소 휴식 시간(분)",
+        help_text="연속 수업 사이 최소 휴식 시간"
+    )
+    max_daily_classes = models.IntegerField(
+        default=8,
+        verbose_name="일일 최대 수업 시간",
+        help_text="하루 최대 수업 시간"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'user_preferences'
+        verbose_name = '사용자 선호도'
+        verbose_name_plural = '사용자 선호도 목록'
+
+    def __str__(self):
+        return f"{self.user.username}의 시간표 선호도"
+
+
+class CourseReview(models.Model):
+    """강의별 리뷰 (기존 클래스 유지)"""
 
     def get_formatted_distribution(self):
         if not self.dist_json or not isinstance(self.dist_json, dict):

@@ -19,6 +19,7 @@ from ..utils import (
     get_effective_general_category, get_simplified_category_name,
     extract_missing_required_major_courses, apply_time_constraints, DummyObj
 )
+import re
 
 
 def timetable_view(request):
@@ -48,6 +49,48 @@ def timetable_view(request):
     })
 
 
+def extract_building_number(location):
+    """
+    강의실 위치에서 건물 번호 추출
+    예: "N14-1325" -> "N14", "S1-4217" -> "S1"
+    """
+    if not location:
+        return None
+    # 정규 표현식으로 건물 번호 추출
+    match = re.match(r'^([NSEW]\d+)', location.upper())
+    if match:
+        return match.group(1)
+    return None
+
+
+# 건물 거리 캐시 (전역 변수로 한 번만 로드)
+_distance_cache = None
+
+def load_distance_cache():
+    """건물 거리 데이터를 메모리에 캐싱"""
+    global _distance_cache
+    if _distance_cache is None:
+        _distance_cache = {}
+        for dist in BuildingDistance.objects.all():
+            key = (dist.from_building, dist.to_building)
+            _distance_cache[key] = dist.walking_time
+        print(f"DEBUG: 건물 거리 캐시 로드 완료 - {len(_distance_cache)}개 항목")
+    return _distance_cache
+
+def get_building_distance(from_building, to_building):
+    """
+    두 건물 간 이동 시간 조회 (캐시 사용)
+    """
+    if not from_building or not to_building:
+        return 0
+    if from_building == to_building:
+        return 0
+
+    # 캐시 확인
+    cache = load_distance_cache()
+    return cache.get((from_building, to_building), 5)
+
+
 def generate_timetable_stream(request):
     """
     시간표 생성 메인 함수
@@ -56,7 +99,7 @@ def generate_timetable_stream(request):
     """
     year = 2025
     term = '1학기'
-    
+
     try:
         print("DEBUG: --- Timetable Generation Start ---")
 
@@ -82,6 +125,20 @@ def generate_timetable_stream(request):
         existing_ids = request.GET.getlist('existing_courses[]')
         exclude_names = request.GET.getlist('exclude_courses[]')
         print("DEBUG: exclude_courses =", exclude_names)
+
+        # 선호도 파라미터 파싱
+        preferred_instructors = request.GET.getlist('preferred_instructors[]')
+        avoid_instructors = request.GET.getlist('avoid_instructors[]')
+        preferred_courses = request.GET.getlist('preferred_courses[]')
+        avoid_courses = request.GET.getlist('avoid_courses[]')
+        max_walking_time = int(request.GET.get('max_walking_time', 10))
+        prefer_compact = request.GET.get('prefer_compact', 'false').lower() == 'true'
+        prefer_morning = request.GET.get('prefer_morning', 'false').lower() == 'true'
+        prefer_afternoon = request.GET.get('prefer_afternoon', 'false').lower() == 'true'
+
+        print("DEBUG: preferred_instructors =", preferred_instructors)
+        print("DEBUG: avoid_instructors =", avoid_instructors)
+        print("DEBUG: max_walking_time =", max_walking_time)
         
         try:
             pre_added_ids = [int(cid) for cid in existing_ids]
@@ -227,6 +284,7 @@ def generate_timetable_stream(request):
 
         # 졸업요건 기반 과목 우선순위 계산을 위한 맵 생성
         priority_map = {}
+        
         if graduation_progress:
             for progress in graduation_progress:
                 # 미충족 카테고리별로 부족 학점에 비례한 우선순위 부여
@@ -274,9 +332,10 @@ def generate_timetable_stream(request):
                 # 학과 매칭 - 관련 학과를 포함하도록 개선
                 if course.category.category_name == "전공필수":
                     if not student_dept_id:
-                        # 학생 학과 정보가 없으면 전공필수 제외
-                        print(f"DEBUG: 전공필수 '{course.course_name}' 제외 - 학생 학과 정보 없음")
-                        continue
+                        # 학생 학과 정보가 없으면 전공필수도 포함 (테스트용)
+                        print(f"DEBUG: 전공필수 '{course.course_name}' 포함 - 학과 정보 없음 (테스트 모드)")
+                        # continue를 주석처리하여 전공필수도 포함
+                        pass
 
                     # 관련 학과 ID 목록 정의 (소프트웨어 관련)
                     # 소프트웨어학과(3), 소프트웨어학부(9)만 관련
@@ -291,20 +350,22 @@ def generate_timetable_stream(request):
                             is_related = True
                             break
 
-                    # 같은 학과이거나 관련 학과가 아니면 제외
-                    if course.dept_id != student_dept_id and not is_related:
-                        # 다른 학과의 전공필수 제외
-                        print(f"DEBUG: 전공필수 '{course.course_name}' 제외 - 관련없는 학과 과목 (과목 학과: {course.dept_id}, 학생 학과: {student_dept_id})")
-                        continue
-                    else:
-                        print(f"DEBUG: 전공필수 '{course.course_name}' 포함 - 같은/관련 학과 (과목 학과: {course.dept_id}, 학생 학과: {student_dept_id})")
+                    # 학과 정보가 있는 경우에만 필터링
+                    if student_dept_id:
+                        # 같은 학과이거나 관련 학과가 아니면 제외
+                        if course.dept_id != student_dept_id and not is_related:
+                            # 다른 학과의 전공필수 제외
+                            print(f"DEBUG: 전공필수 '{course.course_name}' 제외 - 관련없는 학과 과목 (과목 학과: {course.dept_id}, 학생 학과: {student_dept_id})")
+                            continue
+                        else:
+                            print(f"DEBUG: 전공필수 '{course.course_name}' 포함 - 같은/관련 학과 (과목 학과: {course.dept_id}, 학생 학과: {student_dept_id})")
 
                 elif course.category.category_name == "전공선택":
                     # 전공선택도 관련 학과 포함
                     if student_dept_id and course.dept_id:
                         # 관련 학과 ID 목록
                         related_dept_groups = [
-                            {3, 9},  # 소프트웨어 관련 학과만
+                            {3, 9},  # 소프트웨어 관련 학과
                         ]
 
                         is_related = False
@@ -351,8 +412,55 @@ def generate_timetable_stream(request):
             if course.category and course.category.category_name == "전공필수":
                 priority_score += 30
 
+            # 선호도 기반 점수 추가
+            preference_score = 0
+            # 선호 교수 확인 (가중치 10배 증가)
+            if course.instructor_name:
+                if any(prof in course.instructor_name for prof in preferred_instructors):
+                    preference_score += 500  # 50 → 500
+                    print(f"DEBUG: 선호 교수 매칭 - {course.course_name} ({course.instructor_name}) +500점")
+                if any(prof in course.instructor_name for prof in avoid_instructors):
+                    preference_score -= 1000  # 100 → 1000
+                    print(f"DEBUG: 기피 교수 매칭 - {course.course_name} ({course.instructor_name}) -1000점")
+
+            # 선호 과목 확인 (가중치 10배 증가)
+            if any(name.lower() in course.course_name.lower() for name in preferred_courses):
+                preference_score += 500  # 50 → 500
+                print(f"DEBUG: 선호 과목 매칭 - {course.course_name} +500점")
+
+            # 기피 과목 제외 (avoid_courses에 추가)
+            if any(name.lower() in course.course_name.lower() for name in avoid_courses):
+                print(f"DEBUG: 기피 과목 제외 - {course.course_name}")
+                continue
+
+            # 시간대 선호도
+            if prefer_morning or prefer_afternoon:
+                schedules = course.courseschedule_set.all()
+                morning_count = 0
+                afternoon_count = 0
+                for sch in schedules:
+                    times = [int(t) + 8 for t in sch.times.split(',') if t.strip().isdigit()]
+                    for hour in times:
+                        if hour < 12:
+                            morning_count += 1
+                        else:
+                            afternoon_count += 1
+
+                # 시간대 선호도 비율 기반 점수 (대폭 강화)
+                total_hours = morning_count + afternoon_count
+                if total_hours > 0:
+                    if prefer_morning:
+                        morning_ratio = morning_count / total_hours
+                        preference_score += int(morning_ratio * 1000)  # 최대 1000점
+                        print(f"DEBUG: 오전 선호 - {course.course_name} 오전비율 {morning_ratio:.1%} +{int(morning_ratio * 1000)}점")
+                    elif prefer_afternoon:
+                        afternoon_ratio = afternoon_count / total_hours
+                        preference_score += int(afternoon_ratio * 1000)  # 최대 1000점
+                        print(f"DEBUG: 오후 선호 - {course.course_name} 오후비율 {afternoon_ratio:.1%} +{int(afternoon_ratio * 1000)}점")
+
             # 과목 정보에 우선순위 점수 추가 (나중에 활용)
             course.graduation_priority = priority_score
+            course.preference_score = preference_score
 
             candidates.append(course)
 
@@ -408,6 +516,19 @@ def generate_timetable_stream(request):
 
             # 졸업요건 우선순위 점수 추가
             data_item['graduation_priority'] = getattr(course, 'graduation_priority', 0)
+            data_item['preference_score'] = getattr(course, 'preference_score', 0)
+
+            # 디버그: preference_score 확인
+            if data_item['preference_score'] != 0:
+                print(f"DEBUG: Course {course.course_name} has preference_score = {data_item['preference_score']}")
+
+            # 건물 번호 추출
+            building_numbers = []
+            for loc in locations:
+                building = extract_building_number(loc)
+                if building:
+                    building_numbers.append(building)
+            data_item['buildings'] = building_numbers
 
             candidate_data.append(data_item)
         
@@ -591,14 +712,70 @@ def generate_timetable_stream(request):
         for name, ids in name_groups.items():
             model.Add(sum(x[cid] for cid in ids) <= 1)
 
-        # 목적함수: 졸업요건 우선순위 기반 최적화
+        # 건물 간 이동시간 제약 (최적화된 버전)
+        if max_walking_time < 20:  # 20은 "상관없음"을 의미
+            # 시간-과목 매핑을 미리 구성 (성능 개선)
+            time_course_map = defaultdict(lambda: defaultdict(list))
+
+            for data in candidate_data:
+                # 건물 정보가 있는 과목만 처리
+                if not data.get('buildings'):
+                    continue
+
+                for sched in data['schedule']:
+                    day = sched['day']
+                    times = [int(t) + 8 for t in sched['times'].split(',') if t.strip().isdigit()]
+                    for t in times:
+                        time_course_map[day][t].append(data)
+
+            # 중복 체크 방지용 세트
+            checked_pairs = set()
+
+            # 실제 수업이 있는 시간대만 처리
+            for day in time_course_map:
+                for hour in sorted(time_course_map[day].keys()):
+                    # 다음 시간에도 수업이 있는 경우만 체크
+                    if hour + 1 not in time_course_map[day]:
+                        continue
+
+                    curr_courses = time_course_map[day][hour]
+                    next_courses = time_course_map[day][hour + 1]
+
+                    # 연속된 시간에 수업이 있는 경우 거리 체크
+                    for curr in curr_courses:
+                        for next_c in next_courses:
+                            if curr['id'] >= next_c['id']:  # 중복 체크 방지
+                                continue
+
+                            pair_key = (curr['id'], next_c['id'])
+                            if pair_key in checked_pairs:
+                                continue
+
+                            # 두 과목의 건물 간 최대 거리 계산
+                            max_distance = 0
+                            for curr_bldg in curr.get('buildings', []):
+                                for next_bldg in next_c.get('buildings', []):
+                                    distance = get_building_distance(curr_bldg, next_bldg)
+                                    max_distance = max(max_distance, distance)
+
+                            if max_distance > max_walking_time:
+                                model.Add(x[curr['id']] + x[next_c['id']] <= 1)
+                                checked_pairs.add(pair_key)
+
+        # 목적함수: 졸업요건 우선순위 + 선호도 기반 최적화
         # 1. 졸업요건 충족도 (최우선)
         graduation_priority = sum(
             x[data['id']] * data.get('graduation_priority', 0)
             for data in candidate_data
         )
 
-        # 2. 전공필수 우선
+        # 2. 사용자 선호도 점수
+        preference_priority = sum(
+            x[data['id']] * data.get('preference_score', 0)
+            for data in candidate_data
+        )
+
+        # 3. 전공필수 우선
         required_priority = sum(
             x[data['id']] for data in candidate_data
             if data['category'] == '전공필수' and (
@@ -606,7 +783,7 @@ def generate_timetable_stream(request):
             )
         )
 
-        # 3. 동일학년 전공선택 우선 (정수로 유지)
+        # 4. 동일학년 전공선택 우선
         elective_priority = sum(
             x[data['id']] for data in candidate_data
             if data['category'] == '전공선택' and (
@@ -614,13 +791,51 @@ def generate_timetable_stream(request):
             )
         )
 
-        # 졸업요건 충족도를 최우선으로 하여 최적화 (정수 스케일링 적용)
-        # Phase 2와 동일하게 스케일링: grad * 10000 + req * 100 + elec * 1
-        model.Maximize(graduation_priority * 10000 + required_priority * 100 + elective_priority * 1)
+        # 5. 시간표 밀집도 계산 및 적용
+        compactness_bonus = 0
+        if prefer_compact:
+            # 각 요일별 수업 분포 계산
+            daily_classes = defaultdict(list)
+            for data in candidate_data:
+                for sch in data['schedule']:
+                    day = sch['day']
+                    times = [int(t) + 8 for t in sch['times'].split(',') if t.strip().isdigit()]
+                    for t in times:
+                        daily_classes[day].append((t, data['id']))
+
+            # 밀집도 보너스 계산 (공강이 적을수록 높은 점수)
+            for day, time_list in daily_classes.items():
+                if time_list:
+                    times = sorted([t for t, _ in time_list])
+                    if len(times) > 1:
+                        gaps = sum(times[i+1] - times[i] - 1 for i in range(len(times)-1))
+                        # 공강이 적을수록 보너스 (최대 200점/요일)
+                        day_bonus = max(0, 200 - gaps * 50)
+                        for _, course_id in time_list:
+                            compactness_bonus += x[course_id] * day_bonus
+
+            print(f"DEBUG: 밀집도 선호 활성화 - 공강 최소화 보너스 적용")
+
+        # 최종 목적함수 (선호도 가중치 10배 증가 + 밀집도 보너스)
+        # grad * 100000 + pref * 10000 + compact * 5000 + req * 100 + elec * 10
+        model.Maximize(
+            graduation_priority * 100000 +
+            preference_priority * 10000 +  # 1000 → 10000 (10배 증가)
+            compactness_bonus * 5000 +     # 밀집도 보너스 추가
+            required_priority * 100 +
+            elective_priority * 10
+        )
+        print(f"DEBUG: 목적함수 가중치 - 졸업:100000, 선호도:10000, 밀집도:5000, 전필:100, 전선:10")
 
         # Phase 1: 최적 목적함수 값 찾기
         solver = cp_model.CpSolver()
+        # 솔버 파라미터 최적화
+        solver.parameters.max_time_in_seconds = 5  # 최대 5초
+        solver.parameters.num_search_workers = 4   # 병렬 처리
+        solver.parameters.linearization_level = 2  # 선형화 레벨
+
         print("DEBUG: Starting Phase 1 optimization...")
+        print(f"DEBUG: 후보 과목 수: {len(candidate_data)}개")
         status = solver.Solve(model)
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
             return JsonResponse({"error": "해결책을 찾지 못했습니다."}, status=500)
@@ -630,13 +845,15 @@ def generate_timetable_stream(request):
 
         # 디버그: 목적함수 구성요소 출력
         grad_val = sum(solver.Value(x[data['id']]) * data.get('graduation_priority', 0) for data in candidate_data)
+        pref_val = sum(solver.Value(x[data['id']]) * data.get('preference_score', 0) for data in candidate_data)
         req_val = sum(solver.Value(x[data['id']]) for data in candidate_data
                      if data['category'] == '전공필수' and (data['year'] == "전학년" or (
                          data['year'][0].isdigit() and int(data['year'][0]) <= current_year)))
         elec_val = sum(solver.Value(x[data['id']]) for data in candidate_data
                       if data['category'] == '전공선택' and (data['year'] == "전학년" or (
                           data['year'][0].isdigit() and int(data['year'][0]) == current_year)))
-        print(f"DEBUG: Phase 1 components - Graduation: {grad_val}, Required: {req_val}, Elective: {elec_val}")
+        print(f"DEBUG: Phase 1 components - Graduation: {grad_val}, Preference: {pref_val}, Required: {req_val}, Elective: {elec_val}")
+        print(f"DEBUG: Phase 1 calculated objective = {grad_val * 100000 + pref_val * 1000 + req_val * 100 + elec_val * 10}")
 
         # Phase 2: 최적값을 강제하고 모든 해 찾기
         model2 = cp_model.CpModel()
@@ -661,24 +878,75 @@ def generate_timetable_stream(request):
         for name, ids in name_groups.items():
             model2.Add(sum(x2[cid] for cid in ids) <= 1)
         
+        # 건물 간 이동시간 제약 (Phase 2에도 최적화 적용)
+        if max_walking_time < 20:
+            # Phase 1에서 이미 계산한 time_course_map 재사용
+            if 'time_course_map' not in locals():
+                time_course_map = defaultdict(lambda: defaultdict(list))
+                for data in candidate_data:
+                    if not data.get('buildings'):
+                        continue
+                    for sched in data['schedule']:
+                        day = sched['day']
+                        times = [int(t) + 8 for t in sched['times'].split(',') if t.strip().isdigit()]
+                        for t in times:
+                            time_course_map[day][t].append(data)
+
+            checked_pairs = set()
+            for day in time_course_map:
+                for hour in sorted(time_course_map[day].keys()):
+                    if hour + 1 not in time_course_map[day]:
+                        continue
+
+                    curr_courses = time_course_map[day][hour]
+                    next_courses = time_course_map[day][hour + 1]
+
+                    for curr in curr_courses:
+                        for next_c in next_courses:
+                            if curr['id'] >= next_c['id']:
+                                continue
+                            pair_key = (curr['id'], next_c['id'])
+                            if pair_key in checked_pairs:
+                                continue
+
+                            max_distance = 0
+                            for curr_bldg in curr.get('buildings', []):
+                                for next_bldg in next_c.get('buildings', []):
+                                    distance = get_building_distance(curr_bldg, next_bldg)
+                                    max_distance = max(max_distance, distance)
+
+                            if max_distance > max_walking_time:
+                                model2.Add(x2[curr['id']] + x2[next_c['id']] <= 1)
+                                checked_pairs.add(pair_key)
+
         # 최적 목적함수 값 강제 (Phase 1과 동일한 계산 사용)
         # 1. 졸업요건 충족도
         grad_sum = sum(x2[data['id']] * data.get('graduation_priority', 0) for data in candidate_data)
 
-        # 2. 전공필수 우선
+        # 2. 사용자 선호도
+        pref_sum = sum(x2[data['id']] * data.get('preference_score', 0) for data in candidate_data)
+
+        # 3. 전공필수 우선
         req_sum = sum(x2[data['id']] for data in candidate_data
                      if data['category'] == '전공필수' and (data['year'] == "전학년" or (
                          data['year'][0].isdigit() and int(data['year'][0]) <= current_year)))
 
-        # 3. 동일학년 전공선택 우선
+        # 4. 동일학년 전공선택 우선
         elec_sum = sum(x2[data['id']] for data in candidate_data
                       if data['category'] == '전공선택' and (data['year'] == "전학년" or (
                           data['year'][0].isdigit() and int(data['year'][0]) == current_year)))
 
-        # 전체 목적함수 값 강제 (Phase 1과 동일한 스케일링: grad * 10000 + req * 100 + elec * 1)
-        model2.Add(grad_sum * 10000 + req_sum * 100 + elec_sum * 1 == int(best_value))
+        # Phase 2: 일단 목적함수 제약 없이 모든 유효한 해 찾기
+        # 목적함수 제약을 제거하여 실제로 해가 존재하는지 확인
+        print(f"DEBUG: Phase 2 - Searching for ALL valid solutions (no objective constraint)")
+        print(f"DEBUG: Phase 1 found solution with objective = {best_value}")
 
-        print("DEBUG: Phase 2 forcing optimal objective =", best_value)
+        # 디버그: Phase 2 목적함수 구성요소 계산 확인
+        print("DEBUG: Phase 2 objective components checking:")
+        total_grad = sum(data.get('graduation_priority', 0) for data in candidate_data)
+        total_pref = sum(data.get('preference_score', 0) for data in candidate_data)
+        print(f"  Total possible grad priority: {total_grad}")
+        print(f"  Total possible pref score: {total_pref}")
 
         # 해 수집기
         class TimetableSolutionCollector(cp_model.CpSolverSolutionCallback):
@@ -721,21 +989,168 @@ def generate_timetable_stream(request):
             def Solutions(self):
                 return self._solutions
 
-        collector2 = TimetableSolutionCollector(x2, candidate_data, limit=50)
+        # Phase 2: 여러 개의 다른 해 찾기 (SearchForAllSolutions 대신 직접 구현)
+        timetables_data = []
         solver2 = cp_model.CpSolver()
-        print("DEBUG: Starting Phase 2 search for all solutions...")
-        solver2.SearchForAllSolutions(model2, collector2)
-        print("DEBUG: Phase 2 search finished. Total solutions:", collector2._solution_count)
+        solver2.parameters.max_time_in_seconds = 1  # 각 해당 1초 제한
+        solver2.parameters.num_search_workers = 4
 
-        timetables_data = collector2.Solutions()
-        print("DEBUG: Total unique solutions found:", len(timetables_data))
+        print("DEBUG: Starting Phase 2 search for multiple solutions...")
+
+        # 최대 20개의 서로 다른 시간표 찾기
+        for i in range(20):
+            status = solver2.Solve(model2)
+
+            if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+                solution = []
+                selected_ids = []
+
+                for data in candidate_data:
+                    if solver2.Value(x2[data['id']]) == 1:
+                        selected_ids.append(data['id'])
+                        solution.append({
+                            'course_id': data['id'],
+                            'course_name': data.get('course_name', ''),
+                            'course_code': data.get('course_code', ''),
+                            'section': data.get('section', ''),
+                            'credits': data.get('credit', 0),
+                            'target_year': data.get('year', ''),
+                            'instructor_name': data.get('instructor_name', ''),
+                            'capacity': data.get('capacity', 0),
+                            'dept_name': data.get('dept_name', ''),
+                            'category_name': data.get('category', ''),
+                            'semester': data.get('semester', ''),
+                            'schedules': data.get('schedule', []),
+                            'location': data.get('location', '')
+                        })
+
+                timetables_data.append(solution)
+                print(f"DEBUG: Found solution #{i+1} with {len(solution)} courses")
+
+                # 다음 반복에서 같은 해를 찾지 않도록 제약 추가
+                # 선택된 과목 중 적어도 하나는 다르게 선택하도록 함
+                model2.Add(sum(x2[cid] for cid in selected_ids) < len(selected_ids))
+            else:
+                print(f"DEBUG: No more solutions found after {i} iterations")
+                break
+
+        print(f"DEBUG: Phase 2 search finished. Total solutions: {len(timetables_data)}")
+
+        # ========== 선호도 기반 시간표 정렬 및 필터링 ==========
+        print("DEBUG: Starting preference-based sorting and filtering...")
+
+        def calculate_timetable_preference_score(timetable, prefs):
+            """시간표의 선호도 점수 계산"""
+            score = 0
+            matched_prefs = {'instructors': 0, 'courses': 0, 'avoided': 0}
+
+            for course in timetable:
+                instructor = course.get('instructor_name', '')
+                course_name = course.get('course_name', '')
+
+                # 선호 교수 점수
+                if instructor and prefs.get('preferred_instructors'):
+                    for pref in prefs['preferred_instructors']:
+                        if pref in instructor:
+                            score += 1000
+                            matched_prefs['instructors'] += 1
+                            print(f"  DEBUG: 선호 교수 매칭 +1000: {course_name} ({instructor})")
+
+                # 기피 교수 감점
+                if instructor and prefs.get('avoid_instructors'):
+                    for avoid in prefs['avoid_instructors']:
+                        if avoid in instructor:
+                            score -= 2000
+                            matched_prefs['avoided'] += 1
+                            print(f"  DEBUG: 기피 교수 발견 -2000: {course_name} ({instructor})")
+
+                # 선호 과목 점수
+                if prefs.get('preferred_courses'):
+                    for pref in prefs['preferred_courses']:
+                        if pref.lower() in course_name.lower():
+                            score += 1000
+                            matched_prefs['courses'] += 1
+                            print(f"  DEBUG: 선호 과목 매칭 +1000: {course_name}")
+
+                # 기피 과목 감점
+                if prefs.get('avoid_courses'):
+                    for avoid in prefs['avoid_courses']:
+                        if avoid.lower() in course_name.lower():
+                            score -= 2000
+                            matched_prefs['avoided'] += 1
+                            print(f"  DEBUG: 기피 과목 발견 -2000: {course_name}")
+
+                # 시간대 선호도
+                if prefs.get('prefer_morning') or prefs.get('prefer_afternoon'):
+                    schedules = course.get('schedules', [])
+                    morning_count = 0
+                    afternoon_count = 0
+
+                    for sch in schedules:
+                        times = sch.get('times', '')
+                        if times:
+                            for t in times.split(','):
+                                if t.strip().isdigit():
+                                    hour = int(t) + 8
+                                    if hour < 12:
+                                        morning_count += 1
+                                    else:
+                                        afternoon_count += 1
+
+                    if prefs.get('prefer_morning') and morning_count > afternoon_count:
+                        score += 200
+                    elif prefs.get('prefer_afternoon') and afternoon_count > morning_count:
+                        score += 200
+
+            return score, matched_prefs
+
+        # 선호도 정보 수집
+        preferences = {
+            'preferred_instructors': preferred_instructors,
+            'avoid_instructors': avoid_instructors,
+            'preferred_courses': preferred_courses,
+            'avoid_courses': avoid_courses,
+            'prefer_morning': prefer_morning,
+            'prefer_afternoon': prefer_afternoon
+        }
+
+        # 각 시간표에 선호도 점수 계산 및 추가
+        scored_timetables = []
+        for idx, timetable in enumerate(timetables_data):
+            print(f"\nDEBUG: 시간표 #{idx+1} 선호도 평가:")
+            score, matched = calculate_timetable_preference_score(timetable, preferences)
+
+            # 시간표에 메타데이터 추가
+            timetable_with_score = {
+                'courses': timetable,
+                'preference_score': score,
+                'matched_preferences': matched,
+                'recommendation_level': '★★★★★' if score > 3000 else '★★★★' if score > 1500 else '★★★' if score > 0 else '★★' if score >= -1000 else '★'
+            }
+            scored_timetables.append((score, timetable_with_score, timetable))
+            print(f"  총 선호도 점수: {score}점")
+
+        # 선호도 점수로 정렬 (높은 점수가 먼저)
+        scored_timetables.sort(key=lambda x: x[0], reverse=True)
+
+        # 정렬된 시간표 리스트 생성
+        sorted_timetables = [t[2] for t in scored_timetables]  # 원본 형식 유지
+
+        # 최고/최저 점수 출력
+        if scored_timetables:
+            best_score = scored_timetables[0][0]
+            worst_score = scored_timetables[-1][0]
+            print(f"\nDEBUG: 선호도 점수 범위: {worst_score}점 ~ {best_score}점")
+            print(f"DEBUG: 최고 점수 시간표가 첫 번째로 배치됨 (점수: {best_score})")
+
+        print("DEBUG: Total unique solutions found:", len(sorted_timetables))
         print("DEBUG: --- Timetable Generation End ---")
 
         result = {
             'progress': '완료',
-            'found': len(timetables_data),
-            'timetables': timetables_data,
-            'message': f"총 {len(timetables_data)}개의 시간표를 찾았습니다." if timetables_data else "조건에 맞는 시간표를 찾지 못했습니다. 조건을 변경해보세요."
+            'found': len(sorted_timetables),
+            'timetables': sorted_timetables,
+            'message': f"선호도 순으로 정렬된 {len(sorted_timetables)}개의 시간표를 찾았습니다." if sorted_timetables else "조건에 맞는 시간표를 찾지 못했습니다. 조건을 변경해보세요."
         }
 
         def event_stream():

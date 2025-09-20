@@ -205,45 +205,47 @@ def generate_timetable_stream(request):
             pre_added_courses = filtered
             pre_added_ids = [c.course_id for c in pre_added_courses]
 
-        # 3-3. 학생 정보 및 졸업 기록 로드
+        # 3-3. 학생 정보 로드 (GraduationRecord 대신 UserProfile/Transcript 사용)
         student_id = request.user.id if request.user.is_authenticated else 1
-        grad_record = GraduationRecord.objects.filter(user_id=student_id).last()
 
         # UserProfile과 UserGraduationProgress 로드
         user_profile = None
         graduation_progress = []
+        completed_courses = []
+
         if request.user.is_authenticated:
             user_profile = UserProfile.objects.filter(user=request.user).first()
             if user_profile:
+                # 졸업 진행 상황 로드
                 graduation_progress = UserGraduationProgress.objects.filter(
                     user_profile=user_profile,
                     is_satisfied=False,
                     shortage_credits__gt=0
                 ).select_related('category').order_by('-shortage_credits')
-        
+
+                # 이수한 과목 목록 로드 (Transcript에서)
+                transcripts = Transcript.objects.filter(
+                    user_profile=user_profile
+                ).select_related('course')
+                completed_courses = [t.course.course_name.strip().upper() for t in transcripts]
+
+        # 학년 정보 (UserProfile에서)
         try:
-            if grad_record and grad_record.user_year:
-                if grad_record.user_year == "전학년":
+            if user_profile and user_profile.current_grade:
+                current_year = user_profile.current_grade
+                if current_year >= 4:  # 4학년 이상은 전학년으로 처리
                     current_year = 100
-                else:
-                    current_year = int(grad_record.user_year[0])
             else:
-                current_year = 3
+                current_year = 3  # 기본값
         except Exception:
             current_year = 3
         print("DEBUG: current_year =", current_year)
 
-        # UserProfile에서 학과 정보 가져오기 (우선)
+        # UserProfile에서 학과 정보 가져오기
         if user_profile and user_profile.department:
             student_dept_id = user_profile.department.dept_id
             dept_name = user_profile.department.dept_name
             print(f"DEBUG: UserProfile에서 학과 정보 사용 - {dept_name} (ID: {student_dept_id})")
-        # GraduationRecord에서 가져오기 (fallback)
-        elif grad_record and grad_record.user_major:
-            dept_name = grad_record.user_major
-            dept_obj = Department.objects.filter(dept_name=dept_name).first()
-            student_dept_id = dept_obj.dept_id if dept_obj else None
-            print(f"DEBUG: GraduationRecord에서 학과 정보 사용 - {dept_name} (ID: {student_dept_id})")
         else:
             student_dept_id = None
             dept_name = ""
@@ -253,25 +255,17 @@ def generate_timetable_stream(request):
         
 
 
-        # 완료한 과목 목록 처리
-        completed_courses = []
-        if grad_record and grad_record.completed_courses:
-            try:
-                completed_courses = json.loads(grad_record.completed_courses)
-                completed_courses = [name.strip().upper() for name in completed_courses if name]
-            except Exception as e:
-                print("DEBUG: completed_courses parse error:", e)
-                completed_courses = []
-        print("DEBUG: completed_courses =", completed_courses)
+        # 이수한 과목 목록은 위에서 이미 처리됨
+        print("DEBUG: completed_courses =", completed_courses[:5] if completed_courses else [])  # 처음 5개만 출력
 
-        # 교양 세부 이수 상태 처리
+        # 교양 세부 이수 상태 처리 (UserGraduationProgress에서)
         missing_gen_sub = {}
-        try:
-            missing_gen_sub = json.loads(grad_record.missing_general_sub or '{}')
-            missing_gen_sub = {k: int(v) for k, v in missing_gen_sub.items()}
-        except Exception as e:
-            print("DEBUG: missing_general_sub parse error:", e)
-            missing_gen_sub = {}
+        if user_profile:
+            # UserGraduationProgress에서 부족한 학점 정보 추출
+            for progress in graduation_progress:
+                if progress.shortage_credits > 0:
+                    cat_name = progress.category.category_name
+                    missing_gen_sub[cat_name] = int(progress.shortage_credits)
         print("DEBUG: missing_gen_sub =", missing_gen_sub)
 
         # 후보 강좌 조회 및 필터링

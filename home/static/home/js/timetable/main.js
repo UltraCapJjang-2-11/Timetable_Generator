@@ -63,13 +63,62 @@ function buildApiParams() {
     params.append("major_credits", constraints.major_credits || 0);
     params.append("elective_credits", constraints.elective_credits || 0);
 
-    ['existing_courses', 'free_days', 'required_courses', 'exclude_courses'].forEach(key => {
+    // 배열 파라미터들
+    ['existing_courses', 'free_days', 'required_courses', 'exclude_courses',
+     'preferred_instructors', 'avoid_instructors', 'preferred_courses', 'avoid_courses',
+     'preference_tags'].forEach(key => {
         constraints[key]?.forEach(value => params.append(`${key}[]`, value));
     });
 
-    ['specific_avoid_times', 'specific_avoid_time_ranges'].forEach(key => {
+    // JSON으로 직렬화해야 하는 파라미터들
+    ['specific_avoid_times', 'specific_avoid_time_ranges', 'avoid_times', 'avoid_time_ranges', 'only_time_ranges'].forEach(key => {
         constraints[key]?.forEach(value => params.append(`${key}[]`, JSON.stringify(value)));
     });
+
+    // 단일 값 파라미터들
+    if (constraints.max_walking_time !== undefined) {
+        params.append("max_walking_time", constraints.max_walking_time);
+    }
+    if (constraints.prefer_compact !== undefined) {
+        params.append("prefer_compact", constraints.prefer_compact);
+    }
+    if (constraints.prefer_morning !== undefined) {
+        params.append("prefer_morning", constraints.prefer_morning);
+    }
+    if (constraints.prefer_afternoon !== undefined) {
+        params.append("prefer_afternoon", constraints.prefer_afternoon);
+    }
+
+    // 디버깅: 전달되는 모든 파라미터 확인
+    console.log('buildApiParams - 전달되는 파라미터:', {
+        total_credits: totalCredits,
+        major_credits: constraints.major_credits,
+        elective_credits: constraints.elective_credits,
+        preferred_instructors: constraints.preferred_instructors,
+        avoid_instructors: constraints.avoid_instructors,
+        preferred_courses: constraints.preferred_courses,
+        avoid_courses: constraints.avoid_courses,
+        max_walking_time: constraints.max_walking_time,
+        prefer_compact: constraints.prefer_compact,
+        prefer_morning: constraints.prefer_morning,
+        prefer_afternoon: constraints.prefer_afternoon,
+        preference_tags: constraints.preference_tags,
+        free_days: constraints.free_days,
+        specific_avoid_times: constraints.specific_avoid_times
+    });
+
+    // 파라미터 검증
+    if (totalCredits > 24) {
+        console.warn('경고: 총 학점이 24학점을 초과합니다:', totalCredits);
+    }
+
+    if (constraints.preferred_instructors?.length > 0) {
+        console.log('선호 교수 목록:', constraints.preferred_instructors);
+    }
+
+    if (constraints.preference_tags?.length > 0) {
+        console.log('선택된 교양 태그:', constraints.preference_tags);
+    }
 
     return params;
 }
@@ -84,9 +133,31 @@ function setupSseConnection(url, onComplete) {
 
     evtSource.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        if (data.progress === "완료") {
 
-            timetables = data.timetables.map(timetableCourseData => {
+        // 응답 데이터 검증
+        console.log('SSE 응답 수신:', {
+            progress: data.progress,
+            timetables_count: data.timetables?.length,
+            message: data.message
+        });
+
+        if (data.progress === "완료") {
+            // 시간표 데이터 검증
+            if (!data.timetables || data.timetables.length === 0) {
+                console.error('시간표 데이터가 없습니다.');
+                progressText.textContent = "조건에 맞는 시간표를 찾지 못했습니다.";
+                setTimeout(() => progressOverlay.style.display = "none", 2000);
+                evtSource.close();
+                if (onComplete) onComplete(false);
+                return;
+            }
+
+            console.log(`${data.timetables.length}개의 시간표 생성 완료`);
+
+            timetables = data.timetables.map((timetableCourseData, index) => {
+                console.log(`시간표 ${index + 1} 처리 중:`, {
+                    courses_count: timetableCourseData.length
+                });
                 const courses = Course.createFromApiData(timetableCourseData);
                 return new Timetable(courses); // Course 배열로 Timetable 인스턴스 생성
             });
@@ -234,6 +305,17 @@ function handleGenerateButtonClick() {
 function handleTimetableActionRequest(e) {
     const parsedData = e.detail;
     console.log('handleTimetableActionRequest 호출됨:', parsedData);
+
+    // 파라미터 검증 추가
+    if (parsedData.major_credits !== undefined && parsedData.elective_credits !== undefined) {
+        const totalCredits = parsedData.major_credits + parsedData.elective_credits;
+        if (totalCredits > 24) {
+            console.warn(`경고: 요청된 총 학점(${totalCredits})이 24학점을 초과합니다.`);
+            if (!confirm(`총 ${totalCredits}학점의 시간표를 생성하시겠습니까? (권장: 최대 24학점)`)) {
+                return;
+            }
+        }
+    }
     
     if (parsedData.is_modification) {
         // 시간표 수정의 경우: 기존 제약조건 + 새로운 제약조건
@@ -266,10 +348,15 @@ function handleTimetableActionRequest(e) {
                 constraints[key] = parsedData[key];
             } else if (key !== 'total_credits' && key !== 'is_modification') {
                 // total_credits는 유지하고, 나머지는 초기화
-                if (key === 'free_days' || key === 'required_courses' || key === 'avoid_times' || 
+                if (key === 'free_days' || key === 'required_courses' || key === 'avoid_times' ||
                     key === 'avoid_time_ranges' || key === 'only_time_ranges' || key === 'exclude_courses' ||
-                    key === 'specific_avoid_times' || key === 'specific_avoid_time_ranges') {
+                    key === 'specific_avoid_times' || key === 'specific_avoid_time_ranges' ||
+                    key === 'preferred_instructors' || key === 'avoid_instructors' ||
+                    key === 'preferred_courses' || key === 'avoid_courses' || key === 'preference_tags') {
                     constraints[key] = [];
+                } else if (key === 'max_walking_time' || key === 'prefer_compact' ||
+                           key === 'prefer_morning' || key === 'prefer_afternoon') {
+                    constraints[key] = undefined;
                 }
             }
         });

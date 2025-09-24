@@ -1,0 +1,191 @@
+<!-- 간소화된 설문조사 오버레이 (5단계) -->
+<div id="survey-overlay">
+    <div class="survey-container">
+
+        <!-- STEP 1: 학점 입력 -->
+        <div class="survey-step active" data-step="1">
+            <h3>1. 수강할 전공 학점과 교양 학점을 입력해주세요.</h3>
+            <div class="credit-inputs">
+                <input type="number" id="major-credit-input" placeholder="전공 학점" min="0" max="24">
+                <input type="number" id="elective-credit-input" placeholder="교양 학점" min="0" max="24">
+            </div>
+        </div>
+
+        <!-- STEP 2: 공강 요일 -->
+        <div class="survey-step" data-step="2">
+            <h3>2. 희망하는 공강 요일을 선택해주세요.</h3>
+            <div class="weekday-options">
+                <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
+                <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
+                <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
+                <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
+                <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
+                <input type="checkbox" id="none" value="없음"><label for="none">없음</label>
+            </div>
+        </div>
+
+        <!-- STEP 3: 제외 시간 -->
+        <div class="survey-step" data-step="3">
+            <h3>3. 제외하고 싶은 시간을 선택해주세요. (선택사항)</h3>
+            <table class="survey-timetable">
+                <thead>
+                    <tr>
+                        <th>시간</th>
+                        <th>월</th>
+                        <th>화</th>
+                        <th>수</th>
+                        <th>목</th>
+                        <th>금</th>
+                    </tr>
+                </thead>
+                <tbody id="survey-tbody">
+                    <!-- JavaScript로 동적 생성 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- STEP 4: 선호도 통합 (교수/과목) -->
+        <div class="survey-step" data-step="4">
+            <h3>4. 교수님과 과목 선호도를 입력해주세요. (선택사항)</h3>
+            <div class="preference-grid">
+                <div class="preference-column">
+                    <h4>선호하는 교수님</h4>
+                    <div class="preference-input-container">
+                        <input type="text" id="preferred-instructor-input" placeholder="교수님 이름 입력 후 Enter">
+                        <div id="preferred-instructors-list" class="preference-list"></div>
+                    </div>
+
+                    <h4>선호하는 과목</h4>
+                    <div class="preference-input-container">
+                        <input type="text" id="preferred-course-input" placeholder="과목명 입력 후 Enter">
+                        <div id="preferred-courses-list" class="preference-list"></div>
+                    </div>
+                </div>
+
+                <div class="preference-column">
+                    <h4>기피하고 싶은 교수님</h4>
+                    <div class="preference-input-container">
+                        <input type="text" id="avoid-instructor-input" placeholder="교수님 이름 입력 후 Enter">
+                        <div id="avoid-instructors-list" class="preference-list"></div>
+                    </div>
+
+                    <h4>기피하고 싶은 과목</h4>
+                    <div class="preference-input-container">
+                        <input type="text" id="avoid-course-input" placeholder="과목명 입력 후 Enter">
+                        <div id="avoid-courses-list" class="preference-list"></div>
+                    </div>
+                </div>
+            </div>
+            <small>* 각 항목에 여러 개를 입력할 수 있습니다. Enter키로 추가하세요.</small>
+        </div>
+
+        <!-- STEP 5: 시간표 스타일 및 교양 특징 -->
+        <div class="survey-step" data-step="5">
+            <h3>5. 시간표 스타일을 선택해주세요.</h3>
+            <div class="style-preferences">
+                <div class="preference-group">
+                    <label>최대 이동 시간 (연속 수업 간)</label>
+                    <select id="max-walking-time">
+                        <option value="5">5분 이내</option>
+                        <option value="10" selected>10분 이내</option>
+                        <option value="15">15분 이내</option>
+                        <option value="20">상관없음</option>
+                    </select>
+                </div>
+
+                <div class="preference-group">
+                    <label>시간표 밀집도</label>
+                    <div class="radio-options">
+                        <input type="radio" name="compact" id="compact-yes" value="yes">
+                        <label for="compact-yes">공강 없이 밀집된 시간표</label>
+                        <input type="radio" name="compact" id="compact-no" value="no" checked>
+                        <label for="compact-no">상관없음</label>
+                    </div>
+                </div>
+
+                <div class="preference-group">
+                    <label>선호 시간대</label>
+                    <div class="checkbox-options">
+                        <input type="checkbox" id="prefer-morning" value="morning">
+                        <label for="prefer-morning">오전 수업 선호 (9시-12시)</label>
+                        <input type="checkbox" id="prefer-afternoon" value="afternoon">
+                        <label for="prefer-afternoon">오후 수업 선호 (12시-18시)</label>
+                    </div>
+                </div>
+
+                <div class="preference-group">
+                    <label>선호하는 교양 과목 특징 (선택사항)</label>
+                    <div class="tag-options">
+                        <span>#조별과제가 없는</span>
+                        <span>#과제가 적은</span>
+                        <span>#시험이 쉬운</span>
+                        <span>#출석 체크가 없는</span>
+                        <span>#온라인 강의</span>
+                        <span>#토론이 많은</span>
+                        <span>#실습이 많은</span>
+                        <span>#이론 중심</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer: 버튼 -->
+        <div class="survey-footer">
+            <button class="prev-btn" style="display: none;">이전</button>
+            <button class="next-btn">다음</button>
+        </div>
+
+    </div>
+</div>
+
+<style>
+.preference-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.preference-column h4 {
+    font-size: 14px;
+    margin: 15px 0 10px 0;
+    color: #333;
+}
+
+.preference-column h4:first-child {
+    margin-top: 0;
+}
+
+.preference-input-container {
+    margin-bottom: 10px;
+}
+
+.survey-step {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.style-preferences {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.prev-btn {
+    background-color: #999;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.prev-btn:hover {
+    background-color: #777;
+}
+
+.survey-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+</style>

@@ -136,6 +136,10 @@ def generate_timetable_stream(request):
         prefer_morning = request.GET.get('prefer_morning', 'false').lower() == 'true'
         prefer_afternoon = request.GET.get('prefer_afternoon', 'false').lower() == 'true'
 
+        # 교양 과목 태그 파라미터 파싱
+        preference_tags = request.GET.getlist('preference_tags[]')
+        print("DEBUG: preference_tags =", preference_tags)
+
         print("DEBUG: preferred_instructors =", preferred_instructors)
         print("DEBUG: avoid_instructors =", avoid_instructors)
         print("DEBUG: max_walking_time =", max_walking_time)
@@ -148,11 +152,24 @@ def generate_timetable_stream(request):
         pre_added_ids = list(set(pre_added_ids + req_ids))
         print("DEBUG: final pre_added_ids (기존+필수과목) =", pre_added_ids)
 
-        # 목표 학점 설정
+        # 목표 학점 설정 및 검증
         try:
             target_total = int(request.GET.get('total_credits', 18))
             target_major = int(request.GET.get('major_credits', 9))
             target_elective = int(request.GET.get('elective_credits', 9))
+
+            # 학점 범위 검증
+            if target_total < 0 or target_total > 30:
+                print(f"DEBUG: 비정상적인 총 학점 요청: {target_total}")
+                target_total = min(max(target_total, 0), 24)  # 0-24로 제한
+
+            if target_major < 0 or target_major > 24:
+                print(f"DEBUG: 비정상적인 전공 학점 요청: {target_major}")
+                target_major = min(max(target_major, 0), 24)
+
+            if target_elective < 0 or target_elective > 24:
+                print(f"DEBUG: 비정상적인 교양 학점 요청: {target_elective}")
+                target_elective = min(max(target_elective, 0), 24)
             
             # 전공 + 교양 학점이 총 학점을 초과하지 않도록 조정
             if target_major + target_elective > target_total:
@@ -426,6 +443,34 @@ def generate_timetable_stream(request):
             if any(name.lower() in course.course_name.lower() for name in avoid_courses):
                 print(f"DEBUG: 기피 과목 제외 - {course.course_name}")
                 continue
+
+            # 교양 과목 태그 필터링
+            if get_effective_general_category(course) and preference_tags:
+                # 태그 매핑 (UI 태그 -> 필터링 로직)
+                tag_filters = {
+                    '#조별과제가 없는': lambda c: '팀' not in c.course_name and '조별' not in c.course_name,
+                    '#과제가 적은': lambda c: '실습' not in c.course_name,
+                    '#시험이 쉬운': lambda c: '심화' not in c.course_name and '고급' not in c.course_name,
+                    '#출석 체크가 없는': lambda c: '실습' not in c.course_name and '실험' not in c.course_name,
+                    '#온라인 강의': lambda c: '온라인' in c.course_name or '사이버' in c.course_name,
+                    '#토론이 많은': lambda c: '토론' in c.course_name or '세미나' in c.course_name,
+                    '#실습이 많은': lambda c: '실습' in c.course_name or '실험' in c.course_name,
+                    '#이론 중심': lambda c: '이론' in c.course_name or '개론' in c.course_name
+                }
+
+                # 선택된 태그 중 하나라도 만족하지 못하면 제외
+                tag_matched = False
+                for tag in preference_tags:
+                    if tag in tag_filters:
+                        if tag_filters[tag](course):
+                            tag_matched = True
+                            preference_score += 20  # 태그 매칭 보너스
+                            print(f"DEBUG: 태그 매칭 - {course.course_name} ({tag}) +20점")
+                            break
+
+                # 태그가 선택되었는데 하나도 매칭되지 않으면 선호도 감점
+                if not tag_matched:
+                    preference_score -= 10
 
             # 시간대 선호도
             if prefer_morning or prefer_afternoon:
@@ -1029,6 +1074,28 @@ def generate_timetable_stream(request):
                 break
 
         print(f"DEBUG: Phase 2 search finished. Total solutions: {len(timetables_data)}")
+
+        # 선호도 파라미터 요약 출력
+        if preferred_instructors or avoid_instructors or preferred_courses or avoid_courses or preference_tags:
+            print("\nDEBUG: === 사용자 선호도 요약 ===")
+            if preferred_instructors:
+                print(f"  선호 교수: {', '.join(preferred_instructors)}")
+            if avoid_instructors:
+                print(f"  기피 교수: {', '.join(avoid_instructors)}")
+            if preferred_courses:
+                print(f"  선호 과목: {', '.join(preferred_courses)}")
+            if avoid_courses:
+                print(f"  기피 과목: {', '.join(avoid_courses)}")
+            if preference_tags:
+                print(f"  교양 태그: {', '.join(preference_tags)}")
+            if prefer_morning:
+                print("  오전 수업 선호")
+            if prefer_afternoon:
+                print("  오후 수업 선호")
+            if prefer_compact:
+                print("  밀집 시간표 선호")
+            print(f"  최대 이동시간: {max_walking_time}분")
+            print("================================\n")
 
         # ========== 선호도 기반 시간표 정렬 및 필터링 ==========
         print("DEBUG: Starting preference-based sorting and filtering...")

@@ -66,6 +66,8 @@ class CourseFilterService:
         """
         category_name(예: '확대교양')에 해당하는 Category 및
         모든 하위 Category의 ID를 찾아서 필터링
+
+        개선: 실제 강의가 있는 카테고리를 우선 선택
         """
         # 1) 루트 카테고리 가져오기 - 여러 개가 있을 수 있으므로 filter 사용
         root_categories = Category.objects.filter(category_name=category_name)
@@ -73,15 +75,33 @@ class CourseFilterService:
         if not root_categories.exists():
             return queryset.none()
 
-        # 여러 카테고리가 있으면 가장 최신 version_year를 가진 것을 선택
-        root_category = root_categories.order_by('-version_year').first()
+        # 2) 가장 많은 강의가 있는 카테고리 선택
+        root_category = None
+        max_course_count = 0
 
-        # 2) 해당 카테고리의 모든 하위 카테고리 ID를 재귀적으로 구하기
+        # 각 카테고리별 강의 수 확인
+        for cat in root_categories:
+            # 해당 카테고리와 하위 카테고리에 있는 강의 수 계산
+            test_ids = self._get_all_subcategory_ids(cat)
+            test_ids.append(cat.category_id)
+
+            course_count = Courses.objects.filter(category_id__in=test_ids).count()
+
+            # 가장 많은 강의가 있는 카테고리 선택
+            if course_count > max_course_count:
+                max_course_count = course_count
+                root_category = cat
+
+        # 강의가 있는 카테고리를 찾지 못한 경우, 최신 version_year 선택 (fallback)
+        if not root_category:
+            root_category = root_categories.order_by('-version_year').first()
+
+        # 3) 해당 카테고리의 모든 하위 카테고리 ID를 재귀적으로 구하기
         category_ids = self._get_all_subcategory_ids(root_category)
         # 루트 카테고리 자기 자신도 포함
         category_ids.append(root_category.category_id)
 
-        # 3) 해당 ID들을 가진 Course들만 필터링
+        # 4) 해당 ID들을 가진 Course들만 필터링
         return queryset.filter(category_id__in=category_ids)
 
     def filter_by_category_id(self, queryset, category_id):

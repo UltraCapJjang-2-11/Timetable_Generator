@@ -14,7 +14,10 @@
       "Read(//private/tmp/**)",
       "Bash(pip install:*)",
       "Bash(timeout 60 python test_timetable_user_input.py)",
-      "Bash(timeout 60 python:*)"
+      "Bash(timeout 60 python:*)",
+      "Bash(gcc:*)",
+      "Bash(echo:*)",
+      "Bash(./test)"
     ],
     "deny": [],
     "ask": []

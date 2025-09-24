@@ -13,3 +13,4 @@ test_*.py
 *.log
 media/transcripts/
 *.md
+test*

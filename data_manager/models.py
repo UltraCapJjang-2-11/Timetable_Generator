@@ -804,19 +804,15 @@ class UserReview(models.Model):
     user_profile = models.ForeignKey(
         UserProfile,
         verbose_name="작성자 프로필",
+        null=True,
+        blank=True,
         on_delete=models.CASCADE  # 사용자가 탈퇴하면 강의평도 함께 삭제
     )
 
     rating = models.DecimalField("별점", max_digits=2, decimal_places=1)
     comment_text = models.TextField("리뷰 본문", null=True, blank=True)
-    categories = models.JSONField("카테고리 선택", default=dict)  # {"assign":"none", ...}
-    semester = models.ForeignKey(
-        Semester,
-        verbose_name="학기",
-        null=True, blank=True,
-        on_delete=models.SET_NULL
-    )
-    created_at = models.DateTimeField("작성일", auto_now_add=True)
+    semester = models.CharField("수강 학기", max_length=50, null=True, blank=True)  # 예: "25년 1학기 수강자"
+    is_anonymous = models.BooleanField("익명 여부", default=True)
 
     class Meta:
         db_table = 'user_review'

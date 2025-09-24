@@ -8,7 +8,8 @@ from django.db import transaction
 # 1. 모델 임포트 (your_app을 실제 앱 이름으로 변경하세요)
 from data_manager.models import (
     University, College, Department, Major,
-    Semester, Category, Courses, CourseSchedule, RuleSet, Rule
+    Semester, Category, Courses, CourseSchedule, RuleSet, Rule,
+    CourseReviewSummary, UserReview, UserProfile, CourseSumm
 )
 
 DATA_DIR = Path(__file__).parent / 'setup_data'
@@ -61,6 +62,8 @@ class Command(BaseCommand):
         self.setup_categories(DATA_DIR / "category.json")
         self.setup_courses_and_schedules(DATA_DIR / "course_list_result.csv")
         self.setup_rulesets_and_rules(DATA_DIR / "graduation_rules.json")
+        self.setup_course_review_summaries(DATA_DIR / "course_review_summaries.csv")
+        # self.setup_course_summs(DATA_DIR / "course_summ.csv")
 
         self.stdout.write(self.style.SUCCESS("🎉 모든 데이터 셋업이 성공적으로 완료되었습니다!"))
 
@@ -69,6 +72,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("⚠️  --clear 옵션이 감지되었습니다. 기존 데이터를 삭제합니다..."))
 
         models_to_clear = [
+            CourseSumm, UserReview, CourseReviewSummary,  # 새로 추가 (순서 중요)
             CourseSchedule, Courses, Category, Semester,
             Major, Department, College, University, RuleSet, Rule
         ]
@@ -280,3 +284,107 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("  ✓ 완료"))
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR('graduation_rules.json 가 존재하지 않습니다.'))
+
+    def setup_course_review_summaries(self, file_path):
+        """강의 리뷰 요약 정보 및 개별 리뷰 셋업"""
+        self.stdout.write(self.style.NOTICE("  - 9단계: 강의 리뷰 요약 정보 및 개별 리뷰 셋업 중..."))
+
+        with open(file_path, 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    dist_json = json.loads(row['dist_json']) if row.get('dist_json') else {}
+
+                    # CourseReviewSummary 생성
+                    summary, created = CourseReviewSummary.objects.update_or_create(
+                        course_code=row['course_code'],
+                        instructor_name=row['instructor_name'],
+                        defaults={
+                            'course_name': row['course_name'],
+                            'review_count': self._safe_to_int(row.get('review_count', 0)),
+                            'avg_rating': self._safe_to_float(row.get('avg_rating', 0)),
+                            'dist_json': dist_json,
+                            'review_sum': row.get('review_sum', ''),
+                        }
+                    )
+
+                    # user_reviews 컬럼이 있으면 UserReview 생성
+                    if 'user_reviews' in row and row['user_reviews']:
+                        try:
+                            user_reviews = json.loads(row['user_reviews'])
+                            for review in user_reviews:
+                                UserReview.objects.update_or_create(
+                                    summary=summary,
+                                    semester=review.get('semester', ''),
+                                    comment_text=review.get('text', ''),
+                                    defaults={
+                                        'rating': self._safe_to_float(review.get('star', 0)),
+                                        'user_profile': None,  # 익명 처리
+                                        'is_anonymous': True,
+                                    }
+                                )
+                        except json.JSONDecodeError as e:
+                            self.stdout.write(self.style.WARNING(
+                                f"  !! user_reviews JSON 파싱 오류 (과목: {row.get('course_code')}): {e}"))
+
+                except json.JSONDecodeError as e:
+                    self.stdout.write(self.style.WARNING(
+                        f"  !! JSON 파싱 오류 (과목: {row.get('course_code')}): {e}"))
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(
+                        f"  !! 오류 (과목: {row.get('course_code')}): {e}"))
+
+        self.stdout.write(self.style.SUCCESS("  ✓ 완료"))
+
+
+    def setup_course_summs(self, file_path):
+        """강의 요약 정보 셋업 (CourseSumm)"""
+        self.stdout.write(self.style.NOTICE("  - 강의 요약 정보 (CourseSumm) 셋업 중..."))
+
+        # Courses 캐싱 (성능 최적화)
+        courses_cache = {}
+
+        with open(file_path, 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    year = self._safe_to_int(row['year'])
+                    term = row['term']
+                    course_code = row['course_code']
+                    section = row['section']
+
+                    # 캐시 키 생성
+                    cache_key = f"{year}_{term}_{course_code}_{section}"
+
+                    # 캐시에서 찾거나 DB에서 조회
+                    if cache_key not in courses_cache:
+                        semester = Semester.objects.get(year=year, term=term)
+                        course = Courses.objects.get(
+                            semester=semester,
+                            course_code=course_code,
+                            section=section
+                        )
+                        courses_cache[cache_key] = course
+                    else:
+                        course = courses_cache[cache_key]
+
+                    # CourseSumm 생성 또는 업데이트
+                    CourseSumm.objects.update_or_create(
+                        course=course,
+                        defaults={
+                            'course_summarization': row.get('course_summarization', ''),
+                            'group_activity': row.get('group_activity', 'N'),
+                        }
+                    )
+
+                except Semester.DoesNotExist:
+                    self.stdout.write(self.style.WARNING(
+                        f"  !! Semester 없음: {row.get('year')} {row.get('term')}"))
+                except Courses.DoesNotExist:
+                    self.stdout.write(self.style.WARNING(
+                        f"  !! Course 없음: {row.get('course_code')} (분반: {row.get('section')}, 학기: {row.get('year')} {row.get('term')})"))
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(
+                        f"  !! 오류 (과목코드: {row.get('course_code')}): {e}"))
+
+        self.stdout.write(self.style.SUCCESS("  ✓ 완료"))

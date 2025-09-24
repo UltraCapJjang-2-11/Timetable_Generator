@@ -113,7 +113,6 @@ class CourseReviewSummaryAdmin(admin.ModelAdmin):
 
 @admin.register(UserReview)
 class UserReviewAdmin(admin.ModelAdmin):
-    list_display = ('summary', 'rating', 'semester', 'created_at')
+    list_display = ('summary', 'rating', 'semester', 'is_anonymous')
     search_fields = ('summary__course_code', 'summary__instructor_name', 'comment_text')
-    list_filter = ('semester',)
-    readonly_fields = ('created_at',)
+    list_filter = ('is_anonymous',)

@@ -190,3 +190,11 @@
 .remove-from-list-btn:hover {
     background-color: #c82333;
 }
+
+/* 강의 평점 표시 스타일 */
+.course-rating {
+    color: #ffa500;  /* 골드/오렌지 색상 */
+    font-size: 0.9em;
+    margin-left: 8px;
+    font-weight: normal;
+}

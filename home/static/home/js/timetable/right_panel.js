@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         timetable.courses.forEach(course => {
+            // 디버그: rating 값 확인
+            console.log(`Course: ${course.name}, Rating: ${course.rating}`);
+
             const itemDiv = document.createElement('div');
             let text = '고정';
             if(course.isPinned) text = '고정됨'
@@ -68,7 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
             itemDiv.innerHTML = `
                 <button class="remove-from-list-btn" title="${course.name} 삭제">-</button>
                 <div class="course-content">
-                    <div class="course-title">${course.name}</div>
+                    <div class="course-title">
+                        ${course.name}
+                        ${course.rating ? `<span class="course-rating">⭐${course.rating.toFixed(1)}</span>` : ''}
+                    </div>
                     <div class="course-details">${course.instructor} / ${course.credits}학점 / ${course.categoryName}</div>
                 </div>
                 <button type="button" class="pin-toggle-btn btn btn-outline-danger ${course.isPinned ? 'active': ''}">

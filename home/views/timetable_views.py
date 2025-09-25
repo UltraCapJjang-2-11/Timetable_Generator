@@ -158,6 +158,14 @@ def generate_timetable_stream(request):
             target_major = int(request.GET.get('major_credits', 9))
             target_elective = int(request.GET.get('elective_credits', 9))
 
+            # CourseReviewSummary 데이터 미리 로드 (평점 기반 가중치용)
+            review_summaries = {}
+            for summary in CourseReviewSummary.objects.filter(avg_rating__isnull=False):
+                # course_name과 instructor_name을 키로 사용 (과목코드가 달라도 매칭 가능)
+                key = (summary.course_name, summary.instructor_name)
+                review_summaries[key] = summary
+            print(f"DEBUG: Loaded {len(review_summaries)} course review summaries")
+
             # 학점 범위 검증
             if target_total < 0 or target_total > 30:
                 print(f"DEBUG: 비정상적인 총 학점 요청: {target_total}")
@@ -423,21 +431,21 @@ def generate_timetable_stream(request):
             if course.category and course.category.category_name == "전공필수":
                 priority_score += 30
 
-            # 선호도 기반 점수 추가
+            # 선호도 기반 점수 추가 (정규화된 점수 사용)
             preference_score = 0
-            # 선호 교수 확인 (가중치 10배 증가)
+            # 선호 교수 확인 (정규화된 점수)
             if course.instructor_name:
                 if any(prof in course.instructor_name for prof in preferred_instructors):
-                    preference_score += 500  # 50 → 500
-                    print(f"DEBUG: 선호 교수 매칭 - {course.course_name} ({course.instructor_name}) +500점")
+                    preference_score += 100  # 500 → 100 (정규화)
+                    print(f"DEBUG: 선호 교수 매칭 - {course.course_name} ({course.instructor_name}) +100점")
                 if any(prof in course.instructor_name for prof in avoid_instructors):
-                    preference_score -= 1000  # 100 → 1000
-                    print(f"DEBUG: 기피 교수 매칭 - {course.course_name} ({course.instructor_name}) -1000점")
+                    preference_score -= 200  # 1000 → 200 (정규화)
+                    print(f"DEBUG: 기피 교수 매칭 - {course.course_name} ({course.instructor_name}) -200점")
 
-            # 선호 과목 확인 (가중치 10배 증가)
+            # 선호 과목 확인 (정규화된 점수)
             if any(name.lower() in course.course_name.lower() for name in preferred_courses):
-                preference_score += 500  # 50 → 500
-                print(f"DEBUG: 선호 과목 매칭 - {course.course_name} +500점")
+                preference_score += 100  # 500 → 100 (정규화)
+                print(f"DEBUG: 선호 과목 매칭 - {course.course_name} +100점")
 
             # 기피 과목 제외 (avoid_courses에 추가)
             if any(name.lower() in course.course_name.lower() for name in avoid_courses):
@@ -485,21 +493,40 @@ def generate_timetable_stream(request):
                         else:
                             afternoon_count += 1
 
-                # 시간대 선호도 비율 기반 점수 (대폭 강화)
+                # 시간대 선호도 비율 기반 점수 (정규화)
                 total_hours = morning_count + afternoon_count
                 if total_hours > 0:
                     if prefer_morning:
                         morning_ratio = morning_count / total_hours
-                        preference_score += int(morning_ratio * 1000)  # 최대 1000점
-                        print(f"DEBUG: 오전 선호 - {course.course_name} 오전비율 {morning_ratio:.1%} +{int(morning_ratio * 1000)}점")
+                        preference_score += int(morning_ratio * 100)  # 최대 100점 (정규화)
+                        print(f"DEBUG: 오전 선호 - {course.course_name} 오전비율 {morning_ratio:.1%} +{int(morning_ratio * 100)}점")
                     elif prefer_afternoon:
                         afternoon_ratio = afternoon_count / total_hours
-                        preference_score += int(afternoon_ratio * 1000)  # 최대 1000점
-                        print(f"DEBUG: 오후 선호 - {course.course_name} 오후비율 {afternoon_ratio:.1%} +{int(afternoon_ratio * 1000)}점")
+                        preference_score += int(afternoon_ratio * 100)  # 최대 100점 (정규화)
+                        print(f"DEBUG: 오후 선호 - {course.course_name} 오후비율 {afternoon_ratio:.1%} +{int(afternoon_ratio * 100)}점")
+
+            # 평점 기반 점수 계산 (정규화)
+            rating_score = 0
+            review_key = (course.course_name, course.instructor_name)
+            if review_key in review_summaries:
+                avg_rating = float(review_summaries[review_key].avg_rating)
+                # 평점 구간별 점수 부여 (정규화: 0-100 범위)
+                if avg_rating >= 4.5:
+                    rating_score = 100  # 300 → 100
+                elif avg_rating >= 4.0:
+                    rating_score = 75   # 200 → 75
+                elif avg_rating >= 3.5:
+                    rating_score = 50   # 100 → 50
+                elif avg_rating >= 3.0:
+                    rating_score = 25   # 50 → 25
+                else:
+                    rating_score = 0
+                print(f"DEBUG: 평점 적용 - {course.course_name} ({course.instructor_name}) 평점 {avg_rating:.2f} → +{rating_score}점")
 
             # 과목 정보에 우선순위 점수 추가 (나중에 활용)
             course.graduation_priority = priority_score
             course.preference_score = preference_score
+            course.rating_score = rating_score  # 평점 점수 추가
 
             candidates.append(course)
 
@@ -556,10 +583,15 @@ def generate_timetable_stream(request):
             # 졸업요건 우선순위 점수 추가
             data_item['graduation_priority'] = getattr(course, 'graduation_priority', 0)
             data_item['preference_score'] = getattr(course, 'preference_score', 0)
+            data_item['rating_score'] = getattr(course, 'rating_score', 0)  # 평점 점수 추가
 
             # 디버그: preference_score 확인
             if data_item['preference_score'] != 0:
                 print(f"DEBUG: Course {course.course_name} has preference_score = {data_item['preference_score']}")
+
+            # 디버그: rating_score 확인
+            if data_item['rating_score'] != 0:
+                print(f"DEBUG: Course {course.course_name} has rating_score = {data_item['rating_score']}")
 
             # 건물 번호 추출
             building_numbers = []
@@ -801,7 +833,7 @@ def generate_timetable_stream(request):
                                 model.Add(x[curr['id']] + x[next_c['id']] <= 1)
                                 checked_pairs.add(pair_key)
 
-        # 목적함수: 졸업요건 우선순위 + 선호도 기반 최적화
+        # 목적함수: 졸업요건 우선순위 + 선호도 + 평점 기반 최적화
         # 1. 졸업요건 충족도 (최우선)
         graduation_priority = sum(
             x[data['id']] * data.get('graduation_priority', 0)
@@ -814,7 +846,13 @@ def generate_timetable_stream(request):
             for data in candidate_data
         )
 
-        # 3. 전공필수 우선
+        # 3. 강의 평점 점수 (새로 추가)
+        rating_priority = sum(
+            x[data['id']] * data.get('rating_score', 0)
+            for data in candidate_data
+        )
+
+        # 4. 전공필수 우선
         required_priority = sum(
             x[data['id']] for data in candidate_data
             if data['category'] == '전공필수' and (
@@ -822,7 +860,7 @@ def generate_timetable_stream(request):
             )
         )
 
-        # 4. 동일학년 전공선택 우선
+        # 5. 동일학년 전공선택 우선
         elective_priority = sum(
             x[data['id']] for data in candidate_data
             if data['category'] == '전공선택' and (
@@ -830,7 +868,7 @@ def generate_timetable_stream(request):
             )
         )
 
-        # 5. 시간표 밀집도 계산 및 적용
+        # 6. 시간표 밀집도 계산 및 적용
         compactness_bonus = 0
         if prefer_compact:
             # 각 요일별 수업 분포 계산
@@ -855,16 +893,17 @@ def generate_timetable_stream(request):
 
             print(f"DEBUG: 밀집도 선호 활성화 - 공강 최소화 보너스 적용")
 
-        # 최종 목적함수 (선호도 가중치 10배 증가 + 밀집도 보너스)
-        # grad * 100000 + pref * 10000 + compact * 5000 + req * 100 + elec * 10
+        # 최종 목적함수 (균형 개선: 사용자 선호도 중시)
+        # 개선: 졸업요건은 여전히 우선이지만 사용자 선호도와 다른 요소들도 실질적으로 반영
         model.Maximize(
-            graduation_priority * 100000 +
-            preference_priority * 10000 +  # 1000 → 10000 (10배 증가)
-            compactness_bonus * 5000 +     # 밀집도 보너스 추가
-            required_priority * 100 +
-            elective_priority * 10
+            graduation_priority * 3000 +    # 10000 → 3000 (여전히 최우선이지만 균형있게)
+            preference_priority * 2000 +    # 1000 → 2000 (사용자 선호도 중요성 상향)
+            rating_priority * 1500 +        # 2000 → 1500 (평점은 중요하지만 선호도보다 낮게)
+            compactness_bonus * 800 +       # 500 → 800 (밀집도 영향력 증가)
+            required_priority * 1000 +      # 1000 유지 (전공필수 중요도 유지)
+            elective_priority * 600         # 500 → 600 (전공선택 약간 상향)
         )
-        print(f"DEBUG: 목적함수 가중치 - 졸업:100000, 선호도:10000, 밀집도:5000, 전필:100, 전선:10")
+        print(f"DEBUG: 목적함수 가중치 - 졸업:3000, 선호도:2000, 평점:1500, 밀집도:800, 전필:1000, 전선:600")
 
         # Phase 1: 최적 목적함수 값 찾기
         solver = cp_model.CpSolver()
@@ -885,14 +924,39 @@ def generate_timetable_stream(request):
         # 디버그: 목적함수 구성요소 출력
         grad_val = sum(solver.Value(x[data['id']]) * data.get('graduation_priority', 0) for data in candidate_data)
         pref_val = sum(solver.Value(x[data['id']]) * data.get('preference_score', 0) for data in candidate_data)
+        rating_val = sum(solver.Value(x[data['id']]) * data.get('rating_score', 0) for data in candidate_data)  # 평점 점수 합계
         req_val = sum(solver.Value(x[data['id']]) for data in candidate_data
                      if data['category'] == '전공필수' and (data['year'] == "전학년" or (
                          data['year'][0].isdigit() and int(data['year'][0]) <= current_year)))
         elec_val = sum(solver.Value(x[data['id']]) for data in candidate_data
                       if data['category'] == '전공선택' and (data['year'] == "전학년" or (
                           data['year'][0].isdigit() and int(data['year'][0]) == current_year)))
-        print(f"DEBUG: Phase 1 components - Graduation: {grad_val}, Preference: {pref_val}, Required: {req_val}, Elective: {elec_val}")
-        print(f"DEBUG: Phase 1 calculated objective = {grad_val * 100000 + pref_val * 1000 + req_val * 100 + elec_val * 10}")
+
+        # 선택된 과목들의 평균 평점 계산
+        selected_with_ratings = []
+        for data in candidate_data:
+            if solver.Value(x[data['id']]) == 1 and data.get('rating_score', 0) > 0:
+                # rating_score를 원래 평점으로 역산
+                rating_score = data.get('rating_score', 0)
+                if rating_score >= 300:
+                    avg_rating = 4.5
+                elif rating_score >= 200:
+                    avg_rating = 4.0
+                elif rating_score >= 100:
+                    avg_rating = 3.5
+                elif rating_score >= 50:
+                    avg_rating = 3.0
+                else:
+                    avg_rating = 2.5
+                selected_with_ratings.append(avg_rating)
+                print(f"DEBUG: Selected with rating - {data['course_name']} (평점 {avg_rating:.1f})")
+
+        if selected_with_ratings:
+            avg_of_selected = sum(selected_with_ratings) / len(selected_with_ratings)
+            print(f"DEBUG: 선택된 과목 중 평점이 있는 과목들의 평균 평점: {avg_of_selected:.2f}")
+
+        print(f"DEBUG: Phase 1 components - Graduation: {grad_val}, Preference: {pref_val}, Rating: {rating_val}, Required: {req_val}, Elective: {elec_val}")
+        print(f"DEBUG: Phase 1 calculated objective = {grad_val * 100000 + pref_val * 10000 + rating_val * 5000 + req_val * 100 + elec_val * 10}")
 
         # Phase 2: 최적값을 강제하고 모든 해 찾기
         model2 = cp_model.CpModel()
@@ -965,7 +1029,7 @@ def generate_timetable_stream(request):
         # 2. 사용자 선호도
         pref_sum = sum(x2[data['id']] * data.get('preference_score', 0) for data in candidate_data)
 
-        # 3. 전공필수 우선
+        # 4. 전공필수 우선
         req_sum = sum(x2[data['id']] for data in candidate_data
                      if data['category'] == '전공필수' and (data['year'] == "전학년" or (
                          data['year'][0].isdigit() and int(data['year'][0]) <= current_year)))
@@ -1047,6 +1111,13 @@ def generate_timetable_stream(request):
                 for data in candidate_data:
                     if solver2.Value(x2[data['id']]) == 1:
                         selected_ids.append(data['id'])
+
+                        # 평점 정보 조회
+                        avg_rating = None
+                        review_key = (data.get('course_name', ''), data.get('instructor_name', ''))
+                        if review_key in review_summaries and review_key[0] and review_key[1]:
+                            avg_rating = float(review_summaries[review_key].avg_rating)
+
                         solution.append({
                             'course_id': data['id'],
                             'course_name': data.get('course_name', ''),
@@ -1060,7 +1131,8 @@ def generate_timetable_stream(request):
                             'category_name': data.get('category', ''),
                             'semester': data.get('semester', ''),
                             'schedules': data.get('schedule', []),
-                            'location': data.get('location', '')
+                            'location': data.get('location', ''),
+                            'avg_rating': avg_rating  # 평점 정보 추가
                         })
 
                 timetables_data.append(solution)
@@ -1074,6 +1146,17 @@ def generate_timetable_stream(request):
                 break
 
         print(f"DEBUG: Phase 2 search finished. Total solutions: {len(timetables_data)}")
+
+        # 평점 데이터 요약 출력
+        if review_summaries:
+            print(f"\nDEBUG: === 강의 평점 데이터 요약 ===")
+            print(f"  로드된 평점 데이터: {len(review_summaries)}개")
+            ratings_applied = sum(1 for data in candidate_data if data.get('rating_score', 0) > 0)
+            print(f"  평점이 적용된 후보 과목: {ratings_applied}개")
+            if ratings_applied > 0:
+                avg_rating_score = sum(data.get('rating_score', 0) for data in candidate_data if data.get('rating_score', 0) > 0) / ratings_applied
+                print(f"  평균 평점 점수: {avg_rating_score:.1f}점")
+            print("================================\n")
 
         # 선호도 파라미터 요약 출력
         if preferred_instructors or avoid_instructors or preferred_courses or avoid_courses or preference_tags:
@@ -1109,37 +1192,37 @@ def generate_timetable_stream(request):
                 instructor = course.get('instructor_name', '')
                 course_name = course.get('course_name', '')
 
-                # 선호 교수 점수
+                # 선호 교수 점수 (정규화된 점수 사용)
                 if instructor and prefs.get('preferred_instructors'):
                     for pref in prefs['preferred_instructors']:
                         if pref in instructor:
-                            score += 1000
+                            score += 100  # 1000 → 100 (정규화)
                             matched_prefs['instructors'] += 1
-                            print(f"  DEBUG: 선호 교수 매칭 +1000: {course_name} ({instructor})")
+                            print(f"  DEBUG: 선호 교수 매칭 +100: {course_name} ({instructor})")
 
-                # 기피 교수 감점
+                # 기피 교수 감점 (정규화된 점수 사용)
                 if instructor and prefs.get('avoid_instructors'):
                     for avoid in prefs['avoid_instructors']:
                         if avoid in instructor:
-                            score -= 2000
+                            score -= 200  # 2000 → 200 (정규화)
                             matched_prefs['avoided'] += 1
-                            print(f"  DEBUG: 기피 교수 발견 -2000: {course_name} ({instructor})")
+                            print(f"  DEBUG: 기피 교수 발견 -200: {course_name} ({instructor})")
 
-                # 선호 과목 점수
+                # 선호 과목 점수 (정규화된 점수 사용)
                 if prefs.get('preferred_courses'):
                     for pref in prefs['preferred_courses']:
                         if pref.lower() in course_name.lower():
-                            score += 1000
+                            score += 100  # 1000 → 100 (정규화)
                             matched_prefs['courses'] += 1
-                            print(f"  DEBUG: 선호 과목 매칭 +1000: {course_name}")
+                            print(f"  DEBUG: 선호 과목 매칭 +100: {course_name}")
 
-                # 기피 과목 감점
+                # 기피 과목 감점 (정규화된 점수 사용)
                 if prefs.get('avoid_courses'):
                     for avoid in prefs['avoid_courses']:
                         if avoid.lower() in course_name.lower():
-                            score -= 2000
+                            score -= 200  # 2000 → 200 (정규화)
                             matched_prefs['avoided'] += 1
-                            print(f"  DEBUG: 기피 과목 발견 -2000: {course_name}")
+                            print(f"  DEBUG: 기피 과목 발견 -200: {course_name}")
 
                 # 시간대 선호도
                 if prefs.get('prefer_morning') or prefs.get('prefer_afternoon'):
@@ -1159,9 +1242,9 @@ def generate_timetable_stream(request):
                                         afternoon_count += 1
 
                     if prefs.get('prefer_morning') and morning_count > afternoon_count:
-                        score += 200
+                        score += 50  # 200 → 50 (정규화)
                     elif prefs.get('prefer_afternoon') and afternoon_count > morning_count:
-                        score += 200
+                        score += 50  # 200 → 50 (정규화)
 
             return score, matched_prefs
 

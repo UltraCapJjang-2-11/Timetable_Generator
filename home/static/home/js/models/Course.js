@@ -21,6 +21,7 @@ export class Course {
         this.categoryName = data.category_name || '';
         this.semester = data.semester || '';
         this.isPinned = false;
+        this.rating = data.avg_rating || null;  // 평점 정보 추가
 
         const scheduleData = data.schedules || [];
         this.schedules = scheduleData.map(s => {
@@ -98,6 +99,7 @@ export class Course {
             dept_name: this.deptName,
             category_name: this.categoryName,
             semester: this.semester,
+            avg_rating: this.rating,  // 평점 정보 추가
             schedules: this.schedules.map(s => ({
                 day: s.day,
                 location: s.location,

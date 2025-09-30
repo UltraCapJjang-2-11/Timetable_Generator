@@ -413,11 +413,19 @@ def generate_timetable_stream(request):
                 continue
             if any("가상강의실" in (sch.location or "") for sch in course.courseschedule_set.all()):
                 continue
-            # 교양 강좌 세부 항목 확인
+            # 교양 강좌 세부 항목 확인 및 초과 학점 과목 우선순위 조정
             if get_effective_general_category(course) and missing_gen_sub:
                 effective_cat = get_effective_general_category(course)
-                if missing_gen_sub.get(effective_cat, 0) == 0:
+                shortage = missing_gen_sub.get(effective_cat, 0)
+
+                if shortage == 0:
+                    # 이미 충족된 카테고리는 제외
                     continue
+                elif course.credits > shortage:
+                    # 필요한 학점보다 큰 과목은 우선순위 낮추기
+                    # 예: 3학점 필요한데 4학점 과목인 경우
+                    print(f"DEBUG: '{course.course_name}' ({course.credits}학점) > {effective_cat} 필요({shortage}학점) - 우선순위 감소")
+                    # 나중에 priority_score에서 패널티 적용
 
             # 졸업요건 기반 우선순위 점수 계산
             priority_score = 0
@@ -426,6 +434,16 @@ def generate_timetable_stream(request):
             if course.category_id in priority_map:
                 priority_score = priority_map[course.category_id]
                 print(f"DEBUG: '{course.course_name}' 졸업요건 우선순위 점수: {priority_score}")
+
+            # 교양 과목이 필요 학점보다 큰 경우 패널티 적용
+            if get_effective_general_category(course) and missing_gen_sub:
+                effective_cat = get_effective_general_category(course)
+                shortage = missing_gen_sub.get(effective_cat, 0)
+                if shortage > 0 and course.credits > shortage:
+                    # 초과 학점에 대한 패널티 (초과 학점 * 30점)
+                    penalty = (course.credits - shortage) * 30
+                    priority_score -= penalty
+                    print(f"DEBUG: '{course.course_name}' 초과 학점 패널티 -{penalty}점 (필요: {shortage}, 실제: {course.credits})")
 
             # 전공필수 과목에 추가 가중치
             if course.category and course.category.category_name == "전공필수":
@@ -759,9 +777,27 @@ def generate_timetable_stream(request):
         model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data) == target_total)
         model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if
                       data['category'] in ['전공필수', '전공선택']) == target_major)
-        model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if 
-                      get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or 
+        model.Add(sum(data['credit'] * x[data['id']] for data in candidate_data if
+                      get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or
                       data['category'] not in ['전공필수', '전공선택']) == target_elective)
+
+        # 교양 세부 카테고리별 상한 제약 추가 - 졸업요건 초과 방지
+        if missing_gen_sub:
+            print("DEBUG: 교양 세부 카테고리별 제약 추가 중...")
+            for category_name, shortage_credits in missing_gen_sub.items():
+                # 해당 카테고리의 과목들 찾기
+                category_courses = [
+                    data for data in candidate_data
+                    if data.get('effective_category') == category_name
+                ]
+
+                if category_courses:
+                    # 해당 카테고리 과목들의 학점 합이 부족분을 초과하지 않도록 제약
+                    model.Add(
+                        sum(data['credit'] * x[data['id']] for data in category_courses)
+                        <= shortage_credits
+                    )
+                    print(f"DEBUG: {category_name} 카테고리 - 최대 {shortage_credits}학점 제약 추가 (과목 {len(category_courses)}개)")
 
         # 시간표 충돌 제약
         slot_mapping = defaultdict(list)
@@ -972,9 +1008,22 @@ def generate_timetable_stream(request):
         model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data) == target_total)
         model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if
                       data['category'] in ['전공필수', '전공선택']) == target_major)
-        model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if 
-                      get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or 
+        model2.Add(sum(data['credit'] * x2[data['id']] for data in candidate_data if
+                      get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)})) or
                       data['category'] not in ['전공필수', '전공선택']) == target_elective)
+
+        # Phase 2에도 교양 세부 카테고리별 상한 제약 추가
+        if missing_gen_sub:
+            for category_name, shortage_credits in missing_gen_sub.items():
+                category_courses = [
+                    data for data in candidate_data
+                    if data.get('effective_category') == category_name
+                ]
+                if category_courses:
+                    model2.Add(
+                        sum(data['credit'] * x2[data['id']] for data in category_courses)
+                        <= shortage_credits
+                    )
 
         for (day, slot), ids in slot_mapping.items():
             model2.Add(sum(x2[cid] for cid in ids) <= 1)

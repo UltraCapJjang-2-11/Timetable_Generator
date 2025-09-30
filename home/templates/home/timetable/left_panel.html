@@ -3,6 +3,12 @@
 {% load category_tags %}
 <div class="left-panel p-3 border-end overflow-auto">
 
+    {# 검색 섹션 헤더 #}
+    <div class="search-section-header mb-3">
+        <h5 class="fw-bold">강의 검색</h5>
+        <hr class="my-2">
+    </div>
+
     {# 교과목 분류(카테고리) 선택하는 드롭다운 #}
     {% category_dropdown %}
 
@@ -11,23 +17,50 @@
         {% org_dropdowns %}
     </div>
 
-    {# 강의명을 통한 검색 컨테이너 #}
-    <div id="course-name-search-container" class="d-flex flex-row align-items-baseline gap-3 mb-3">
-        <div class="d-flex flex-column flex-grow-1">
-            <label for="course_name_search" class="form-label fw-bold">강의명 검색</label>
-            <input type="text" id="course_name_search" class="form-control" placeholder="강의명 입력">
+    {# 강의명 검색 섹션 #}
+    <div class="search-input-section mb-3">
+        <div class="divider-or text-center my-3">
+            <span class="bg-light px-2">또는</span>
+        </div>
+        <div id="course-name-search-container" class="mb-3">
+            <label for="course_name_search" class="form-label fw-bold">강의명으로 검색</label>
+            <input type="text" id="course_name_search" class="form-control" placeholder="강의명을 입력하세요">
         </div>
     </div>
 
-    {# 검색 버튼 #}
-    <button id="search-button" class="btn btn-warning w-50 mb-3">검색</button>
-    
+    {# 버튼 섹션 #}
+    <div class="button-section d-flex gap-2 mb-3">
+        <button id="search-button" class="btn flex-fill">
+            <span>검색</span>
+        </button>
+        <button id="reset-button" class="btn flex-fill">
+            <span>초기화</span>
+        </button>
+    </div>
+
     {# 설문조사 버튼 #}
-    <button id="survey-button" class="btn btn-primary w-50 mb-3" onclick="showSurvey()">설문조사</button>
+    <div class="survey-section mb-3">
+        <button id="survey-button" class="btn w-100" onclick="showSurvey()">
+            <span>AI 시간표 생성</span>
+        </button>
+    </div>
+
+    {# 검색 결과 섹션 #}
+    <div class="results-section-header mb-2">
+        <h6 class="fw-bold d-flex justify-content-between align-items-center">
+            <span>검색 결과</span>
+            <span id="result-count" class="badge bg-secondary">0</span>
+        </h6>
+        <hr class="my-2">
+    </div>
 
     {# 결과 테이블 #}
     <div id="course-results-container" class="course-list-container">
-        <div id="course-list-body"></div>
+        <div id="course-list-body">
+            <div class="text-center text-muted py-4">
+                <i>검색 조건을 선택하고 검색 버튼을 클릭하세요</i>
+            </div>
+        </div>
     </div>
 
     {# 상세 정보 모달 #}

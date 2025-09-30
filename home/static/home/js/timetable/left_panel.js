@@ -36,8 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const url = `/course/search/?${params.toString()}&year=2025&term=2학기`;
-        $panelElements.courseListBody.innerHTML = '<tr><td colspan="4" class="text-center py-3">검색 중…</td></tr>';
+        const url = `/course/search/?${params.toString()}&year=2025&term=1학기`;
+
+        // 로딩 표시 개선
+        $panelElements.courseListBody.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-warning pulse" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">검색 중...</span>
+                </div>
+                <p class="mt-3 text-muted fade-in">강의를 검색하고 있습니다...</p>
+                <div class="loading-dots mt-2">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        `;
 
         try {
             const response = await fetch(url);
@@ -45,8 +59,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             const courses = Course.createFromApiData(data);
             renderCourseList(courses);
+
+            // 결과 개수 업데이트 애니메이션
+            const resultCount = document.getElementById('result-count');
+            if (resultCount) {
+                resultCount.classList.add('bounce-in');
+                resultCount.textContent = courses.length;
+                setTimeout(() => resultCount.classList.remove('bounce-in'), 750);
+            }
         } catch (error) {
-            $panelElements.courseListBody.innerHTML = `<tr><td colspan="4" class="text-danger text-center py-3">오류: ${error}</td></tr>`;
+            $panelElements.courseListBody.innerHTML = `
+                <div class="alert alert-danger m-3" role="alert">
+                    <strong>오류 발생!</strong><br>
+                    ${error.message}
+                </div>
+            `;
         }
     }
 
@@ -65,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         courses.forEach(course => {
             const courseItem = document.createElement('div');
-            courseItem.className = 'course-item';
+            courseItem.className = 'course-item fade-in-up';
             courseItem.dataset.courseId = course.id;
 
             const scheduleHtml = course.schedules.map(s => `
@@ -104,30 +131,35 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             // 새로운 간단한 미리보기 시스템
+            // 디바운싱을 위한 타이머
+            let hoverTimer;
+
             courseItem.addEventListener('mouseenter', () => {
-                // 항상 모든 기존 미리보기를 먼저 제거
-                document.dispatchEvent(new CustomEvent('clearAllPreviews'));
-                
-                // 새로운 미리보기 표시
-                document.dispatchEvent(new CustomEvent('showCoursePreview', {
-                    detail: { course: course.toObject() }
-                }));
+                // 짧은 지연 후 미리보기 표시 (깜빡임 방지)
+                hoverTimer = setTimeout(() => {
+                    document.dispatchEvent(new CustomEvent('clearAllPreviews'));
+                    document.dispatchEvent(new CustomEvent('showCoursePreview', {
+                        detail: { course: course.toObject() }
+                    }));
+                }, 100);
             });
 
             courseItem.addEventListener('mouseleave', (e) => {
-                // 시간표 영역이나 다른 강의 카드로 이동했는지 확인
+                // 타이머 취소
+                if (hoverTimer) {
+                    clearTimeout(hoverTimer);
+                    hoverTimer = null;
+                }
+
                 const relatedTarget = e.relatedTarget;
-                
                 const isMovingToTimetable = relatedTarget && (
-                    relatedTarget.closest('.middle-panel') || 
+                    relatedTarget.closest('.middle-panel') ||
                     relatedTarget.closest('.timetable')
                 );
-                
-                const isMovingToOtherCourse = relatedTarget && 
+                const isMovingToOtherCourse = relatedTarget &&
                     relatedTarget.closest('.course-item');
-                
+
                 if (!isMovingToTimetable && !isMovingToOtherCourse) {
-                    // 시간표나 다른 강의가 아닌 곳으로 이동한 경우만 미리보기 제거
                     document.dispatchEvent(new CustomEvent('hideCoursePreview', {
                         detail: { course: course.toObject() }
                     }));
@@ -140,13 +172,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             addBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                course.isPinned = true; // 시간표에 고정
+
+                // 리플 효과 추가
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                addBtn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+
+                course.isPinned = true;
                 document.dispatchEvent(new CustomEvent('addCourseToView', {
                     detail: { course: course }
                 }));
 
                 addBtn.textContent = '✓';
                 addBtn.disabled = true;
+                courseItem.classList.add('selected');
+
                 setTimeout(() => {
                     addBtn.textContent = '+';
                     addBtn.disabled = false;
@@ -266,12 +307,88 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- 이벤트 리스너 등록 ---
-    $panelElements.searchButton.addEventListener('click', performSearch);
-    // Enter 키로도 검색 가능하도록
-    $panelElements.courseNameSearch.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            performSearch();
+    /**
+     * 검색 필터를 초기화합니다.
+     */
+    function resetSearchFilters() {
+        // 카테고리 드롭다운 초기화
+        const categoryRoot = document.getElementById('category_root');
+        const categoryChild = document.getElementById('category_child');
+        const categoryGrandchild = document.getElementById('category_grandchild');
+        const childContainer = document.getElementById('child-container');
+        const grandchildContainer = document.getElementById('grandchild-container');
+        const orgContainer = document.getElementById('org-container');
+
+        if (categoryRoot) categoryRoot.value = '';
+        if (categoryChild) {
+            categoryChild.value = '';
+            categoryChild.disabled = true;
         }
+        if (categoryGrandchild) {
+            categoryGrandchild.value = '';
+            categoryGrandchild.disabled = true;
+        }
+        if (childContainer) childContainer.style.display = 'none';
+        if (grandchildContainer) grandchildContainer.style.display = 'none';
+        if (orgContainer) orgContainer.style.display = 'none';
+
+        // 학과 드롭다운 초기화
+        const college = document.getElementById('college');
+        const dept = document.getElementById('dept');
+        if (college) college.value = '';
+        if (dept) {
+            dept.value = '';
+            dept.disabled = true;
+        }
+
+        // 강의명 검색 입력 초기화
+        if ($panelElements.courseNameSearch) {
+            $panelElements.courseNameSearch.value = '';
+        }
+
+        // 결과 영역 초기화
+        $panelElements.courseListBody.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i>검색 조건을 선택하고 검색 버튼을 클릭하세요</i>
+            </div>
+        `;
+
+        // 결과 개수 초기화
+        const resultCount = document.getElementById('result-count');
+        if (resultCount) {
+            resultCount.textContent = '0';
+        }
+    }
+
+    // --- 이벤트 리스너 등록 ---
+    const resetButton = document.getElementById('reset-button');
+
+    if ($panelElements.searchButton) {
+        $panelElements.searchButton.addEventListener('click', performSearch);
+    }
+
+    if (resetButton) {
+        resetButton.addEventListener('click', resetSearchFilters);
+    }
+
+    // Enter 키로도 검색 가능하도록
+    if ($panelElements.courseNameSearch) {
+        $panelElements.courseNameSearch.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performSearch();
+            }
+        });
+    }
+
+    // 페이지 로드 시 애니메이션
+    document.querySelectorAll('.search-section-header, .category-dropdown-section, .search-input-section, .button-section, .survey-section').forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            el.style.transition = 'all 0.5s ease';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, index * 100);
     });
 });

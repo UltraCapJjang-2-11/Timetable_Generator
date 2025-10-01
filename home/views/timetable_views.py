@@ -93,7 +93,41 @@ def get_building_distance(from_building, to_building):
 
 def generate_timetable_stream(request):
     """
-    시간표 생성 메인 함수
+    시간표 생성 메인 함수 (리팩토링 버전)
+    사용자 제약조건을 기반으로 최적의 시간표 조합을 생성
+    CP-SAT 알고리즘을 사용하여 최적화 문제를 해결
+    """
+    try:
+        # 서비스 초기화
+        from home.services.parameter_parser import ParameterParser
+        from home.services.timetable_generation_service import TimetableGenerationService
+
+        # 1. 파라미터 파싱
+        parser = ParameterParser()
+        timetable_request = parser.parse_request(request)
+
+        # 2. 시간표 생성 서비스 실행
+        service = TimetableGenerationService()
+        result = service.generate(request.user, timetable_request)
+
+        # 3. 응답 반환
+        def event_stream():
+            yield f"data: {json.dumps(result, ensure_ascii=False)}\n\n"
+
+        return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
+
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+# ============================================================================
+# 아래는 기존 함수 (백업 용도로 주석처리하여 보존)
+# ============================================================================
+
+def generate_timetable_stream_old(request):
+    """
+    시간표 생성 메인 함수 (구버전 - 백업용)
     사용자 제약조건을 기반으로 최적의 시간표 조합을 생성
     CP-SAT 알고리즘을 사용하여 최적화 문제를 해결
     """
@@ -101,7 +135,7 @@ def generate_timetable_stream(request):
     term = '1학기'
 
     try:
-        print("DEBUG: --- Timetable Generation Start ---")
+        print("DEBUG: --- Timetable Generation Start (OLD) ---")
 
         # 0) 자연어 파싱으로 받아온 필수 과목명 → Course ID 리스트(req_ids)
         req_names = request.GET.getlist('required_courses[]')

@@ -34,13 +34,14 @@ MAX_WALKING_TIME_NO_LIMIT = 20  # "상관없음" 옵션 값 (분)
 class ScoringWeights:
     """시간표 생성 시 사용되는 점수 가중치"""
 
-    # 목적함수 가중치 (최종 점수 계산)
-    GRADUATION_PRIORITY_WEIGHT = 3000  # 졸업요건 충족도
-    PREFERENCE_WEIGHT = 2000           # 사용자 선호도
-    RATING_WEIGHT = 1500               # 강의 평점
-    COMPACTNESS_WEIGHT = 800           # 시간표 밀집도
+    # 목적함수 가중치 (최종 점수 계산) - 사용자 선호 중심으로 재조정
+    GRADUATION_PRIORITY_WEIGHT = 1000  # 졸업요건 충족도
+    PREFERENCE_WEIGHT = 3500           # 사용자 선호도 (2500 -> 3500, 최우선)
+    RATING_WEIGHT = 800                # 강의 평점 (2000 -> 800, 대폭 감소)
+    COMPACTNESS_WEIGHT = 2500          # 시간표 밀집도 (1500 -> 2500, 대폭 강화)
     REQUIRED_COURSE_WEIGHT = 1000      # 전공필수 우선순위
     ELECTIVE_COURSE_WEIGHT = 600       # 전공선택 우선순위
+    GENERAL_CATEGORY_BONUS_WEIGHT = 500  # 교양 카테고리 충족 보너스 (신규)
 
     # 선호도 점수 (개별 항목)
     PREFERRED_INSTRUCTOR_BONUS = 100   # 선호 교수 보너스
@@ -59,21 +60,25 @@ class ScoringWeights:
     # 교양 과목 초과 학점 패널티
     GENERAL_EXCESS_CREDIT_PENALTY = 30  # 초과 학점당 패널티
 
-    # 평점 점수 (강의평)
-    RATING_4_5_PLUS = 100   # 평점 4.5 이상
-    RATING_4_0_PLUS = 75    # 평점 4.0 이상
-    RATING_3_5_PLUS = 50    # 평점 3.5 이상
-    RATING_3_0_PLUS = 25    # 평점 3.0 이상
-    RATING_BELOW_3_0 = 0    # 평점 3.0 미만
+    # 평점 점수 (강의평) - 영향력 감소
+    RATING_4_5_PLUS = 50    # 평점 4.5 이상 (100 -> 50)
+    RATING_4_0_PLUS = 40    # 평점 4.0 이상 (75 -> 40)
+    RATING_3_5_PLUS = 25    # 평점 3.5 이상 (50 -> 25)
+    RATING_3_0_PLUS = 15    # 평점 3.0 이상 (25 -> 15)
+    RATING_2_0_TO_3_0 = -15    # 평점 2.0~3.0 (페널티) (-25 -> -15)
+    RATING_1_5_TO_2_0 = -25    # 평점 1.5~2.0 (페널티) (-50 -> -25)
+    RATING_BELOW_1_5 = -50     # 평점 1.5 미만 (강한 페널티) (-100 -> -50)
+    RATING_BELOW_3_0 = 0    # 평점 3.0 미만 (기존 호환성용, deprecated)
 
-    # 밀집도 보너스
-    COMPACTNESS_BASE_BONUS = 200        # 요일당 기본 보너스
-    COMPACTNESS_GAP_PENALTY = 50        # 공강시간당 패널티
+    # 밀집도 보너스 (대폭 강화)
+    COMPACTNESS_BASE_BONUS = 500        # 연속 수업 보너스 (300 -> 500)
+    COMPACTNESS_GAP_PENALTY = 200       # 공강시간당 패널티 (100 -> 200)
 
-    # 시간대 선호도 (오전/오후)
-    TIME_SLOT_PREFERENCE_BONUS = 50     # 선호 시간대 보너스
-    MORNING_PREFERENCE_BONUS = 50       # 오전 선호 보너스 (비율 기반)
-    AFTERNOON_PREFERENCE_BONUS = 50     # 오후 선호 보너스 (비율 기반)
+    # 시간대 선호도 (오전/오후) - 대폭 강화
+    TIME_SLOT_PREFERENCE_BONUS = 100    # 선호 시간대 보너스 (50 -> 100)
+    MORNING_PREFERENCE_BONUS = 500      # 오전 선호 보너스 (300 -> 500)
+    AFTERNOON_PREFERENCE_BONUS = 500    # 오후 선호 보너스 (300 -> 500)
+    PURE_TIME_PREFERENCE_BONUS = 200    # 순수 오전/오후 과목 추가 보너스 (100 -> 200)
 
 # ============================================================================
 # 시간 관련 상수
@@ -97,7 +102,7 @@ class SolverParameters:
     # Phase 2: 다양한 해 찾기
     PHASE2_MAX_TIME = 1             # 각 해당 최대 시간 (초)
     PHASE2_NUM_WORKERS = 4          # 병렬 처리 워커 수
-    PHASE2_MAX_SOLUTIONS = 20       # 최대 해 개수
+    PHASE2_MAX_SOLUTIONS = 100      # 최대 해 개수 (1500 -> 100, 성능 향상)
 
 # ============================================================================
 # 필터링 관련 상수

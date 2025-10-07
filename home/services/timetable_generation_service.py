@@ -126,7 +126,7 @@ class TimetableGenerationService:
             max_walking_time=request_params.max_walking_time,
             prefer_compact=request_params.prefer_compact
         )
-        model, x = self.model_builder.build_model(candidate_data, constraints)
+        model, x, objective_expr = self.model_builder.build_model(candidate_data, constraints)
 
         # 12. Phase 1: 최적해 찾기
         best_value = self.solution_finder.find_optimal_solution(
@@ -142,12 +142,14 @@ class TimetableGenerationService:
                 'message': ValidationMessages.NO_SOLUTION_FOUND
             }
 
-        # 13. Phase 2: 다양한 해 찾기
+        # 13. Phase 2: 다양한 해 찾기 (Phase 1의 최적값 활용)
         timetables_data = self.solution_finder.find_multiple_solutions(
             model,
             x,
             candidate_data,
-            score_criteria.review_summaries
+            score_criteria.review_summaries,
+            optimal_value=best_value,  # Phase 1 최적값 전달
+            objective_expr=objective_expr  # 목적함수 표현식 전달
         )
 
         # 14. 선호도 기반 정렬
@@ -156,8 +158,37 @@ class TimetableGenerationService:
             request_params
         )
 
-        print("DEBUG: Total unique solutions found:", len(sorted_timetables))
-        print("DEBUG: --- Timetable Generation End ---")
+        # 전체 프로세스 요약
+        print("\n" + "="*80)
+        print("📊 시간표 생성 프로세스 최종 요약")
+        print("="*80)
+        print(f"✅ 후보 과목 수: {len(candidates)}개")
+        print(f"✅ 시간 제약 적용 후: {len(candidate_data)}개")
+        print(f"✅ Phase 1 최적해: {best_value:,.0f}점")
+        print(f"✅ Phase 2 생성 시간표: {len(timetables_data)}개")
+        print(f"✅ 최종 선별 시간표: {len(sorted_timetables)}개")
+
+        if sorted_timetables:
+            print("\n📋 사용자 요구사항 충족도:")
+            print(f"  - 목표 총 학점: {request_params.target_total}")
+            print(f"  - 목표 전공 학점: {request_params.target_major}")
+            print(f"  - 목표 교양 학점: {request_params.target_elective}")
+
+            # 첫 번째 시간표 기준 충족도 확인
+            first_timetable = sorted_timetables[0]
+            total_credits = sum(course['credits'] for course in first_timetable)
+            major_credits = sum(course['credits'] for course in first_timetable
+                              if course['category_name'] in ['전공필수', '전공선택'])
+            elective_credits = sum(course['credits'] for course in first_timetable
+                                 if course['category_name'] not in ['전공필수', '전공선택'])
+
+            print(f"\n  최상위 시간표 학점 분석:")
+            print(f"    - 실제 총 학점: {total_credits} (목표: {request_params.target_total})")
+            print(f"    - 실제 전공 학점: {major_credits} (목표: {request_params.target_major})")
+            print(f"    - 실제 교양 학점: {elective_credits} (목표: {request_params.target_elective})")
+
+        print("\n✅ 시간표 생성 완료!")
+        print("="*80 + "\n")
 
         # 15. 결과 반환
         return {
@@ -366,46 +397,137 @@ class TimetableGenerationService:
 
     def _sort_by_preference(
         self,
-        timetables: List[List[Dict[str, Any]]],
+        timetables: List[Dict[str, Any]],  # 구조 변경: Dict로 수정
         request_params: TimetableRequest
     ) -> List[List[Dict[str, Any]]]:
         """선호도 기반 시간표 정렬"""
-        print("DEBUG: Starting preference-based sorting and filtering...")
+        print("\n" + "="*80)
+        print("📊 선호도 기반 시간표 정렬 및 선별")
+        print("="*80)
 
-        # ScoreCriteria 생성 (간소화 버전)
+        # ScoreCriteria 생성 (간소화 버전) - prefer_compact 추가
         score_criteria = ScoreCriteria(
             preferred_instructors=request_params.preferred_instructors,
             avoid_instructors=request_params.avoid_instructors,
             preferred_courses=request_params.preferred_courses,
             avoid_courses=request_params.avoid_courses,
             prefer_morning=request_params.prefer_morning,
-            prefer_afternoon=request_params.prefer_afternoon
+            prefer_afternoon=request_params.prefer_afternoon,
+            prefer_compact=request_params.prefer_compact  # 밀집도 선호 추가
         )
+
+        # 선호 조건 출력
+        print("📌 사용자 선호 조건:")
+        if request_params.preferred_instructors:
+            print(f"  - 선호 교수: {', '.join(request_params.preferred_instructors)}")
+        if request_params.avoid_instructors:
+            print(f"  - 기피 교수: {', '.join(request_params.avoid_instructors)}")
+        if request_params.preferred_courses:
+            print(f"  - 선호 과목: {', '.join(request_params.preferred_courses)}")
+        if request_params.avoid_courses:
+            print(f"  - 기피 과목: {', '.join(request_params.avoid_courses)}")
+        if request_params.prefer_morning:
+            print("  - 오전 시간대 선호")
+        if request_params.prefer_afternoon:
+            print("  - 오후 시간대 선호")
+
+        print(f"\n총 {len(timetables)}개 시간표 평가 시작...")
+        print("-" * 80)
 
         # 각 시간표에 선호도 점수 계산 및 추가
         scored_timetables = []
-        for idx, timetable in enumerate(timetables):
-            print(f"\nDEBUG: 시간표 #{idx+1} 선호도 평가:")
+        for idx, timetable_data in enumerate(timetables):
+            # 시간표 과목 리스트 추출
+            timetable = timetable_data['courses']
+            objective_value = timetable_data.get('objective_value', 0)
+            objective_percentage = timetable_data.get('objective_percentage', 0)
+
             score, matched = self.scorer.calculate_timetable_preference_score(
                 timetable,
                 score_criteria
             )
             recommendation_level = self.scorer.get_recommendation_level(score)
 
-            scored_timetables.append((score, timetable))
-            print(f"  총 선호도 점수: {score}점, 추천 레벨: {recommendation_level}")
+            # 종합 점수 계산: 목적함수 값 + 선호도 보너스
+            # 목적함수 값을 1/1000로 스케일링하여 선호도 점수와 균형 맞춤
+            combined_score = (objective_value / 1000) + score
 
-        # 선호도 점수로 정렬 (높은 점수가 먼저)
-        scored_timetables.sort(key=lambda x: x[0], reverse=True)
+            scored_timetables.append({
+                'number': idx + 1,
+                'preference_score': score,
+                'objective_value': objective_value,
+                'objective_percentage': objective_percentage,
+                'combined_score': combined_score,
+                'timetable': timetable,
+                'matched': matched,
+                'recommendation': recommendation_level,
+                'num_courses': len(timetable)
+            })
+
+        # 종합 점수로 정렬 (높은 점수가 먼저)
+        # 1차: combined_score, 2차: objective_value
+        scored_timetables.sort(key=lambda x: (x['combined_score'], x['objective_value']), reverse=True)
+
+        # 점수 분포 분석
+        pref_scores = [st['preference_score'] for st in scored_timetables]
+        obj_values = [st['objective_value'] for st in scored_timetables]
+        combined_scores = [st['combined_score'] for st in scored_timetables]
+
+        print("\n📈 점수 분포 분석:")
+        print("1️⃣ 목적함수 값:")
+        print(f"  - 최고: {max(obj_values):,.0f} ({max(st['objective_percentage'] for st in scored_timetables):.1f}%)")
+        print(f"  - 최저: {min(obj_values):,.0f} ({min(st['objective_percentage'] for st in scored_timetables):.1f}%)")
+        print(f"  - 평균: {sum(obj_values)/len(obj_values):,.0f}")
+
+        print("\n2️⃣ 선호도 점수:")
+        print(f"  - 최고: {max(pref_scores)}점")
+        print(f"  - 최저: {min(pref_scores)}점")
+        print(f"  - 평균: {sum(pref_scores)/len(pref_scores):.1f}점")
+
+        print("\n3️⃣ 종합 점수 (목적함수/1000 + 선호도):")
+        print(f"  - 최고: {max(combined_scores):.1f}점")
+        print(f"  - 최저: {min(combined_scores):.1f}점")
+        print(f"  - 평균: {sum(combined_scores)/len(combined_scores):.1f}점")
+
+        # 상위 20개와 나머지 비교
+        top_20 = scored_timetables[:20]
+        rest = scored_timetables[20:] if len(scored_timetables) > 20 else []
+
+        if top_20:
+            top_20_avg = sum(st['combined_score'] for st in top_20) / len(top_20)
+            print(f"\n📊 상위 20개 시간표:")
+            print(f"  - 평균 종합점수: {top_20_avg:.1f}점")
+            print(f"  - 종합점수 범위: {top_20[-1]['combined_score']:.1f}점 ~ {top_20[0]['combined_score']:.1f}점")
+            print(f"  - 목적함수 범위: {min(st['objective_value'] for st in top_20):,.0f} ~ {max(st['objective_value'] for st in top_20):,.0f}")
+
+            # 상위 5개 시간표 상세 정보
+            print("\n🏆 상위 5개 시간표 상세:")
+            print("-" * 120)
+            print(f"{'순위':4} {'목적함수':>10} {'선호도':>8} {'종합점수':>10} {'추천':5} {'과목수':>6} {'주요 과목'}")
+            print("-" * 120)
+
+            for i, st in enumerate(top_20[:5]):
+                course_names = [c['course_name'] for c in st['timetable']]
+                main_courses = ', '.join(course_names[:3]) + ('...' if len(course_names) > 3 else '')
+                print(f"{i+1:4d} {st['objective_value']:10,.0f} {st['preference_score']:8d} "
+                      f"{st['combined_score']:10.1f} {st['recommendation']:5} {st['num_courses']:6d} "
+                      f"{main_courses}")
+
+        if rest:
+            rest_avg = sum(st['combined_score'] for st in rest) / len(rest)
+            print(f"\n📊 나머지 {len(rest)}개 시간표:")
+            print(f"  - 평균 종합점수: {rest_avg:.1f}점")
+            print(f"  - 종합점수 범위: {rest[-1]['combined_score']:.1f}점 ~ {rest[0]['combined_score']:.1f}점")
+            print(f"  - 상위 20개 대비 평균 종합점수 차이: {top_20_avg - rest_avg:.1f}점")
+            print(f"  - 목적함수 범위: {min(st['objective_value'] for st in rest):,.0f} ~ {max(st['objective_value'] for st in rest):,.0f}")
 
         # 정렬된 시간표 리스트 생성
-        sorted_timetables = [t[1] for t in scored_timetables]
+        sorted_timetables = [st['timetable'] for st in scored_timetables]
 
-        # 최고/최저 점수 출력
-        if scored_timetables:
-            best_score = scored_timetables[0][0]
-            worst_score = scored_timetables[-1][0]
-            print(f"\nDEBUG: 선호도 점수 범위: {worst_score}점 ~ {best_score}점")
-            print(f"DEBUG: 최고 점수 시간표가 첫 번째로 배치됨 (점수: {best_score})")
+        # 상위 20개만 반환
+        top_timetables = sorted_timetables[:20]
 
-        return sorted_timetables
+        print(f"\n✅ 최종 선별: 총 {len(sorted_timetables)}개 중 상위 {len(top_timetables)}개 시간표 제공")
+        print("="*80 + "\n")
+
+        return top_timetables

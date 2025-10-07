@@ -160,6 +160,9 @@ class ScoreCriteria:
     prefer_morning: bool = False
     prefer_afternoon: bool = False
 
+    # 밀집도 선호 (공강 최소화)
+    prefer_compact: bool = False
+
     # 교양 세부 이수 상태 (초과 학점 패널티용)
     missing_gen_sub: Dict[str, int] = field(default_factory=dict)
 

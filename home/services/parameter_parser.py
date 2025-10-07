@@ -32,6 +32,16 @@ class ParameterParser:
         Raises:
             ValueError: 파라미터가 올바르지 않을 경우
         """
+        # 시간대 선호 파라미터 파싱 디버그
+        prefer_morning_raw = request.GET.get('prefer_morning', 'false')
+        prefer_afternoon_raw = request.GET.get('prefer_afternoon', 'false')
+        prefer_compact_raw = request.GET.get('prefer_compact', 'false')
+
+        print(f"DEBUG [ParameterParser]: Raw 시간대 선호 파라미터:")
+        print(f"  - prefer_morning raw: '{prefer_morning_raw}' -> {prefer_morning_raw.lower() == 'true'}")
+        print(f"  - prefer_afternoon raw: '{prefer_afternoon_raw}' -> {prefer_afternoon_raw.lower() == 'true'}")
+        print(f"  - prefer_compact raw: '{prefer_compact_raw}' -> {prefer_compact_raw.lower() == 'true'}")
+
         # 기본 파라미터 추출
         params = TimetableRequest(
             # 학점
@@ -54,10 +64,10 @@ class ParameterParser:
             # 교양 태그
             preference_tags=request.GET.getlist('preference_tags[]'),
 
-            # 시간대 선호
-            prefer_morning=request.GET.get('prefer_morning', 'false').lower() == 'true',
-            prefer_afternoon=request.GET.get('prefer_afternoon', 'false').lower() == 'true',
-            prefer_compact=request.GET.get('prefer_compact', 'false').lower() == 'true',
+            # 시간대 선호 (디버그 추가)
+            prefer_morning=prefer_morning_raw.lower() == 'true',
+            prefer_afternoon=prefer_afternoon_raw.lower() == 'true',
+            prefer_compact=prefer_compact_raw.lower() == 'true',
 
             # 건물 거리
             max_walking_time=int(request.GET.get('max_walking_time', 10)),

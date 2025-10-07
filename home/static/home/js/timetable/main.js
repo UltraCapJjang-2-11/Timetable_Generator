@@ -279,6 +279,18 @@ function handleGenerateButtonClick() {
     constraints.free_days = Array.from(document.querySelectorAll(".day-options input:checked")).map(cb => cb.value);
     constraints.existing_courses = [];
 
+    // 시간대 선호 및 밀집도 설정 추가
+    constraints.prefer_morning = document.getElementById("prefer-morning")?.checked || false;
+    constraints.prefer_afternoon = document.getElementById("prefer-afternoon")?.checked || false;
+    constraints.prefer_compact = document.querySelector('input[name="compact"]:checked')?.value === 'yes' || false;
+
+    // 디버그: 체크박스 값 확인
+    console.log('시간대 선호 설정:', {
+        prefer_morning: constraints.prefer_morning,
+        prefer_afternoon: constraints.prefer_afternoon,
+        prefer_compact: constraints.prefer_compact
+    });
+
     // 현재 시간표에서 고정된(pinned) 강의들의 ID를 수집합니다.
     if (timetableState.currentTimetable) {
         constraints.existing_courses = timetableState.currentTimetable.courses

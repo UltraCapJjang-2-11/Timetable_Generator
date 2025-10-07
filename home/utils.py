@@ -5,9 +5,61 @@
 
 import json
 import re
+from typing import List, Set
 from collections import defaultdict
 from data_manager.services.course_filter_service import CourseFilterService
 from data_manager.models import Department
+
+
+def parse_time_slots(times_str: str, add_base_hour: bool = False) -> List[int]:
+    """
+    시간 문자열을 파싱하여 정수 리스트로 변환
+
+    Args:
+        times_str: 시간 문자열 (예: "02,03,04" 또는 "02, 03, 04")
+        add_base_hour: True면 CLASS_START_HOUR(8)을 더함
+
+    Returns:
+        시간 슬롯 리스트 (예: [2,3,4] 또는 [10,11,12])
+    """
+    if not times_str:
+        return []
+
+    try:
+        # 쉼표로 분리하고 공백 제거
+        time_parts = times_str.split(',')
+        result = []
+
+        for t in time_parts:
+            t = t.strip()
+            if t.isdigit():
+                time_val = int(t)
+                if add_base_hour:
+                    time_val += 8  # CLASS_START_HOUR
+                result.append(time_val)
+
+        return result
+    except (ValueError, AttributeError):
+        return []
+
+
+def parse_time_slots_to_set(times_str: str) -> Set[str]:
+    """
+    시간 문자열을 파싱하여 문자열 집합으로 변환 (시간 충돌 체크용)
+
+    Args:
+        times_str: 시간 문자열 (예: "02,03,04")
+
+    Returns:
+        시간 슬롯 문자열 집합 (예: {'02','03','04'})
+    """
+    if not times_str:
+        return set()
+
+    try:
+        return set(t.strip() for t in times_str.split(',') if t.strip())
+    except (ValueError, AttributeError):
+        return set()
 
 
 class DummyObj:
@@ -105,7 +157,7 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
             ok = True
             for sched in data['schedule']:
                 # times: "02,03,04" → [10,11,12]
-                hours = [int(t)+8 for t in sched['times'].split(',')]
+                hours = parse_time_slots(sched['times'], add_base_hour=True)
                 if not any(
                     sched['day'] in r['days']
                     and all(h >= r['start_hour'] and
@@ -125,7 +177,7 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
         for data in candidate_data:
             bad = False
             for sched in data['schedule']:
-                hours = [int(t)+8 for t in sched['times'].split(',')]
+                hours = parse_time_slots(sched['times'], add_base_hour=True)
                 # (1) 단일 시각 회피
                 if any(obj['day']==sched['day'] and h==obj['hour'] 
                        for obj in avoid_times for h in hours):
@@ -151,7 +203,7 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
         for data in candidate_data:
             bad = False
             for sched in data['schedule']:
-                hours = [int(t)+8 for t in sched['times'].split(',')]
+                hours = parse_time_slots(sched['times'], add_base_hour=True)
                 
                 # (1) 특정 요일+시간 회피
                 if any(obj['day']==sched['day'] and h==obj['hour'] 

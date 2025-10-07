@@ -266,19 +266,24 @@ class CandidateFilter:
             if data['category'] in ['전공필수', '전공선택'] and data.get('pre_added', False)
         )
 
-        # 동일학년 전공선택만으로 충분한지 확인
+        # 동일학년 전공선택 우선순위 조정 (완전 제거 대신 가중치 조정)
         if pre_added_major < target_major:
             needed_major = target_major - pre_added_major
             available_same_year_elective = sum(
                 data['credit'] for data in candidate_data
                 if data['category'] == '전공선택' and data.get('is_same_year', False) and not data.get('pre_added', False)
             )
-            if available_same_year_elective >= needed_major:
-                candidate_data = [
-                    data for data in candidate_data
-                    if not (data['category'] == '전공선택' and data.get('is_same_year') is False)
-                ]
-                print("DEBUG: 낮은학년 전공선택 과목 제거 후 candidate_data count =", len(candidate_data))
+
+            # 동일학년 과목이 충분하면 하위학년 과목에 패널티 부여 (제거하지 않음)
+            if available_same_year_elective >= needed_major * 1.5:  # 1.5배 이상 여유가 있을 때만
+                for data in candidate_data:
+                    if data['category'] == '전공선택' and data.get('is_same_year') is False:
+                        # 졸업 우선순위를 낮춤 (제거하지 않고 우선순위 조정)
+                        if 'graduation_priority' in data:
+                            data['graduation_priority'] = max(0, data['graduation_priority'] - 30)
+                        print(f"DEBUG: 하위학년 전공선택 {data['course_name']} 우선순위 감소")
+
+            print(f"DEBUG: 동일학년 전공선택 {available_same_year_elective}학점, 필요 {needed_major}학점")
 
         return candidate_data
 

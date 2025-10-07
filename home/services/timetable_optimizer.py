@@ -17,7 +17,12 @@ from ..views.timetable_config import (
     MAJOR_CATEGORIES
 )
 from .building_distance_service import BuildingDistanceService
-from ..utils import get_effective_general_category, DummyObj
+from ..utils import (
+    get_effective_general_category,
+    DummyObj,
+    parse_time_slots,
+    parse_time_slots_to_set
+)
 
 
 class ModelBuilder:
@@ -30,7 +35,7 @@ class ModelBuilder:
         self,
         candidate_data: List[Dict[str, Any]],
         constraints: ConstraintData
-    ) -> tuple[cp_model.CpModel, Dict[int, cp_model.IntVar]]:
+    ) -> tuple[cp_model.CpModel, Dict[int, cp_model.IntVar], Any]:
         """
         CP-SAT 모델 구성
 
@@ -39,7 +44,7 @@ class ModelBuilder:
             constraints: 제약 조건
 
         Returns:
-            (모델, 변수 딕셔너리) 튜플
+            (모델, 변수 딕셔너리, 목적함수 표현식) 튜플
         """
         model = cp_model.CpModel()
         x = {}
@@ -60,10 +65,10 @@ class ModelBuilder:
         # 5. 건물 간 이동시간 제약
         self._add_distance_constraints(model, x, candidate_data, constraints)
 
-        # 6. 목적함수 설정
-        self._set_objective_function(model, x, candidate_data, constraints)
+        # 6. 목적함수 설정 및 표현식 저장
+        objective_expr = self._set_objective_function(model, x, candidate_data, constraints)
 
-        return model, x
+        return model, x, objective_expr
 
     def _add_pre_added_constraints(
         self,
@@ -71,9 +76,32 @@ class ModelBuilder:
         x: Dict[int, cp_model.IntVar],
         candidate_data: List[Dict[str, Any]]
     ) -> None:
-        """미리 추가된 과목 강제 포함"""
-        for data in candidate_data:
-            if data.get('pre_added', False):
+        """미리 추가된 과목 강제 포함 (검증 포함)"""
+        pre_added_courses = [data for data in candidate_data if data.get('pre_added', False)]
+
+        if pre_added_courses:
+            # 1. 사전 추가 과목들의 시간 충돌 체크
+            time_conflicts = []
+            for i, course1 in enumerate(pre_added_courses):
+                for j, course2 in enumerate(pre_added_courses[i+1:], i+1):
+                    for sch1 in course1['schedule']:
+                        for sch2 in course2['schedule']:
+                            if sch1['day'] == sch2['day']:
+                                times1 = parse_time_slots_to_set(sch1['times'])
+                                times2 = parse_time_slots_to_set(sch2['times'])
+                                if times1 & times2:  # 교집합이 있으면 충돌
+                                    time_conflicts.append((course1['course_name'], course2['course_name']))
+
+            if time_conflicts:
+                conflict_msg = ", ".join([f"{c1} ↔ {c2}" for c1, c2 in time_conflicts])
+                print(f"WARNING: 사전 추가 과목 간 시간 충돌 감지: {conflict_msg}")
+
+            # 2. 사전 추가 과목들의 학점 합계 체크
+            pre_added_credits = sum(data['credit'] for data in pre_added_courses)
+            print(f"DEBUG: 사전 추가 과목 {len(pre_added_courses)}개, 총 {pre_added_credits}학점")
+
+            # 3. 사전 추가 과목 강제 포함
+            for data in pre_added_courses:
                 model.Add(x[data['id']] == 1)
 
     def _add_credit_constraints(
@@ -105,7 +133,7 @@ class ModelBuilder:
             == constraints.target_elective
         )
 
-        # 교양 세부 카테고리별 상한 제약
+        # 교양 세부 카테고리별 제약 (상한 및 하한 체크)
         if constraints.missing_gen_sub:
             print("DEBUG: 교양 세부 카테고리별 제약 추가 중...")
             for category_name, shortage_credits in constraints.missing_gen_sub.items():
@@ -114,11 +142,20 @@ class ModelBuilder:
                     if data.get('effective_category') == category_name
                 ]
                 if category_courses:
-                    model.Add(
-                        sum(data['credit'] * x[data['id']] for data in category_courses)
-                        <= shortage_credits
-                    )
-                    print(f"DEBUG: {category_name} 카테고리 - 최대 {shortage_credits}학점 제약 추가 (과목 {len(category_courses)}개)")
+                    # 카테고리별 선택된 학점 합계
+                    category_credit_sum = sum(data['credit'] * x[data['id']] for data in category_courses)
+
+                    # 상한 제약: 필요 이상 수강하지 않도록
+                    model.Add(category_credit_sum <= shortage_credits)
+
+                    # 하한 제약: 가능한 범위 내에서 최대한 충족하도록
+                    # 2학점 과목만 있는 경우를 고려하여 유연하게 처리
+                    available_credits = sum(data['credit'] for data in category_courses)
+                    min_achievable = min(shortage_credits, available_credits)
+
+                    # 최소한 달성 가능한 만큼은 채우도록 soft constraint 추가
+                    # (hard constraint로 하면 해가 없을 수 있으므로 objective에 반영)
+                    print(f"DEBUG: {category_name} 카테고리 - 목표 {shortage_credits}학점, 가능 {available_credits}학점, 과목 {len(category_courses)}개")
 
     def _add_conflict_constraints(
         self,
@@ -168,7 +205,7 @@ class ModelBuilder:
                 continue
             for sched in data['schedule']:
                 day = sched['day']
-                times = [int(t) + CLASS_START_HOUR for t in sched['times'].split(',') if t.strip().isdigit()]
+                times = parse_time_slots(sched['times'], add_base_hour=True)
                 for t in times:
                     time_course_map[day][t].append(data)
 
@@ -208,8 +245,8 @@ class ModelBuilder:
         x: Dict[int, cp_model.IntVar],
         candidate_data: List[Dict[str, Any]],
         constraints: ConstraintData
-    ) -> None:
-        """목적함수 설정"""
+    ) -> Any:
+        """목적함수 설정 및 목적함수 표현식 반환"""
         # 1. 졸업요건 충족도
         graduation_priority = sum(
             x[data['id']] * data.get('graduation_priority', 0)
@@ -244,44 +281,116 @@ class ModelBuilder:
             if data['category'] == '전공선택' and data.get('is_same_year', False)
         )
 
-        # 6. 시간표 밀집도
+        # 6. 교양 카테고리 충족도 보너스
+        gen_category_bonus = 0
+        if constraints.missing_gen_sub:
+            for category_name, shortage_credits in constraints.missing_gen_sub.items():
+                category_courses = [
+                    data for data in candidate_data
+                    if data.get('effective_category') == category_name
+                ]
+                if category_courses:
+                    # 해당 카테고리 과목들에 추가 보너스 부여
+                    for data in category_courses:
+                        # 부족 학점 대비 과목 학점 비율에 따른 보너스
+                        bonus = min(100, (data['credit'] / max(1, shortage_credits)) * 100)
+                        gen_category_bonus += x[data['id']] * int(bonus)
+
+        # 7. 시간표 밀집도 (개선된 로직)
         compactness_bonus = 0
         if constraints.prefer_compact:
-            daily_classes = defaultdict(list)
-            for data in candidate_data:
-                for sch in data['schedule']:
-                    day = sch['day']
-                    times = [int(t) + CLASS_START_HOUR for t in sch['times'].split(',') if t.strip().isdigit()]
-                    for t in times:
-                        daily_classes[day].append((t, data['id']))
+            print(f"DEBUG: 밀집도 선호 활성화됨 (prefer_compact=True)")
+            print(f"DEBUG:   - 공강시간 패널티: {ScoringWeights.COMPACTNESS_GAP_PENALTY}점/시간")
+            print(f"DEBUG:   - 연속 수업 보너스: {ScoringWeights.COMPACTNESS_BASE_BONUS}점")
 
-            # 밀집도 보너스 계산
-            for day, time_list in daily_classes.items():
-                if time_list:
-                    times = sorted([t for t, _ in time_list])
-                    if len(times) > 1:
-                        gaps = sum(times[i+1] - times[i] - 1 for i in range(len(times)-1))
-                        day_bonus = max(0, ScoringWeights.COMPACTNESS_BASE_BONUS - gaps * ScoringWeights.COMPACTNESS_GAP_PENALTY)
-                        for _, course_id in time_list:
-                            compactness_bonus += x[course_id] * day_bonus
+            # 각 요일별로 선택된 과목들의 시간 간격을 최소화
+            for day in ['월', '화', '수', '목', '금']:
+                day_courses = []
+                for data in candidate_data:
+                    for sch in data['schedule']:
+                        if sch['day'] == day:
+                            times = parse_time_slots(sch['times'], add_base_hour=True)
+                            if times:
+                                day_courses.append((min(times), max(times), data['id'], data['course_name']))
 
-            print(f"DEBUG: 밀집도 선호 활성화 - 공강 최소화 보너스 적용")
+                if len(day_courses) >= 2:
+                    # 시간순으로 정렬
+                    day_courses.sort(key=lambda x: x[0])
+                    print(f"DEBUG:   {day}요일 - {len(day_courses)}개 과목:")
+                    for start, end, cid, name in day_courses:
+                        print(f"DEBUG:     - {name}: {start}교시~{end}교시")
 
-        # 최종 목적함수
-        model.Maximize(
+                    # 연속된 과목들 간의 공강 계산 (개선)
+                    for i in range(len(day_courses) - 1):
+                        start1, end1, id1, name1 = day_courses[i]
+                        start2, end2, id2, name2 = day_courses[i + 1]
+
+                        gap = start2 - end1 - 1  # 공강 시간
+
+                        if gap > 0:
+                            # 공강이 있는 경우 페널티
+                            penalty = gap * ScoringWeights.COMPACTNESS_GAP_PENALTY * 2  # 페널티 강화
+                            both_selected = model.NewBoolVar(f'gap_{day}_{i}')
+                            model.AddMultiplicationEquality(both_selected, [x[id1], x[id2]])
+                            compactness_bonus -= both_selected * penalty
+                            print(f"DEBUG:     공강 {gap}시간 발생: {name1} → {name2} (패널티 {penalty}점)")
+                        elif gap == 0:
+                            # 연속된 수업인 경우 보너스
+                            consecutive_bonus = ScoringWeights.COMPACTNESS_BASE_BONUS
+                            both_selected = model.NewBoolVar(f'consecutive_{day}_{i}')
+                            model.AddMultiplicationEquality(both_selected, [x[id1], x[id2]])
+                            compactness_bonus += both_selected * consecutive_bonus
+                            print(f"DEBUG:     연속 수업: {name1} → {name2} (보너스 {consecutive_bonus}점)")
+
+                    # 하루 전체 시간 범위에 대한 패널티 (첫 수업부터 마지막 수업까지)
+                    if len(day_courses) > 0:
+                        first_start = day_courses[0][0]
+                        last_end = day_courses[-1][1]
+                        total_span = last_end - first_start + 1
+                        total_class_time = sum(end - start + 1 for start, end, _, _ in day_courses)
+                        total_gap = total_span - total_class_time
+
+                        if total_gap > 0:
+                            # 전체 공강 시간에 대한 추가 패널티
+                            span_penalty_var = model.NewIntVar(0, 1000, f'span_penalty_{day}')
+                            day_active = model.NewBoolVar(f'day_active_{day}')
+
+                            # 해당 요일에 수업이 있는지 확인
+                            model.Add(sum(x[cid] for _, _, cid, _ in day_courses) >= 1).OnlyEnforceIf(day_active)
+                            model.Add(sum(x[cid] for _, _, cid, _ in day_courses) == 0).OnlyEnforceIf(day_active.Not())
+
+                            # 요일이 활성화되면 패널티 적용 (강화)
+                            model.Add(span_penalty_var == total_gap * 50).OnlyEnforceIf(day_active)  # 20 -> 50
+                            model.Add(span_penalty_var == 0).OnlyEnforceIf(day_active.Not())
+                            compactness_bonus -= span_penalty_var
+
+                            print(f"DEBUG:   {day}요일 전체 범위: {first_start}~{last_end}교시 (총 공강 {total_gap}시간)")
+
+            print(f"DEBUG: 밀집도 보너스/페널티 적용 완료 (가중치: {ScoringWeights.COMPACTNESS_WEIGHT})")
+
+        # 최종 목적함수 표현식 생성
+        objective_expr = (
             graduation_priority * ScoringWeights.GRADUATION_PRIORITY_WEIGHT +
             preference_priority * ScoringWeights.PREFERENCE_WEIGHT +
             rating_priority * ScoringWeights.RATING_WEIGHT +
             compactness_bonus * ScoringWeights.COMPACTNESS_WEIGHT +
             required_priority * ScoringWeights.REQUIRED_COURSE_WEIGHT +
-            elective_priority * ScoringWeights.ELECTIVE_COURSE_WEIGHT
+            elective_priority * ScoringWeights.ELECTIVE_COURSE_WEIGHT +
+            gen_category_bonus * ScoringWeights.GENERAL_CATEGORY_BONUS_WEIGHT
         )
+
+        # 목적함수 설정
+        model.Maximize(objective_expr)
+
         print(f"DEBUG: 목적함수 가중치 - 졸업:{ScoringWeights.GRADUATION_PRIORITY_WEIGHT}, " +
               f"선호도:{ScoringWeights.PREFERENCE_WEIGHT}, " +
               f"평점:{ScoringWeights.RATING_WEIGHT}, " +
-              f"밀집도:{ScoringWeights.COMPACTNESS_WEIGHT}, " +
+              f"밀집도:{ScoringWeights.COMPACTNESS_WEIGHT if constraints.prefer_compact else 0}, " +
               f"전필:{ScoringWeights.REQUIRED_COURSE_WEIGHT}, " +
               f"전선:{ScoringWeights.ELECTIVE_COURSE_WEIGHT}")
+
+        # 목적함수 표현식 반환
+        return objective_expr
 
 
 class SolutionFinder:
@@ -312,18 +421,35 @@ class SolutionFinder:
         solver.parameters.num_search_workers = SolverParameters.PHASE1_NUM_WORKERS
         solver.parameters.linearization_level = SolverParameters.PHASE1_LINEARIZATION_LEVEL
 
-        print("DEBUG: Starting Phase 1 optimization...")
-        print(f"DEBUG: 후보 과목 수: {len(candidate_data)}개")
+        print("\n" + "="*80)
+        print("🔍 Phase 1: 최적해 탐색 시작")
+        print("="*80)
+        print(f"후보 과목 수: {len(candidate_data)}개")
+        print(f"최대 시간: {SolverParameters.PHASE1_MAX_TIME}초")
 
         status = solver.Solve(model)
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+            print("❌ Phase 1: 해를 찾을 수 없음")
             return None
 
         best_value = solver.ObjectiveValue()
-        print("DEBUG: Phase 1 Best objective =", best_value)
+
+        # Phase 1 결과 상세 출력
+        print("\n✅ Phase 1 완료")
+        print(f"최적 목적함수 값: {best_value:,.0f}")
+        print("\n📊 목적함수 구성요소 분석:")
 
         # 디버그: 목적함수 구성요소 출력
         self._print_objective_components(solver, x, candidate_data)
+
+        # 선택된 과목 출력
+        selected_courses = []
+        for data in candidate_data:
+            if solver.Value(x[data['id']]) == 1:
+                selected_courses.append(data['course_name'])
+
+        print(f"\n선택된 과목 ({len(selected_courses)}개): {', '.join(selected_courses)}")
+        print("="*80 + "\n")
 
         return best_value
 
@@ -333,10 +459,12 @@ class SolutionFinder:
         x: Dict[int, cp_model.IntVar],
         candidate_data: List[Dict[str, Any]],
         review_summaries: Dict[tuple, Any],
-        max_solutions: int = SolverParameters.PHASE2_MAX_SOLUTIONS
+        max_solutions: int = SolverParameters.PHASE2_MAX_SOLUTIONS,
+        optimal_value: Optional[float] = None,
+        objective_expr: Any = None
     ) -> List[List[Dict[str, Any]]]:
         """
-        Phase 2: 다양한 해 찾기
+        Phase 2: 다양한 해 찾기 (개선된 버전)
 
         Args:
             model: CP-SAT 모델
@@ -344,16 +472,33 @@ class SolutionFinder:
             candidate_data: 후보 과목 데이터
             review_summaries: 강의 평점 정보
             max_solutions: 최대 해 개수
+            optimal_value: Phase 1에서 찾은 최적값
+            objective_expr: 목적함수 표현식
 
         Returns:
             시간표 리스트 (각 시간표는 과목 딕셔너리 리스트)
         """
         timetables_data = []
+        timetable_scores = []  # 각 시간표의 점수 추적
         solver = cp_model.CpSolver()
         solver.parameters.max_time_in_seconds = SolverParameters.PHASE2_MAX_TIME
         solver.parameters.num_search_workers = SolverParameters.PHASE2_NUM_WORKERS
 
-        print("DEBUG: Starting Phase 2 search for multiple solutions...")
+        print("\n" + "="*80)
+        print("🔍 Phase 2: 다양한 시간표 생성 시작")
+        print("="*80)
+        print(f"목표: 최대 {max_solutions}개 시간표 생성")
+
+        # Phase 1의 최적값을 활용하여 일정 범위 내의 해만 탐색
+        if optimal_value is not None and objective_expr is not None:
+            # 최적값의 90% 이상인 해만 허용 (품질 보장)
+            min_acceptable_value = optimal_value * 0.9
+            model.Add(objective_expr >= int(min_acceptable_value))
+            print(f"최소 목적함수 값 제약: {min_acceptable_value:,.0f} (최적값의 90%)")
+            print(f"최적값: {optimal_value:,.0f}")
+
+        print("\n시간표 생성 진행상황:")
+        print("-" * 80)
 
         # 최대 max_solutions개의 서로 다른 시간표 찾기
         for i in range(max_solutions):
@@ -362,6 +507,7 @@ class SolutionFinder:
             if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
                 solution = []
                 selected_ids = []
+                current_objective_value = solver.ObjectiveValue()
 
                 for data in candidate_data:
                     if solver.Value(x[data['id']]) == 1:
@@ -390,16 +536,56 @@ class SolutionFinder:
                             'avg_rating': avg_rating
                         })
 
-                timetables_data.append(solution)
-                print(f"DEBUG: Found solution #{i+1} with {len(solution)} courses")
+                # percentage 계산을 먼저 수행
+                percentage = (current_objective_value / optimal_value * 100) if optimal_value else 100
+                course_names = [c['course_name'] for c in solution]
 
-                # 다음 반복에서 같은 해를 찾지 않도록 제약 추가
-                model.Add(sum(x[cid] for cid in selected_ids) < len(selected_ids))
+                # 시간표에 목적함수 값 추가
+                solution_with_score = {
+                    'courses': solution,
+                    'objective_value': current_objective_value,
+                    'objective_percentage': percentage
+                }
+                timetables_data.append(solution_with_score)
+
+                # 시간표 점수 정보 저장
+                timetable_scores.append({
+                    'number': i + 1,
+                    'objective_value': current_objective_value,
+                    'percentage': percentage,
+                    'num_courses': len(solution),
+                    'courses': course_names
+                })
+
+                print(f"시간표 #{i+1:3d}: 목적함수값 {current_objective_value:8,.0f} ({percentage:5.1f}%) | {len(solution)}과목 | {', '.join(course_names[:3])}{'...' if len(course_names) > 3 else ''}")
+
+                # 다음 반복에서 다양한 해를 찾도록 제약 추가
+                # 기존 방식: 정확히 같은 조합만 제외 -> 비슷한 해가 많이 나옴
+                # 개선: 최소 2개 이상 과목이 다르도록 강제
+                if len(selected_ids) > 4:
+                    # 선택된 과목 중 최소 2개는 다르게
+                    model.Add(sum(x[cid] for cid in selected_ids) <= len(selected_ids) - 2)
+                else:
+                    # 과목이 적으면 기존 방식 유지
+                    model.Add(sum(x[cid] for cid in selected_ids) < len(selected_ids))
             else:
-                print(f"DEBUG: No more solutions found after {i} iterations")
+                print(f"\n⚠️ {i}개 시간표 생성 후 더 이상 해를 찾을 수 없음")
                 break
 
-        print(f"DEBUG: Phase 2 search finished. Total solutions: {len(timetables_data)}")
+        print("-" * 80)
+
+        # Phase 2 결과 요약
+        if timetable_scores:
+            print(f"\n✅ Phase 2 완료: 총 {len(timetables_data)}개 시간표 생성")
+            print("\n📊 목적함수 값 분포:")
+            obj_values = [ts['objective_value'] for ts in timetable_scores]
+            print(f"  - 최고점: {max(obj_values):,.0f}")
+            print(f"  - 최저점: {min(obj_values):,.0f}")
+            print(f"  - 평균: {sum(obj_values)/len(obj_values):,.0f}")
+            print(f"  - 최적값 대비: {min(ts['percentage'] for ts in timetable_scores):.1f}% ~ {max(ts['percentage'] for ts in timetable_scores):.1f}%")
+
+        print("="*80 + "\n")
+
         return timetables_data
 
     def _print_objective_components(
@@ -417,4 +603,17 @@ class SolutionFinder:
         elec_val = sum(solver.Value(x[data['id']]) for data in candidate_data
                       if data['category'] == '전공선택' and data.get('is_same_year', False))
 
-        print(f"DEBUG: Phase 1 components - Graduation: {grad_val}, Preference: {pref_val}, Rating: {rating_val}, Required: {req_val}, Elective: {elec_val}")
+        # 가중치 적용된 값 계산
+        weighted_grad = grad_val * ScoringWeights.GRADUATION_PRIORITY_WEIGHT
+        weighted_pref = pref_val * ScoringWeights.PREFERENCE_WEIGHT
+        weighted_rating = rating_val * ScoringWeights.RATING_WEIGHT
+        weighted_req = req_val * ScoringWeights.REQUIRED_COURSE_WEIGHT
+        weighted_elec = elec_val * ScoringWeights.ELECTIVE_COURSE_WEIGHT
+
+        print(f"  졸업요건: {grad_val:6.0f} × {ScoringWeights.GRADUATION_PRIORITY_WEIGHT:4} = {weighted_grad:10,.0f}")
+        print(f"  선호도:   {pref_val:6.0f} × {ScoringWeights.PREFERENCE_WEIGHT:4} = {weighted_pref:10,.0f}")
+        print(f"  평점:     {rating_val:6.0f} × {ScoringWeights.RATING_WEIGHT:4} = {weighted_rating:10,.0f}")
+        print(f"  전공필수: {req_val:6.0f} × {ScoringWeights.REQUIRED_COURSE_WEIGHT:4} = {weighted_req:10,.0f}")
+        print(f"  전공선택: {elec_val:6.0f} × {ScoringWeights.ELECTIVE_COURSE_WEIGHT:4} = {weighted_elec:10,.0f}")
+        print(f"  ---")
+        print(f"  총합: {weighted_grad + weighted_pref + weighted_rating + weighted_req + weighted_elec:10,.0f}")

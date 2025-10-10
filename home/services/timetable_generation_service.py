@@ -32,6 +32,7 @@ from .candidate_filter import CandidateFilter
 from .course_scorer import CourseScorer
 from .timetable_optimizer import ModelBuilder, SolutionFinder
 from .building_distance_service import extract_building_number
+from .optimization_levels import OptimizationLevel
 
 
 class TimetableGenerationService:
@@ -132,7 +133,8 @@ class TimetableGenerationService:
         best_value = self.solution_finder.find_optimal_solution(
             model,
             x,
-            candidate_data
+            candidate_data,
+            optimization_level=request_params.optimization_level
         )
         if best_value is None:
             return {
@@ -148,6 +150,7 @@ class TimetableGenerationService:
             x,
             candidate_data,
             score_criteria.review_summaries,
+            optimization_level=request_params.optimization_level,  # 최적화 수준 전달
             optimal_value=best_value,  # Phase 1 최적값 전달
             objective_expr=objective_expr  # 목적함수 표현식 전달
         )
@@ -286,7 +289,9 @@ class TimetableGenerationService:
             exclude_names=request_params.exclude_courses,
             free_days=request_params.free_days,
             pre_added_ids=request_params.existing_courses,
-            missing_gen_sub=user_info.missing_gen_sub
+            missing_gen_sub=user_info.missing_gen_sub,
+            prefer_morning=request_params.prefer_morning,
+            prefer_afternoon=request_params.prefer_afternoon
         )
 
     def _create_score_criteria(
@@ -524,10 +529,15 @@ class TimetableGenerationService:
         # 정렬된 시간표 리스트 생성
         sorted_timetables = [st['timetable'] for st in scored_timetables]
 
-        # 상위 20개만 반환
-        top_timetables = sorted_timetables[:20]
+        # 최적화 수준에 따라 반환할 시간표 수 결정
+        level_config = OptimizationLevel.get_level(request_params.optimization_level)
+        return_count = level_config['return_count']
+
+        # 상위 시간표 반환
+        top_timetables = sorted_timetables[:return_count]
 
         print(f"\n✅ 최종 선별: 총 {len(sorted_timetables)}개 중 상위 {len(top_timetables)}개 시간표 제공")
+        print(f"   (최적화 수준 '{level_config['display_name']}'에 따라 {return_count}개 반환)")
         print("="*80 + "\n")
 
         return top_timetables

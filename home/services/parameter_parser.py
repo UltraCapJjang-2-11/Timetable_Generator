@@ -78,6 +78,9 @@ class ParameterParser:
             avoid_time_ranges=self._parse_json_list(request.GET.getlist('avoid_time_ranges[]')),
             specific_avoid_times=self._parse_json_list(request.GET.getlist('specific_avoid_times[]')),
             specific_avoid_time_ranges=self._parse_json_list(request.GET.getlist('specific_avoid_time_ranges[]')),
+
+            # 최적화 수준 (BASIC, ADVANCED, EXPERT, ULTRA)
+            optimization_level=self._parse_optimization_level(request),
         )
 
         # 학점 검증 및 조정
@@ -87,6 +90,18 @@ class ParameterParser:
         self._print_parsed_params(params)
 
         return params
+
+    def _parse_optimization_level(self, request: HttpRequest) -> str:
+        """최적화 수준 파라미터 파싱"""
+        level = request.GET.get('optimization_level', 'ADVANCED').upper()
+        valid_levels = ['BASIC', 'ADVANCED', 'EXPERT', 'ULTRA']
+
+        if level not in valid_levels:
+            print(f"DEBUG: Invalid optimization level '{level}', using default 'ADVANCED'")
+            level = 'ADVANCED'
+
+        print(f"DEBUG: Optimization level set to '{level}'")
+        return level
 
     def _parse_credits(self, request: HttpRequest, key: str, default: int) -> int:
         """학점 파라미터 파싱"""
@@ -167,4 +182,5 @@ class ParameterParser:
         print(f"  시간대 선호: morning={params.prefer_morning}, afternoon={params.prefer_afternoon}, compact={params.prefer_compact}")
         print(f"  최대 이동시간: {params.max_walking_time}분")
         print(f"  시간 제약: only_ranges={len(params.only_time_ranges)}, avoid_times={len(params.avoid_times)}, avoid_ranges={len(params.avoid_time_ranges)}")
+        print(f"  최적화 수준: {params.optimization_level}")
         print("DEBUG: ---------------------------")

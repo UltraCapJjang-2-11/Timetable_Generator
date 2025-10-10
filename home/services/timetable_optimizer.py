@@ -17,6 +17,7 @@ from ..views.timetable_config import (
     MAJOR_CATEGORIES
 )
 from .building_distance_service import BuildingDistanceService
+from .optimization_levels import OptimizationLevel
 from ..utils import (
     get_effective_general_category,
     DummyObj,
@@ -403,7 +404,8 @@ class SolutionFinder:
         self,
         model: cp_model.CpModel,
         x: Dict[int, cp_model.IntVar],
-        candidate_data: List[Dict[str, Any]]
+        candidate_data: List[Dict[str, Any]],
+        optimization_level: str = 'ADVANCED'
     ) -> Optional[float]:
         """
         Phase 1: 최적해 찾기
@@ -412,20 +414,26 @@ class SolutionFinder:
             model: CP-SAT 모델
             x: 변수 딕셔너리
             candidate_data: 후보 과목 데이터
+            optimization_level: 최적화 수준 (BASIC, ADVANCED, EXPERT, ULTRA)
 
         Returns:
             최적 목적함수 값. 해를 찾지 못하면 None
         """
+        # 최적화 레벨 설정 로드
+        level_config = OptimizationLevel.get_level(optimization_level)
+
         solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds = SolverParameters.PHASE1_MAX_TIME
-        solver.parameters.num_search_workers = SolverParameters.PHASE1_NUM_WORKERS
+        solver.parameters.max_time_in_seconds = level_config['phase1_time']
+        solver.parameters.num_search_workers = level_config['num_workers']
         solver.parameters.linearization_level = SolverParameters.PHASE1_LINEARIZATION_LEVEL
 
         print("\n" + "="*80)
         print("🔍 Phase 1: 최적해 탐색 시작")
         print("="*80)
+        print(f"🎯 최적화 수준: {level_config['display_name']}")
         print(f"후보 과목 수: {len(candidate_data)}개")
-        print(f"최대 시간: {SolverParameters.PHASE1_MAX_TIME}초")
+        print(f"최대 시간: {level_config['phase1_time']}초")
+        print(f"병렬 워커: {level_config['num_workers']}개")
 
         status = solver.Solve(model)
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
@@ -459,7 +467,7 @@ class SolutionFinder:
         x: Dict[int, cp_model.IntVar],
         candidate_data: List[Dict[str, Any]],
         review_summaries: Dict[tuple, Any],
-        max_solutions: int = SolverParameters.PHASE2_MAX_SOLUTIONS,
+        optimization_level: str = 'ADVANCED',
         optimal_value: Optional[float] = None,
         objective_expr: Any = None
     ) -> List[List[Dict[str, Any]]]:
@@ -471,30 +479,38 @@ class SolutionFinder:
             x: 변수 딕셔너리
             candidate_data: 후보 과목 데이터
             review_summaries: 강의 평점 정보
-            max_solutions: 최대 해 개수
+            optimization_level: 최적화 수준 (BASIC, ADVANCED, EXPERT, ULTRA)
             optimal_value: Phase 1에서 찾은 최적값
             objective_expr: 목적함수 표현식
 
         Returns:
             시간표 리스트 (각 시간표는 과목 딕셔너리 리스트)
         """
+        # 최적화 레벨 설정 로드
+        level_config = OptimizationLevel.get_level(optimization_level)
+        max_solutions = level_config['solutions']
+
         timetables_data = []
         timetable_scores = []  # 각 시간표의 점수 추적
         solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds = SolverParameters.PHASE2_MAX_TIME
-        solver.parameters.num_search_workers = SolverParameters.PHASE2_NUM_WORKERS
+        solver.parameters.max_time_in_seconds = level_config['phase2_time']
+        solver.parameters.num_search_workers = level_config['num_workers']
 
         print("\n" + "="*80)
         print("🔍 Phase 2: 다양한 시간표 생성 시작")
         print("="*80)
+        print(f"🎯 최적화 수준: {level_config['display_name']}")
         print(f"목표: 최대 {max_solutions}개 시간표 생성")
+        print(f"최대 시간: {level_config['phase2_time']}초")
+        print(f"병렬 워커: {level_config['num_workers']}개")
 
         # Phase 1의 최적값을 활용하여 일정 범위 내의 해만 탐색
         if optimal_value is not None and objective_expr is not None:
-            # 최적값의 90% 이상인 해만 허용 (품질 보장)
-            min_acceptable_value = optimal_value * 0.9
+            # 최적화 레벨에 따른 최소 품질 기준 적용
+            min_quality = level_config['min_quality']
+            min_acceptable_value = optimal_value * min_quality
             model.Add(objective_expr >= int(min_acceptable_value))
-            print(f"최소 목적함수 값 제약: {min_acceptable_value:,.0f} (최적값의 90%)")
+            print(f"최소 목적함수 값 제약: {min_acceptable_value:,.0f} (최적값의 {min_quality*100:.0f}%)")
             print(f"최적값: {optimal_value:,.0f}")
 
         print("\n시간표 생성 진행상황:")

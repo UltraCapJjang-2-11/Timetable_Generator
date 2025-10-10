@@ -179,7 +179,7 @@ class CourseScorer:
             if not tag_matched:
                 preference_score += ScoringWeights.TAG_MISMATCH_PENALTY
 
-        # 시간대 선호도 (강화된 로직)
+        # 시간대 선호도 (교양 과목은 더욱 강화)
         if criteria.prefer_morning or criteria.prefer_afternoon:
             schedules = course.courseschedule_set.all()
             morning_count = 0
@@ -193,44 +193,69 @@ class CourseScorer:
                     else:
                         afternoon_count += 1
 
+            # 교양 과목 여부 확인
+            is_general_education = get_effective_general_category(course) is not None
+
             # 시간대 선호도 비율 기반 점수
             total_hours = morning_count + afternoon_count
             if total_hours > 0:
                 if criteria.prefer_morning:
                     morning_ratio = morning_count / total_hours
-                    # 오전 비율에 따른 점수 (100% 오전 = 최대 점수)
-                    bonus = int(morning_ratio * ScoringWeights.MORNING_PREFERENCE_BONUS)
-                    preference_score += bonus
 
-                    # 순수 오전 과목 (90% 이상 오전)에 추가 보너스
-                    if morning_ratio >= 0.9:
-                        preference_score += ScoringWeights.PURE_TIME_PREFERENCE_BONUS
-                        print(f"DEBUG: 오전 선호 - {course.course_name} 오전 {morning_ratio:.0%} +{bonus + ScoringWeights.PURE_TIME_PREFERENCE_BONUS}점")
-                    elif morning_ratio > 0.5:
-                        print(f"DEBUG: 오전 선호 - {course.course_name} 오전비율 {morning_ratio:.1%} +{bonus}점")
+                    # 교양 과목: 시간대 점수 극대화
+                    if is_general_education:
+                        if morning_ratio >= 0.8:
+                            # 오전 80% 이상: 극대 보너스
+                            preference_score += 3000
+                            print(f"DEBUG: 오전 선호 - 교양 {course.course_name} 오전 {morning_ratio:.0%} +3000점 (극대화)")
+                        else:
+                            # 오전 80% 미만: 강한 패널티
+                            preference_score -= 5000
+                            print(f"DEBUG: 오전 선호 - 교양 {course.course_name} 오전 {morning_ratio:.0%} -5000점 (강한 패널티)")
                     else:
-                        # 오후가 더 많은 과목은 강한 패널티
-                        penalty = -150  # -50 -> -150 (3배 강화)
-                        preference_score += penalty
-                        print(f"DEBUG: 오전 선호 - {course.course_name} 오후 과목 패널티 {penalty}점")
+                        # 전공 과목: 기존 로직 유지
+                        bonus = int(morning_ratio * ScoringWeights.MORNING_PREFERENCE_BONUS)
+                        preference_score += bonus
+
+                        if morning_ratio >= 0.9:
+                            preference_score += ScoringWeights.PURE_TIME_PREFERENCE_BONUS
+                            print(f"DEBUG: 오전 선호 - {course.course_name} 오전 {morning_ratio:.0%} +{bonus + ScoringWeights.PURE_TIME_PREFERENCE_BONUS}점")
+                        elif morning_ratio > 0.5:
+                            print(f"DEBUG: 오전 선호 - {course.course_name} 오전비율 {morning_ratio:.1%} +{bonus}점")
+                        else:
+                            # 전공은 시간대 페널티 최소화 (졸업요건 우선)
+                            penalty = -20  # -150 → -20 (87% 감소)
+                            print(f"DEBUG: 오전 선호 - {course.course_name} 오후 과목 약한 패널티 {penalty}점")
+                            preference_score += penalty
 
                 elif criteria.prefer_afternoon:
                     afternoon_ratio = afternoon_count / total_hours
-                    # 오후 비율에 따른 점수 (100% 오후 = 최대 점수)
-                    bonus = int(afternoon_ratio * ScoringWeights.AFTERNOON_PREFERENCE_BONUS)
-                    preference_score += bonus
 
-                    # 순수 오후 과목 (90% 이상 오후)에 추가 보너스
-                    if afternoon_ratio >= 0.9:
-                        preference_score += ScoringWeights.PURE_TIME_PREFERENCE_BONUS
-                        print(f"DEBUG: 오후 선호 - {course.course_name} 오후 {afternoon_ratio:.0%} +{bonus + ScoringWeights.PURE_TIME_PREFERENCE_BONUS}점")
-                    elif afternoon_ratio > 0.5:
-                        print(f"DEBUG: 오후 선호 - {course.course_name} 오후비율 {afternoon_ratio:.1%} +{bonus}점")
+                    # 교양 과목: 시간대 점수 극대화
+                    if is_general_education:
+                        if afternoon_ratio >= 0.8:
+                            # 오후 80% 이상: 극대 보너스
+                            preference_score += 3000
+                            print(f"DEBUG: 오후 선호 - 교양 {course.course_name} 오후 {afternoon_ratio:.0%} +3000점 (극대화)")
+                        else:
+                            # 오후 80% 미만: 강한 패널티
+                            preference_score -= 5000
+                            print(f"DEBUG: 오후 선호 - 교양 {course.course_name} 오후 {afternoon_ratio:.0%} -5000점 (강한 패널티)")
                     else:
-                        # 오전이 더 많은 과목은 강한 패널티
-                        penalty = -150  # -50 -> -150 (3배 강화)
-                        preference_score += penalty
-                        print(f"DEBUG: 오후 선호 - {course.course_name} 오전 과목 패널티 {penalty}점")
+                        # 전공 과목: 기존 로직 유지
+                        bonus = int(afternoon_ratio * ScoringWeights.AFTERNOON_PREFERENCE_BONUS)
+                        preference_score += bonus
+
+                        if afternoon_ratio >= 0.9:
+                            preference_score += ScoringWeights.PURE_TIME_PREFERENCE_BONUS
+                            print(f"DEBUG: 오후 선호 - {course.course_name} 오후 {afternoon_ratio:.0%} +{bonus + ScoringWeights.PURE_TIME_PREFERENCE_BONUS}점")
+                        elif afternoon_ratio > 0.5:
+                            print(f"DEBUG: 오후 선호 - {course.course_name} 오후비율 {afternoon_ratio:.1%} +{bonus}점")
+                        else:
+                            # 전공은 시간대 페널티 최소화 (졸업요건 우선)
+                            penalty = -20  # -150 → -20 (87% 감소)
+                            print(f"DEBUG: 오후 선호 - {course.course_name} 오전 과목 약한 패널티 {penalty}점")
+                            preference_score += penalty
 
         return preference_score
 
@@ -334,11 +359,12 @@ class CourseScorer:
                         matched_prefs['avoided'] += 1
                         print(f"  DEBUG: 기피 과목 발견 {ScoringWeights.AVOIDED_COURSE_PENALTY}: {course_name}")
 
-            # 시간대 선호도 (강화된 로직)
+            # 시간대 선호도 (교양 과목은 더욱 강화)
             if criteria.prefer_morning or criteria.prefer_afternoon:
                 schedules = course.get('schedules', [])
                 morning_count = 0
                 afternoon_count = 0
+                category = course.get('category_name', '')
 
                 for sch in schedules:
                     times = sch.get('times', '')
@@ -350,44 +376,69 @@ class CourseScorer:
                                 else:
                                     afternoon_count += 1
 
+                # 교양 과목 여부 확인
+                is_general_education = category not in ['전공필수', '전공선택', '일선']
+
                 # 디버그: 과목별 시간대 분포
                 total_hours = morning_count + afternoon_count
                 if total_hours > 0:
                     if criteria.prefer_morning:
                         morning_ratio = morning_count / total_hours
-                        if morning_ratio >= 0.9:
-                            # 90% 이상 오전인 과목
-                            bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS * 2
-                            score += bonus
-                            print(f"  DEBUG: 오전 과목 강한 보너스 +{bonus}: {course_name} (오전 {morning_ratio:.0%})")
-                        elif morning_ratio > 0.5:
-                            # 오전이 더 많은 과목
-                            bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS
-                            score += bonus
-                            print(f"  DEBUG: 오전 선호 보너스 +{bonus}: {course_name} (오전 {morning_ratio:.0%})")
+
+                        # 교양 과목: 시간대 점수 극대화
+                        if is_general_education:
+                            if morning_ratio >= 0.8:
+                                bonus = 3000  # 극대 보너스
+                                print(f"  DEBUG: 오전 교양 극대 보너스 +{bonus}: {course_name} (오전 {morning_ratio:.0%})")
+                                score += bonus
+                            else:
+                                penalty = -5000  # 강한 패널티
+                                print(f"  DEBUG: 오전 선호 - 오후 교양 강한 패널티 {penalty}: {course_name} (오전 {morning_ratio:.0%})")
+                                score += penalty
                         else:
-                            # 오후가 더 많은 과목은 강한 패널티
-                            penalty = -ScoringWeights.TIME_SLOT_PREFERENCE_BONUS * 3  # 3배 강화
-                            score += penalty
-                            print(f"  DEBUG: 오전 선호 - 오후 과목 패널티 {penalty}: {course_name}")
+                            # 전공 과목: 기존 로직 유지
+                            if morning_ratio >= 0.9:
+                                bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS * 2
+                                print(f"  DEBUG: 오전 과목 강한 보너스 +{bonus}: {course_name} (오전 {morning_ratio:.0%})")
+                                score += bonus
+                            elif morning_ratio > 0.5:
+                                bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS
+                                score += bonus
+                                print(f"  DEBUG: 오전 선호 보너스 +{bonus}: {course_name} (오전 {morning_ratio:.0%})")
+                            else:
+                                # 전공은 시간대 페널티 최소화 (졸업요건 우선)
+                                penalty = -20
+                                print(f"  DEBUG: 오전 선호 - 오후 전공 약한 패널티 {penalty}: {course_name}")
+                                score += penalty
 
                     elif criteria.prefer_afternoon:
                         afternoon_ratio = afternoon_count / total_hours
-                        if afternoon_ratio >= 0.9:
-                            # 90% 이상 오후인 과목
-                            bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS * 2
-                            score += bonus
-                            print(f"  DEBUG: 오후 과목 강한 보너스 +{bonus}: {course_name} (오후 {afternoon_ratio:.0%})")
-                        elif afternoon_ratio > 0.5:
-                            # 오후가 더 많은 과목
-                            bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS
-                            score += bonus
-                            print(f"  DEBUG: 오후 선호 보너스 +{bonus}: {course_name} (오후 {afternoon_ratio:.0%})")
+
+                        # 교양 과목: 시간대 점수 극대화
+                        if is_general_education:
+                            if afternoon_ratio >= 0.8:
+                                bonus = 3000  # 극대 보너스
+                                print(f"  DEBUG: 오후 교양 극대 보너스 +{bonus}: {course_name} (오후 {afternoon_ratio:.0%})")
+                                score += bonus
+                            else:
+                                penalty = -5000  # 강한 패널티
+                                print(f"  DEBUG: 오후 선호 - 오전 교양 강한 패널티 {penalty}: {course_name} (오후 {afternoon_ratio:.0%})")
+                                score += penalty
                         else:
-                            # 오전이 더 많은 과목은 강한 패널티
-                            penalty = -ScoringWeights.TIME_SLOT_PREFERENCE_BONUS * 3  # 3배 강화
-                            score += penalty
-                            print(f"  DEBUG: 오후 선호 - 오전 과목 패널티 {penalty}: {course_name}")
+                            # 전공 과목: 기존 로직 유지
+                            if afternoon_ratio >= 0.9:
+                                bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS * 2
+                                print(f"  DEBUG: 오후 과목 강한 보너스 +{bonus}: {course_name} (오후 {afternoon_ratio:.0%})")
+                                score += bonus
+                            elif afternoon_ratio > 0.5:
+                                bonus = ScoringWeights.TIME_SLOT_PREFERENCE_BONUS
+                                score += bonus
+                                print(f"  DEBUG: 오후 선호 보너스 +{bonus}: {course_name} (오후 {afternoon_ratio:.0%})")
+                            else:
+                                # 전공은 시간대 페널티 최소화 (졸업요건 우선)
+                                penalty = -20
+                                print(f"  DEBUG: 오후 선호 - 오전 전공 약한 패널티 {penalty}: {course_name}")
+                                score += penalty
 
         return score, matched_prefs
 

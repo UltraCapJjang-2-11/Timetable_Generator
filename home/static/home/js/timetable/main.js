@@ -22,7 +22,8 @@ const constraints = {
     specific_avoid_times: [],
     specific_avoid_time_ranges: [],
     is_modification: false,
-    existing_courses: []
+    existing_courses: [],
+    optimization_level: 'ADVANCED'  // 최적화 수준 기본값
 };
 let timetables = [];  // 생성된 Timetable 객체의 배열
 let currentIndex = 0;  // 현재 렌더링(선택된)시간표의 인덱스
@@ -87,6 +88,9 @@ function buildApiParams() {
     }
     if (constraints.prefer_afternoon !== undefined) {
         params.append("prefer_afternoon", constraints.prefer_afternoon);
+    }
+    if (constraints.optimization_level !== undefined) {
+        params.append("optimization_level", constraints.optimization_level);
     }
 
     // 디버깅: 전달되는 모든 파라미터 확인
@@ -353,13 +357,10 @@ function handleTimetableActionRequest(e) {
         // 새로운 시간표 생성의 경우: 모든 제약조건을 새로 설정
         constraints.is_modification = false;
         constraints.existing_courses = [];
-        
-        // 모든 제약조건을 새로 설정 (기존 조건 초기화)
+
+        // 1. 기존 constraints 초기화 (total_credits, is_modification, existing_courses는 유지)
         Object.keys(constraints).forEach(key => {
-            if (parsedData[key] !== undefined) {
-                constraints[key] = parsedData[key];
-            } else if (key !== 'total_credits' && key !== 'is_modification') {
-                // total_credits는 유지하고, 나머지는 초기화
+            if (key !== 'total_credits' && key !== 'is_modification' && key !== 'existing_courses') {
                 if (key === 'free_days' || key === 'required_courses' || key === 'avoid_times' ||
                     key === 'avoid_time_ranges' || key === 'only_time_ranges' || key === 'exclude_courses' ||
                     key === 'specific_avoid_times' || key === 'specific_avoid_time_ranges' ||
@@ -367,10 +368,17 @@ function handleTimetableActionRequest(e) {
                     key === 'preferred_courses' || key === 'avoid_courses' || key === 'preference_tags') {
                     constraints[key] = [];
                 } else if (key === 'max_walking_time' || key === 'prefer_compact' ||
-                           key === 'prefer_morning' || key === 'prefer_afternoon') {
+                           key === 'prefer_morning' || key === 'prefer_afternoon' || key === 'optimization_level') {
+                    constraints[key] = undefined;
+                } else {
                     constraints[key] = undefined;
                 }
             }
+        });
+
+        // 2. parsedData의 모든 키를 constraints에 설정 (설문조사 데이터 포함)
+        Object.keys(parsedData).forEach(key => {
+            constraints[key] = parsedData[key];
         });
     }
 

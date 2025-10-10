@@ -204,6 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const preferCompact = document.querySelector('input[name="compact"]:checked')?.value === 'yes';
         const preferMorning = document.getElementById('prefer-morning')?.checked || false;
         const preferAfternoon = document.getElementById('prefer-afternoon')?.checked || false;
+        const optimizationLevel = document.getElementById('optimization-level')?.value || 'ADVANCED';
 
         const surveyData = {
             majorCredit: parseInt(major),
@@ -218,7 +219,8 @@ document.addEventListener("DOMContentLoaded", () => {
             maxWalkingTime: maxWalkingTime,
             preferCompact: preferCompact,
             preferMorning: preferMorning,
-            preferAfternoon: preferAfternoon
+            preferAfternoon: preferAfternoon,
+            optimizationLevel: optimizationLevel
         };
 
         console.log("설문조사 결과:", surveyData);
@@ -268,7 +270,8 @@ document.addEventListener("DOMContentLoaded", () => {
             prefer_compact: surveyData.preferCompact || false,
             prefer_morning: surveyData.preferMorning || false,
             prefer_afternoon: surveyData.preferAfternoon || false,
-            preference_tags: surveyData.preferenceTags || []  // 태그 추가
+            preference_tags: surveyData.preferenceTags || [],  // 태그 추가
+            optimization_level: surveyData.optimizationLevel || 'ADVANCED'  // 최적화 수준 추가
         };
 
         // 제외할 시간(blockedTimes)을 specific_avoid_times 형식으로 변환

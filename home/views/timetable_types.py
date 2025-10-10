@@ -50,6 +50,9 @@ class TimetableRequest:
     specific_avoid_times: List[Dict[str, Any]] = field(default_factory=list)
     specific_avoid_time_ranges: List[Dict[str, Any]] = field(default_factory=list)
 
+    # 최적화 수준 (BASIC, ADVANCED, EXPERT, ULTRA)
+    optimization_level: str = 'ADVANCED'
+
 
 @dataclass
 class UserInfo:
@@ -138,6 +141,10 @@ class FilterCriteria:
 
     # 교양 세부 이수 상태
     missing_gen_sub: Dict[str, int] = field(default_factory=dict)
+
+    # 시간대 선호도 (교양 과목 필터링용)
+    prefer_morning: bool = False
+    prefer_afternoon: bool = False
 
 
 @dataclass

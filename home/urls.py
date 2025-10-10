@@ -23,6 +23,10 @@ urlpatterns = [
     path('save_timetable/', save_timetable, name='save_timetable'),
     path('delete_timetable/<int:timetable_id>/', delete_timetable, name='delete_timetable'),
 
+    # 자동완성 API
+    path('api/autocomplete/instructors/', autocomplete_instructors, name='autocomplete-instructors'),
+    path('api/autocomplete/courses/', autocomplete_courses, name='autocomplete-courses'),
+
     # 채팅 기록 조회 API
     path('api/chat/history/', root_views.get_chat_history, name='chat-history'),
 

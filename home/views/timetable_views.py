@@ -344,3 +344,89 @@ def delete_timetable(request, timetable_id):
     except Exception as e:
         print(f"시간표 삭제 오류: {str(e)}")
         return JsonResponse({'error': f'시간표 삭제 중 오류가 발생했습니다: {str(e)}'}, status=500)
+
+
+def autocomplete_instructors(request):
+    """
+    교수 이름 자동완성 API
+    쿼리 파라미터 'q'로 검색어를 받아 부분 일치하는 교수 이름 목록을 반환
+    여러 교수가 쉼표로 구분된 경우 개별 교수로 분리하여 반환
+    """
+    query = request.GET.get('q', '').strip()
+
+    if not query or len(query) < 1:
+        return JsonResponse({'results': []})
+
+    try:
+        # 현재 학기 (2025년 1학기)
+        semester = Semester.objects.filter(year=2025, term='1학기').first()
+
+        if not semester:
+            return JsonResponse({'results': []})
+
+        # 교수 이름으로 검색 (부분 일치, 대소문자 무시)
+        # NULL이 아니고 빈 문자열이 아닌 경우만 검색
+        instructor_names = Courses.objects.filter(
+            semester=semester,
+            instructor_name__icontains=query
+        ).exclude(
+            instructor_name__isnull=True
+        ).exclude(
+            instructor_name=''
+        ).values_list(
+            'instructor_name', flat=True
+        ).distinct()
+
+        # 쉼표로 구분된 교수 이름들을 개별로 분리
+        individual_instructors = set()
+        for name in instructor_names:
+            # 쉼표로 분리하고 공백 제거
+            names = [n.strip() for n in name.split(',')]
+            for n in names:
+                if n and query.lower() in n.lower():  # 검색어와 매칭되는 경우만 추가
+                    individual_instructors.add(n)
+
+        # 정렬 후 최대 10개까지 반환
+        sorted_instructors = sorted(list(individual_instructors))[:10]
+
+        return JsonResponse({
+            'results': sorted_instructors
+        })
+
+    except Exception as e:
+        print(f"교수 자동완성 오류: {str(e)}")
+        return JsonResponse({'results': []})
+
+
+def autocomplete_courses(request):
+    """
+    과목 이름 자동완성 API
+    쿼리 파라미터 'q'로 검색어를 받아 부분 일치하는 과목 이름 목록을 반환
+    """
+    query = request.GET.get('q', '').strip()
+
+    if not query or len(query) < 1:
+        return JsonResponse({'results': []})
+
+    try:
+        # 현재 학기 (2025년 1학기)
+        semester = Semester.objects.filter(year=2025, term='1학기').first()
+
+        if not semester:
+            return JsonResponse({'results': []})
+
+        # 과목 이름으로 검색 (부분 일치, 대소문자 무시)
+        courses = Courses.objects.filter(
+            semester=semester,
+            course_name__icontains=query
+        ).values_list(
+            'course_name', flat=True
+        ).distinct().order_by('course_name')[:10]  # 최대 10개까지
+
+        return JsonResponse({
+            'results': list(courses)
+        })
+
+    except Exception as e:
+        print(f"과목 자동완성 오류: {str(e)}")
+        return JsonResponse({'results': []})

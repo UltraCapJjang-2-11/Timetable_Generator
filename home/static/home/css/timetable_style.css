@@ -423,4 +423,64 @@ body {
     margin-right: 5px;
 }
 
+/* 자동완성 스타일 */
+.autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    margin-top: 2px;
+}
+
+.autocomplete-dropdown.active {
+    display: block;
+}
+
+.autocomplete-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 14px;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+    background-color: #f0f0f0;
+}
+
+.autocomplete-item:active {
+    background-color: #e0e0e0;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 /* 설문조사 오버레이 스타일 (끝) */

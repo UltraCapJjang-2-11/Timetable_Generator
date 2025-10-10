@@ -142,7 +142,10 @@
             <div class="survey-step" data-step="5">
                 <h3>5. 선호하는 교수님을 입력해주세요. (선택사항)</h3>
                 <div class="preference-input-container">
-                    <input type="text" id="preferred-instructor-input" placeholder="교수님 이름 입력 후 Enter">
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="preferred-instructor-input" placeholder="교수님 이름 입력 후 Enter" autocomplete="off">
+                        <div id="preferred-instructor-autocomplete" class="autocomplete-dropdown"></div>
+                    </div>
                     <div id="preferred-instructors-list" class="preference-list"></div>
                     <small>* 여러 명 입력 가능합니다. Enter키로 추가하세요.</small>
                 </div>
@@ -152,7 +155,10 @@
             <div class="survey-step" data-step="6">
                 <h3>6. 기피하고 싶은 교수님을 입력해주세요. (선택사항)</h3>
                 <div class="preference-input-container">
-                    <input type="text" id="avoid-instructor-input" placeholder="교수님 이름 입력 후 Enter">
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="avoid-instructor-input" placeholder="교수님 이름 입력 후 Enter" autocomplete="off">
+                        <div id="avoid-instructor-autocomplete" class="autocomplete-dropdown"></div>
+                    </div>
                     <div id="avoid-instructors-list" class="preference-list"></div>
                     <small>* 여러 명 입력 가능합니다. Enter키로 추가하세요.</small>
                 </div>
@@ -162,7 +168,10 @@
             <div class="survey-step" data-step="7">
                 <h3>7. 꼭 듣고 싶은 과목을 입력해주세요. (선택사항)</h3>
                 <div class="preference-input-container">
-                    <input type="text" id="preferred-course-input" placeholder="과목명 입력 후 Enter">
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="preferred-course-input" placeholder="과목명 입력 후 Enter" autocomplete="off">
+                        <div id="preferred-course-autocomplete" class="autocomplete-dropdown"></div>
+                    </div>
                     <div id="preferred-courses-list" class="preference-list"></div>
                     <small>* 여러 과목 입력 가능합니다. Enter키로 추가하세요.</small>
                 </div>
@@ -172,7 +181,10 @@
             <div class="survey-step" data-step="8">
                 <h3>8. 듣고 싶지 않은 과목을 입력해주세요. (선택사항)</h3>
                 <div class="preference-input-container">
-                    <input type="text" id="avoid-course-input" placeholder="과목명 입력 후 Enter">
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="avoid-course-input" placeholder="과목명 입력 후 Enter" autocomplete="off">
+                        <div id="avoid-course-autocomplete" class="autocomplete-dropdown"></div>
+                    </div>
                     <div id="avoid-courses-list" class="preference-list"></div>
                     <small>* 여러 과목 입력 가능합니다. Enter키로 추가하세요.</small>
                 </div>

@@ -5,6 +5,146 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextBtn = document.querySelector(".next-btn");
     let currentStep = 0;
 
+    // 자동완성 관리 객체
+    const autocompleteManager = {
+        currentFocus: -1,
+        debounceTimer: null,
+
+        // API 호출 함수
+        async fetchSuggestions(query, type) {
+            if (!query || query.length < 1) {
+                return [];
+            }
+
+            try {
+                const endpoint = type === 'instructor'
+                    ? '/api/autocomplete/instructors/'
+                    : '/api/autocomplete/courses/';
+
+                const response = await fetch(`${endpoint}?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                return data.results || [];
+            } catch (error) {
+                console.error('자동완성 API 오류:', error);
+                return [];
+            }
+        },
+
+        // 디바운싱 함수
+        debounce(func, delay = 300) {
+            clearTimeout(this.debounceTimer);
+            this.debounceTimer = setTimeout(func, delay);
+        },
+
+        // 자동완성 결과 렌더링
+        renderSuggestions(suggestions, dropdownElement, inputElement, type, managerType) {
+            // 이미 추가된 항목 제외
+            const existingItems = preferenceManager[managerType];
+            const filteredSuggestions = suggestions.filter(item => !existingItems.includes(item));
+
+            if (filteredSuggestions.length === 0) {
+                dropdownElement.classList.remove('active');
+                return;
+            }
+
+            dropdownElement.innerHTML = filteredSuggestions.map((item, index) =>
+                `<div class="autocomplete-item" data-index="${index}" data-value="${item}">${item}</div>`
+            ).join('');
+
+            dropdownElement.classList.add('active');
+            this.currentFocus = -1;
+
+            // 클릭 이벤트 추가
+            dropdownElement.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const value = item.getAttribute('data-value');
+                    preferenceManager.add(managerType, value);
+                    inputElement.value = '';
+                    dropdownElement.classList.remove('active');
+                });
+            });
+        },
+
+        // 키보드 내비게이션
+        handleKeyDown(e, dropdownElement, inputElement, managerType) {
+            const items = dropdownElement.querySelectorAll('.autocomplete-item');
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.currentFocus++;
+                if (this.currentFocus >= items.length) this.currentFocus = 0;
+                this.setActive(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.currentFocus--;
+                if (this.currentFocus < 0) this.currentFocus = items.length - 1;
+                this.setActive(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (this.currentFocus > -1 && items[this.currentFocus]) {
+                    items[this.currentFocus].click();
+                } else {
+                    // 자동완성 없이 직접 입력
+                    const value = inputElement.value.trim();
+                    if (value) {
+                        preferenceManager.add(managerType, value);
+                        inputElement.value = '';
+                        dropdownElement.classList.remove('active');
+                    }
+                }
+            } else if (e.key === 'Escape') {
+                dropdownElement.classList.remove('active');
+            }
+        },
+
+        setActive(items) {
+            items.forEach((item, index) => {
+                if (index === this.currentFocus) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        },
+
+        // 자동완성 초기화
+        initialize(inputId, dropdownId, type, managerType) {
+            const inputElement = document.getElementById(inputId);
+            const dropdownElement = document.getElementById(dropdownId);
+
+            if (!inputElement || !dropdownElement) return;
+
+            // input 이벤트
+            inputElement.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+
+                if (!query) {
+                    dropdownElement.classList.remove('active');
+                    return;
+                }
+
+                this.debounce(async () => {
+                    const suggestions = await this.fetchSuggestions(query, type);
+                    this.renderSuggestions(suggestions, dropdownElement, inputElement, type, managerType);
+                });
+            });
+
+            // keydown 이벤트
+            inputElement.addEventListener('keydown', (e) => {
+                if (dropdownElement.classList.contains('active')) {
+                    this.handleKeyDown(e, dropdownElement, inputElement, managerType);
+                }
+            });
+
+            // 외부 클릭 시 닫기
+            document.addEventListener('click', (e) => {
+                if (!inputElement.contains(e.target) && !dropdownElement.contains(e.target)) {
+                    dropdownElement.classList.remove('active');
+                }
+            });
+        }
+    };
+
     // 선호도 리스트 관리 객체
     const preferenceManager = {
         preferredInstructors: [],
@@ -66,29 +206,34 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 선호도 입력 필드 이벤트 리스너
-    const preferenceInputs = [
-        { id: 'preferred-instructor-input', type: 'preferredInstructors' },
-        { id: 'avoid-instructor-input', type: 'avoidInstructors' },
-        { id: 'preferred-course-input', type: 'preferredCourses' },
-        { id: 'avoid-course-input', type: 'avoidCourses' }
-    ];
+    // 자동완성 초기화
+    autocompleteManager.initialize(
+        'preferred-instructor-input',
+        'preferred-instructor-autocomplete',
+        'instructor',
+        'preferredInstructors'
+    );
 
-    preferenceInputs.forEach(({ id, type }) => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const value = input.value.trim();
-                    if (value) {
-                        preferenceManager.add(type, value);
-                        input.value = '';
-                    }
-                }
-            });
-        }
-    });
+    autocompleteManager.initialize(
+        'avoid-instructor-input',
+        'avoid-instructor-autocomplete',
+        'instructor',
+        'avoidInstructors'
+    );
+
+    autocompleteManager.initialize(
+        'preferred-course-input',
+        'preferred-course-autocomplete',
+        'course',
+        'preferredCourses'
+    );
+
+    autocompleteManager.initialize(
+        'avoid-course-input',
+        'avoid-course-autocomplete',
+        'course',
+        'avoidCourses'
+    );
 
     // 선호도 항목 삭제 이벤트 (이벤트 위임)
     document.addEventListener('click', (e) => {

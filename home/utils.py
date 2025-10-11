@@ -133,7 +133,7 @@ def extract_missing_required_major_courses(user_dept_id, completed_courses):
 def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_ranges, specific_avoid_times=None, specific_avoid_time_ranges=None):
     """
     시간 제약조건을 적용하여 후보 강좌 목록을 필터링합니다.
-    
+
     Args:
         candidate_data: 후보 강좌 데이터 리스트
         only_ranges: 허용할 시간대 목록
@@ -141,19 +141,28 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
         avoid_ranges: 피해야 할 시간대 목록
         specific_avoid_times: 특정 요일+시간 회피 목록
         specific_avoid_time_ranges: 특정 요일+시간범위 회피 목록
-    
+
     Returns:
         필터링된 후보 강좌 데이터 리스트
+
+    Note:
+        필수 과목(pre_added=True)은 시간 제약 조건을 무시하고 항상 포함됩니다.
     """
     if specific_avoid_times is None:
         specific_avoid_times = []
     if specific_avoid_time_ranges is None:
         specific_avoid_time_ranges = []
-    
-    # 1) only_time_ranges 적용 — 있으면 이 범위 **외** 과목 제거
+
+    # 1) only_time_ranges 적용 — 있으면 이 범위 **외** 과목 제거 (필수 과목 제외)
     if only_ranges:
         filtered = []
         for data in candidate_data:
+            # 필수 과목은 항상 포함
+            if data.get('pre_added', False):
+                filtered.append(data)
+                print(f"DEBUG: 필수 과목 시간 제약 무시 - {data.get('course_name', 'Unknown')}")
+                continue
+
             ok = True
             for sched in data['schedule']:
                 # times: "02,03,04" → [10,11,12]
@@ -171,15 +180,20 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
                 filtered.append(data)
         candidate_data = filtered
 
-    # 2) avoid_times / avoid_time_ranges 적용 — 걸리면 제거
+    # 2) avoid_times / avoid_time_ranges 적용 — 걸리면 제거 (필수 과목 제외)
     if avoid_times or avoid_ranges:
         filtered = []
         for data in candidate_data:
+            # 필수 과목은 항상 포함
+            if data.get('pre_added', False):
+                filtered.append(data)
+                continue
+
             bad = False
             for sched in data['schedule']:
                 hours = parse_time_slots(sched['times'], add_base_hour=True)
                 # (1) 단일 시각 회피
-                if any(obj['day']==sched['day'] and h==obj['hour'] 
+                if any(obj['day']==sched['day'] and h==obj['hour']
                        for obj in avoid_times for h in hours):
                     bad = True
                     break
@@ -197,21 +211,26 @@ def apply_time_constraints(candidate_data, only_ranges, avoid_times, avoid_range
                 filtered.append(data)
         candidate_data = filtered
 
-    # 3) specific_avoid_times / specific_avoid_time_ranges 적용 — 특정 요일+시간 회피
+    # 3) specific_avoid_times / specific_avoid_time_ranges 적용 — 특정 요일+시간 회피 (필수 과목 제외)
     if specific_avoid_times or specific_avoid_time_ranges:
         filtered = []
         for data in candidate_data:
+            # 필수 과목은 항상 포함
+            if data.get('pre_added', False):
+                filtered.append(data)
+                continue
+
             bad = False
             for sched in data['schedule']:
                 hours = parse_time_slots(sched['times'], add_base_hour=True)
-                
+
                 # (1) 특정 요일+시간 회피
-                if any(obj['day']==sched['day'] and h==obj['hour'] 
+                if any(obj['day']==sched['day'] and h==obj['hour']
                        for obj in specific_avoid_times for h in hours):
                     bad = True
                     print(f"DEBUG: 특정 시간 회피로 과목 제외 - {data.get('course_name', 'Unknown')} ({sched['day']}요일 {hours}시)")
                     break
-                
+
                 # (2) 특정 요일+시간범위 회피
                 if any(
                     obj['day']==sched['day']

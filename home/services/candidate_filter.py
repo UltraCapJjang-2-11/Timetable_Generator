@@ -185,11 +185,13 @@ class CandidateFilter:
         course: Courses,
         criteria: FilterCriteria
     ) -> bool:
-        """기본 필터 통과 확인"""
-        # 이미 추가된 과목
-        if course.course_id in criteria.pre_added_ids:
-            return False
+        """기본 필터 통과 확인
 
+        Note:
+            필수 과목(pre_added_ids)도 후보 목록에 포함되어야 합니다.
+            이 과목들은 나중에 _build_candidate_data에서 pre_added=True로 표시되고,
+            CP-SAT 모델에서 강제로 선택됩니다.
+        """
         # 학점 0 이하
         if course.credits <= 0:
             return False
@@ -198,7 +200,15 @@ class CandidateFilter:
         if any(sch.times.strip() == EXCLUDE_TIME_SLOT for sch in course.courseschedule_set.all()):
             return False
 
-        # Free-day 충돌
+        # 필수 과목(pre_added)은 공강일 필터를 무시
+        if course.course_id in criteria.pre_added_ids:
+            print(f"DEBUG: 필수 과목 '{course.course_name}' - 기본 필터 통과 (공강일 무시)")
+            # 가상강의실 제외 (필수 과목도 체크)
+            if any(EXCLUDE_LOCATION_KEYWORD in (sch.location or "") for sch in course.courseschedule_set.all()):
+                return False
+            return True
+
+        # Free-day 충돌 (일반 과목만 체크)
         if any(sch.day in criteria.free_days for sch in course.courseschedule_set.all()):
             return False
 
@@ -332,6 +342,9 @@ class CandidateFilter:
 
         Returns:
             필터링된 후보 과목 데이터 리스트
+
+        Note:
+            필수 과목(pre_added=True)은 제외 목록에 있어도 필터링하지 않습니다.
         """
         if not exclude_names:
             return candidate_data
@@ -340,6 +353,12 @@ class CandidateFilter:
         filtered = []
 
         for d in candidate_data:
+            # 필수 과목은 항상 포함
+            if d.get('pre_added', False):
+                filtered.append(d)
+                print(f"DEBUG: 필수 과목 제외 필터 무시 - {d['course_name']}")
+                continue
+
             course_name = d['course_name'].strip()
             should_exclude = False
 

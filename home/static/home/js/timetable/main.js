@@ -30,6 +30,10 @@ let currentIndex = 0;  // 현재 렌더링(선택된)시간표의 인덱스
 // 시간표 생성 시 고정 상태를 유지하기 위한 Set 변수
 let pinnedCourseIdsToPreserve = new Set();
 
+// 외부에서 접근 가능하도록 노출
+window.getCurrentTimetableIndex = () => currentIndex;
+window.getTimetablesCount = () => timetables.length;
+
 /**
  * ----------------------------------------------------------------
  * 2. 유틸리티 함수 (Utility Functions)
@@ -671,4 +675,31 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener('addCourseToView', handleAddCourse);
     document.addEventListener('removeCourseFromView', handleRemoveCourse);
     document.addEventListener('togglePinCourse', handleTogglePin);
+
+    // NL 시간표 생성 이벤트 리스너
+    document.addEventListener('applyNLGeneratedTimetables', (e) => {
+        const nlTimetables = e.detail.timetables;
+        if (!nlTimetables || nlTimetables.length === 0) return;
+
+        // NL에서 생성된 시간표를 Timetable 객체로 변환
+        // 백엔드는 시간표를 courses 배열의 배열로 반환 (timetables = [[course1, course2, ...], ...])
+        timetables = nlTimetables.map(coursesArray => {
+            const courses = Course.createFromApiData(coursesArray);
+            return new Timetable(courses);
+        });
+
+        currentIndex = 0;
+        applyTimetableToMiddlePanel();
+
+        console.log(`NL 시간표 ${timetables.length}개 적용 완료`);
+    });
+
+    // 특정 인덱스의 시간표로 전환
+    document.addEventListener('switchToTimetable', (e) => {
+        const index = e.detail.index;
+        if (index >= 0 && index < timetables.length) {
+            currentIndex = index;
+            applyTimetableToMiddlePanel();
+        }
+    });
 });

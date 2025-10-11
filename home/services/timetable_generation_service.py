@@ -204,14 +204,17 @@ class TimetableGenerationService:
     def _parse_required_courses(self, req_names: List[str]) -> List[int]:
         """필수 과목명을 Course ID 리스트로 변환"""
         req_ids = []
-        major_qs = (
-            self.course_service.course_search(year=CURRENT_YEAR, term=CURRENT_TERM, category_name='교양') |
-            self.course_service.course_search(year=CURRENT_YEAR, term=CURRENT_TERM, category_name='전공')
-        )
+        # 모든 카테고리에서 검색하도록 수정 (category_name 필터 제거)
+        all_courses = self.course_service.course_search(year=CURRENT_YEAR, term=CURRENT_TERM)
+
         for name in req_names:
-            course = major_qs.filter(course_name__icontains=name).first()
+            course = all_courses.filter(course_name__icontains=name).first()
             if course:
+                print(f"DEBUG: Found required course '{name}' -> {course.course_name} (ID: {course.course_id}, Category: {course.category.category_name if course.category else 'N/A'})")
                 req_ids.append(course.course_id)
+            else:
+                print(f"WARNING: Required course '{name}' not found in current semester ({CURRENT_YEAR} {CURRENT_TERM})")
+
         print("DEBUG: parsed required course IDs =", req_ids)
         return req_ids
 

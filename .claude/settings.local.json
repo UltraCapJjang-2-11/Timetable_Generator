@@ -21,7 +21,8 @@
       "Bash(mysql:*)",
       "Bash(xargs cat:*)",
       "Bash(open /Users/yunsihun/1capjjang/capstone/Timetable_Generator/test_visualization.html)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

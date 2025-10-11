@@ -175,6 +175,79 @@ async def chat_message(sid, data):
 
 
 @sio.event
+async def nl_timetable_request(sid, data):
+    """자연어 기반 시간표 생성 요청 처리"""
+    if not isinstance(data, dict):
+        return
+
+    user_message = data.get("message", "").strip()
+    session_id = data.get("session_id", "default")
+
+    if not user_message:
+        return
+
+    user = sid_to_user.get(sid) or {}
+    user_id = user.get("user_id")
+
+    if not user_id:
+        await sio.emit("nl_timetable_response", {
+            "error": "로그인이 필요합니다.",
+            "stage": "error"
+        }, room=sid)
+        return
+
+    try:
+        # 자연어 처리 서비스 호출
+        from home.services.nl_timetable_service import NaturalLanguageTimetableService
+
+        nl_service = NaturalLanguageTimetableService()
+        constraints, ai_response, stage = await sync_to_async(
+            nl_service.parse_natural_language,
+            thread_sensitive=True
+        )(user_id, session_id, user_message)
+
+        # AI 응답 전송
+        await sio.emit("nl_timetable_response", {
+            "message": ai_response,
+            "stage": stage,
+            "constraints": constraints
+        }, room=sid)
+
+        # 시간표 생성 단계인 경우
+        if stage == "generating" and constraints:
+            await sio.emit("nl_timetable_generating", {
+                "message": "시간표를 생성하고 있습니다...",
+                "summary": nl_service.generate_summary(constraints)
+            }, room=sid)
+
+            # 시간표 생성 (비동기 처리)
+            from django.contrib.auth.models import User
+            from home.services.timetable_generation_service import TimetableGenerationService
+
+            django_user = await sync_to_async(User.objects.get)(id=user_id)
+            timetable_request = nl_service.constraints_to_timetable_request(constraints, django_user)
+
+            generation_service = TimetableGenerationService()
+            result = await sync_to_async(
+                generation_service.generate,
+                thread_sensitive=True
+            )(django_user, timetable_request)
+
+            # 결과 전송
+            await sio.emit("nl_timetable_result", result, room=sid)
+
+            # 세션 초기화
+            nl_service.clear_session(user_id, session_id)
+
+    except Exception as e:
+        logging.getLogger(__name__).exception("NL timetable request failed")
+        await sio.emit("nl_timetable_response", {
+            "error": f"오류가 발생했습니다: {str(e)}",
+            "stage": "error"
+        }, room=sid)
+
+
+@sio.event
 async def disconnect(sid):
     # On disconnect, remove from all rooms and update counts
     rooms = list(sid_to_rooms.get(sid, set()))

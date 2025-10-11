@@ -1,16 +1,41 @@
+# Environment variables
+.env
+.env.local
+
+# Python cache
 config/__pycache__/
 home/__pycache__/
-config/settings.py
 **/__pycache__/
+
+# Django settings (if containing secrets)
+config/settings.py
+
+# Virtual environments
 .venv/
 .venv310/
-db/target
-.rasa/
-user_uploads/
 venv310/
+
+# Database
+db/target
+
+# Rasa
+.rasa/
+
+# User uploads
+user_uploads/
+
+# Test files
 test_*.py
-*.idea
-*.log
-media/transcripts/
-*.md
 test*
+
+# IDE
+*.idea
+
+# Logs
+*.log
+
+# Media
+media/transcripts/
+
+# Markdown (temporary - remove if needed)
+*.md

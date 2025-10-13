@@ -3,7 +3,15 @@
 document.addEventListener("DOMContentLoaded", () => {
     const steps = document.querySelectorAll(".survey-step");
     const nextBtn = document.querySelector(".next-btn");
+    const prevBtn = document.querySelector(".prev-btn");
+    const progressFill = document.getElementById("survey-progress-fill");
+    const currentStepText = document.getElementById("current-step-text");
+    const dots = document.querySelectorAll(".survey-dots .dot");
     let currentStep = 0;
+
+    // 초기 상태 설정
+    updateProgress();
+    updateButtons();
 
     // 자동완성 관리 객체
     const autocompleteManager = {
@@ -265,6 +273,53 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // 프로그레스 바와 단계 표시 업데이트
+    function updateProgress() {
+        const progress = ((currentStep + 1) / steps.length) * 100;
+        progressFill.style.width = `${progress}%`;
+        currentStepText.textContent = currentStep + 1;
+
+        // 점 업데이트
+        dots.forEach((dot, index) => {
+            if (index < currentStep) {
+                dot.classList.add("completed");
+                dot.classList.remove("active");
+            } else if (index === currentStep) {
+                dot.classList.add("active");
+                dot.classList.remove("completed");
+            } else {
+                dot.classList.remove("active", "completed");
+            }
+        });
+    }
+
+    // 버튼 상태 업데이트
+    function updateButtons() {
+        // 첫 단계면 이전 버튼 비활성화
+        prevBtn.disabled = currentStep === 0;
+
+        // 마지막 단계면 버튼 텍스트 변경
+        if (currentStep === steps.length - 1) {
+            nextBtn.innerHTML = "완료 ✓";
+        } else {
+            nextBtn.innerHTML = "다음 →";
+        }
+    }
+
+    // 이전 버튼 클릭 처리
+    prevBtn.addEventListener("click", () => {
+        if (currentStep > 0) {
+            steps[currentStep].classList.remove("active");
+            currentStep--;
+            steps[currentStep].classList.add("active");
+            updateProgress();
+            updateButtons();
+
+            // 스크롤을 위로
+            document.querySelector(".survey-container").scrollTop = 0;
+        }
+    });
+
     // 다음 버튼 클릭 처리
     nextBtn.addEventListener("click", () => {
         // 현재 단계 유효성 검사
@@ -277,11 +332,11 @@ document.addEventListener("DOMContentLoaded", () => {
             steps[currentStep].classList.remove("active");
             currentStep++;
             steps[currentStep].classList.add("active");
+            updateProgress();
+            updateButtons();
 
-            // 마지막 단계면 버튼 텍스트 변경
-            if (currentStep === steps.length - 1) {
-                nextBtn.textContent = "제출";
-            }
+            // 스크롤을 위로
+            document.querySelector(".survey-container").scrollTop = 0;
         } else {
             // 최종 제출
             submitSurvey();
@@ -380,6 +435,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 설문조사 오버레이 열기 함수 (전역 함수로 노출)
     window.showSurvey = function() {
+        // 초기 상태로 리셋
+        currentStep = 0;
+        steps.forEach((step, index) => {
+            if (index === 0) {
+                step.classList.add("active");
+            } else {
+                step.classList.remove("active");
+            }
+        });
+        updateProgress();
+        updateButtons();
+
+        // 스크롤을 위로
+        document.querySelector(".survey-container").scrollTop = 0;
+
         document.getElementById("survey-overlay").style.display = "flex";
     };
 

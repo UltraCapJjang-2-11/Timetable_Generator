@@ -181,27 +181,176 @@ body {
     display: none;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
-    backdrop-filter: blur(3px);
-    padding: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    padding: 40px 20px;
+    animation: fadeIn 0.25s ease;
 }
 
 .survey-container {
     position: relative;
     width: 100%;
-    max-width: 650px;
-    max-height: 90vh;
+    max-width: 500px;
+    max-height: 70vh;
     overflow-y: auto;
     background: white;
-    padding: 40px 40px 120px 40px;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    padding: 35px 30px 85px 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.1);
+    animation: popupAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* 닫기 버튼 */
+.survey-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.survey-close-btn:hover {
+    background: #e0e0e0;
+    color: #333;
+    transform: rotate(90deg);
+}
+
+/* 스크롤바 스타일링 */
+.survey-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.survey-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.survey-container::-webkit-scrollbar-thumb {
+    background: #ffc107;
+    border-radius: 10px;
+}
+
+.survey-container::-webkit-scrollbar-thumb:hover {
+    background: #ffb300;
+}
+
+/* 프로그레스 바 */
+.survey-progress-wrapper {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.survey-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.survey-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffc107, #ff9800);
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 11.11%; /* 1/9 */
+}
+
+.survey-step-indicator {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #666;
+    white-space: nowrap;
+    min-width: 50px;
+}
+
+#current-step-text {
+    color: #ffc107;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* 단계 표시 점들 */
+.survey-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+
+.survey-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.survey-dots .dot.active {
+    background: #ffc107;
+    transform: scale(1.3);
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+.survey-dots .dot.completed {
+    background: #4caf50;
+}
+
+/* 스텝 헤더 */
+.step-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.step-number {
+    display: inline-block;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.step-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #222;
+    line-height: 1.4;
+}
+
+.step-description {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 설문조사 단계 */
 .survey-step {
     display: none;
     flex-direction: column;
     gap: 24px;
+    animation: fadeInUp 0.4s ease;
 }
 
 .survey-step.active {
@@ -215,25 +364,51 @@ body {
     color: #333;
 }
 
+/* 학점 입력 */
 .credit-inputs {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
-    flex-wrap: wrap;
 }
 
-.credit-inputs input[type="number"] {
-    padding: 10px;
-    font-size: 1rem;
-    width: 48%;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    min-width: 200px;
-}
-
-.weekday-options {
+.input-group {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.input-group input[type="number"] {
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.input-group input[type="number"]:focus {
+    outline: none;
+    border-color: #ffc107;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+}
+
+.input-group small {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+/* 요일 선택 */
+.weekday-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
 }
 
 .weekday-options input[type="checkbox"] {
@@ -241,20 +416,30 @@ body {
 }
 
 .weekday-options label {
-    padding: 10px 16px;
-    background-color: #eee;
-    border-radius: 999px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+    border-radius: 12px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.3s ease;
     font-size: 0.95rem;
-    border: 1px solid transparent;
+    font-weight: 500;
+    border: 2px solid transparent;
+    text-align: center;
+    display: block;
+}
+
+.weekday-options label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .weekday-options input[type="checkbox"]:checked + label {
-    background-color: #ffc107;
+    background: linear-gradient(135deg, #ffc107, #ff9800);
     color: white;
-    font-weight: bold;
+    font-weight: 700;
     border-color: #ffca28;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+    transform: translateY(-2px);
 }
 
 .survey-timetable {
@@ -299,47 +484,88 @@ body {
     border: 1px solid #ffa000;
 }
 
+/* 태그 옵션 */
 .tag-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
 }
 
 .tag-options span {
-    background: #eee;
-    padding: 8px 14px;
-    border-radius: 20px;
+    background: linear-gradient(135deg, #f8f8f8, #ececec);
+    padding: 12px 18px;
+    border-radius: 12px;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    text-align: center;
+    font-weight: 500;
+}
+
+.tag-options span:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .tag-options span.selected {
-    background: #ffc107;
+    background: linear-gradient(135deg, #ffc107, #ff9800);
     color: white;
-    font-weight: bold;
+    font-weight: 700;
+    border-color: #ffca28;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+    transform: translateY(-2px);
 }
 
+/* 설문조사 Footer 버튼 */
 .survey-footer {
     position: absolute;
     bottom: 20px;
+    left: 30px;
     right: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.prev-btn, .next-btn {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    max-width: 200px;
+}
+
+.prev-btn {
+    background: linear-gradient(135deg, #e0e0e0, #d0d0d0);
+    color: #333;
+}
+
+.prev-btn:hover {
+    background: linear-gradient(135deg, #d0d0d0, #c0c0c0);
+    transform: translateX(-3px);
+}
+
+.prev-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .next-btn {
-    background: black;
+    background: linear-gradient(135deg, #000000, #333333);
     color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 999px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
 }
 
 .next-btn:hover {
-    background: #333;
+    background: linear-gradient(135deg, #333333, #555555);
+    transform: translateX(3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* 선호도 입력 스타일 */
@@ -349,11 +575,27 @@ body {
 
 .preference-input-container input[type="text"] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
     font-size: 14px;
     margin-bottom: 10px;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.preference-input-container input[type="text"]:focus {
+    outline: none;
+    border-color: #ffc107;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+}
+
+.input-hint {
+    display: block;
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 8px;
 }
 
 .preference-list {
@@ -423,6 +665,132 @@ body {
     margin-right: 5px;
 }
 
+/* 카드 스타일 라디오 버튼 */
+.radio-options-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.radio-card {
+    position: relative;
+}
+
+.radio-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.radio-card label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 16px;
+    background: #f8f8f8;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 100px;
+}
+
+.radio-card label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #ccc;
+}
+
+.radio-card input[type="radio"]:checked + label {
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+    border-color: #ffc107;
+    box-shadow: 0 6px 18px rgba(255, 193, 7, 0.3);
+    transform: translateY(-2px);
+}
+
+.radio-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.radio-card input[type="radio"]:checked + label .radio-card-title,
+.radio-card input[type="radio"]:checked + label .radio-card-desc {
+    color: white;
+}
+
+.radio-card-desc {
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.3;
+}
+
+/* 카드 스타일 체크박스 */
+.checkbox-options-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.checkbox-card {
+    position: relative;
+}
+
+.checkbox-card input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.checkbox-card label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 16px;
+    background: #f8f8f8;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 100px;
+}
+
+.checkbox-card label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #ccc;
+}
+
+.checkbox-card input[type="checkbox"]:checked + label {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    border-color: #2196F3;
+    box-shadow: 0 6px 18px rgba(33, 150, 243, 0.3);
+    transform: translateY(-2px);
+}
+
+.checkbox-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.checkbox-card input[type="checkbox"]:checked + label .checkbox-card-title,
+.checkbox-card input[type="checkbox"]:checked + label .checkbox-card-desc {
+    color: white;
+}
+
+.checkbox-card-desc {
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.3;
+}
+
 /* 자동완성 스타일 */
 .autocomplete-wrapper {
     position: relative;
@@ -481,6 +849,187 @@ body {
 
 .autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 768px) {
+    #survey-overlay {
+        padding: 20px 15px;
+    }
+
+    .survey-container {
+        max-width: 95%;
+        max-height: 80vh;
+        padding: 30px 22px 80px 22px;
+        border-radius: 18px;
+    }
+
+    .survey-close-btn {
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+    }
+
+    .survey-dots {
+        gap: 6px;
+    }
+
+    .survey-dots .dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .step-number {
+        font-size: 0.8rem;
+        padding: 5px 14px;
+    }
+
+    .step-header h3 {
+        font-size: 1.15rem;
+    }
+
+    .step-description {
+        font-size: 0.85rem;
+    }
+
+    .credit-inputs {
+        grid-template-columns: 1fr;
+    }
+
+    .weekday-options {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .tag-options {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .radio-options-card,
+    .checkbox-options-card {
+        grid-template-columns: 1fr;
+    }
+
+    .survey-footer {
+        bottom: 15px;
+        left: 20px;
+        right: 20px;
+    }
+
+    .prev-btn, .next-btn {
+        padding: 12px 24px;
+        font-size: 0.9rem;
+    }
+
+    .survey-timetable {
+        font-size: 0.8rem;
+    }
+
+    .survey-timetable th,
+    .survey-timetable td {
+        padding: 6px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #survey-overlay {
+        padding: 15px 10px;
+    }
+
+    .survey-container {
+        max-height: 85vh;
+        padding: 25px 18px 75px 18px;
+        border-radius: 16px;
+    }
+
+    .survey-close-btn {
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+    }
+
+    .survey-progress-wrapper {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .step-number {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+    }
+
+    .step-header h3 {
+        font-size: 1.05rem;
+    }
+
+    .step-description {
+        font-size: 0.8rem;
+    }
+
+    .weekday-options {
+        grid-template-columns: 1fr;
+    }
+
+    .tag-options {
+        grid-template-columns: 1fr;
+    }
+
+    .survey-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .prev-btn, .next-btn {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .radio-card label,
+    .checkbox-card label {
+        min-height: 85px;
+        padding: 14px 12px;
+    }
+}
+
+/* 애니메이션 추가 */
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes popupAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.survey-step.active {
+    animation: fadeInUp 0.4s ease;
 }
 
 /* 설문조사 오버레이 스타일 (끝) */

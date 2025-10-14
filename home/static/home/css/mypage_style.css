@@ -1,146 +1,298 @@
-/* 전체 배경 및 폰트 설정 */
+:root {
+  --primary-color: #ffcd4a;
+  --primary-light: #fff5cc;
+  --text-dark: #1C1C1C;
+  --text-muted: #6C757D;
+  --bg-light: #FFFFFF;
+  --bg-panel: #F8F9FA;
+  --border-color: #E0E0E0;
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --radius: 14px;
+}
+
 body {
-  padding-top: 80px; /* 네비바 높이에 따라 조정 (예: 70~100px) */
-  background-color: #f9f9f9;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
   font-family: 'Noto Sans KR', sans-serif;
-  color: #333;
+  padding-top: 80px;
 }
 
-/* 페이지 제목 */
-.page-header h2 {
-  color: #000;
-  font-weight: bold;
+/* ==========================================
+   전체 레이아웃
+========================================== */
+.mypage-wrapper {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-top: 40px;
 }
 
-.page-header p {
-  color: #666;
+/* ==========================================
+   왼쪽 패널 — 입체감 강조 버전
+========================================== */
+.left-panel {
+  flex: 0 0 28%;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 28px 22px;
+  border-radius: 18px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08),   /* 바깥 그림자 (바닥쪽 입체감) */
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;  /* 안쪽 미묘한 하이라이트 */
+  height: fit-content;
+  position: relative;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-/* 카드 공통 스타일 */
-.card {
-  border-radius: 1rem;
-  border: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+/* hover 시 살짝 더 떠오르는 효과 */
+.left-panel:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
 }
 
-.card-header {
-  background-color: #ffcd4a;
-  color: #000;
-  font-weight: bold;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
+
+.right-panel {
+  flex: 1;
 }
 
-/* 업로드 섹션 */
-.bg-light {
-  border-radius: 1rem;
-  border: 1px solid #ddd;
-  padding: 1.5rem;
-  background-color: #fff;
-}
-
-/* 주요 버튼 스타일 */
-.btn-primary {
-  background-color: #000;
-  border-color: #000;
-  border-radius: 1.5rem;
-  transition: background-color 0.2s ease;
-}
-
-.btn-primary:hover {
-  background-color: #FFD700;
-  border-color: #FFD700;
-  color: #000;
-}
-
-/* 표 스타일 */
-.table {
-  border-radius: 1rem;
-  overflow: hidden;
-  background-color: #fff;
-}
-
-.table th {
-  background-color: #ffcd4a;
-  color: #000;
+/* ==========================================
+   프로필
+========================================== */
+.profile-section {
   text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
 }
-
-.table td {
-  text-align: center;
-  vertical-align: middle;
-}
-
-/* 차트 컨테이너 */
-.chart-container {
-  padding: 0.5rem;
+.profile-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
   background-color: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 2px solid #ddd;
+}
+.user-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.user-major {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ==========================================
+   Info Block (기본정보, 알림, GPA)
+========================================== */
+.info-block {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid #eee;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+
+.block-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+}
+
+.info-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.info-list li {
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+/* ==========================================
+   알림 섹션
+========================================== */
+.alert-list p {
+  margin: 4px 0;
+  font-size: 0.92rem;
+}
+.alert-item {
+  color: var(--text-dark);
+}
+.alert-empty {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ==========================================
+   GPA 차트
+========================================== */
+.chart-area {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 6px;
 }
 
-.chart-container canvas {
-  max-width: 300px;
-  max-height: 300px;
+/* ==========================================
+   오른쪽 영역 (기존 유지)
+========================================== */
+.section-box h4 {
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text-dark);
 }
 
-/* macOS 스타일 알림 카드 */
-.notification-card {
-  background-color: #F8FBFE;
-  border-radius: 8px;
-  border: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  z-index: 1;
+.table th {
+  background-color: var(--primary-color);
+  color: #000;
+  text-align: center;
+  font-weight: 700;
+}
+.table td {
+  text-align: center;
 }
 
-.notification-card .tools {
-  display: flex;
-  align-items: center;
-  padding: 9px;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.notification-card .circle {
-  padding: 0 4px;
-}
-
-.notification-card .box {
+.grade-badge {
   display: inline-block;
-  align-items: center;
-  width: 10px;
-  height: 10px;
-  padding: 1px;
-  border-radius: 50%;
-}
-
-.notification-card .red {
-  background-color: #ff605c;
-}
-
-.notification-card .yellow {
-  background-color: #ffbd44;
-}
-
-.notification-card .green {
-  background-color: #00ca4e;
-}
-
-.notification-card .card-header {
-  background-color: transparent;
-  border-bottom: none;
-  padding: 0;
-  margin: 0;
-  font-weight: bold;
-  color: #333;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
   font-size: 0.9rem;
-  padding-left: 9px;
-  padding-bottom: 5px;
+  color: #000;
+}
+.grade-Aplus, .grade-A { background-color: #FFE680; }
+.grade-Bplus, .grade-B { background-color: #A8E6A3; }
+.grade-Cplus, .grade-C { background-color: #A9D6F5; }
+.grade-Dplus, .grade-D { background-color: #F8C87C; }
+.grade-F { background-color: #F7A6A6; }
+.grade-P { background-color: #C5C4C4; }
+
+.badge.bg-success {
+  background-color: #FFD93B !important;
+  color: #000 !important;
+}
+.badge.bg-warning {
+  background-color: #D6D6D6 !important;
+  color: #000 !important;
 }
 
-.notification-card .card-body {
-  padding: 15px;
-  padding-top: 10px;
+/* ==========================================
+   학기 목록 (노란 계열 복원)
+========================================== */
+.list-group-item {
+  border: none;
+  border-radius: 8px;
+  background-color: #FFFDF5;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-bottom: 5px;
+  color: var(--text-dark);
 }
+
+.list-group-item:hover {
+  background-color: var(--primary-light);
+}
+
+.list-group-item.active {
+  background-color: var(--primary-color) !important;
+  color: #000 !important;
+  font-weight: 700;
+  transform: scale(1.02);
+}
+
+/* ==========================================
+   졸업요건 이수현황 — 회색 단계만 계층 구분
+========================================== */
+
+/* Level 0: 최상위 (예: 전체, 전공, 교양) */
+.requirement-level-0 td {
+  background-color: #FFFFFF;  /* 흰색 */
+  font-weight: 700;
+  color: #000;
+}
+
+/* Level 1: 중분류 (예: 전공필수, 교양선택 등) */
+.requirement-level-1 td {
+  background-color: #FAFAFA;  /* 옅은 회색 */
+  font-weight: 600;
+  color: #222;
+}
+
+/* Level 2: 세부영역 */
+.requirement-level-2 td {
+  background-color: #F5F5F5;  /* 한 단계 어두운 회색 */
+  font-weight: 500;
+  color: #333;
+}
+
+/* Level 3: 가장 하위 항목 */
+.requirement-level-3 td {
+  background-color: #EFEFEF;  /* 진한 회색 */
+  font-weight: 400;
+  color: #444;
+}
+
+/* 표 경계선 및 간격 정리 */
+#requirements-table-body tr td {
+  border-top: 1px solid #e5e5e5;
+  padding: 10px 6px;
+}
+
+/* 충족/부족 뱃지 색 유지 */
+.badge.bg-success {
+  background-color: #FFD93B !important;
+  color: #000 !important;
+}
+.badge.bg-warning {
+  background-color: #D6D6D6 !important;
+  color: #000 !important;
+}
+
+/* ==========================================
+   이수 과목 현황 — 좌우 카드 균형 조정
+========================================== */
+
+/* 전체 row 높이 맞춤 */
+.section-box .row {
+  display: flex;
+  align-items: stretch;  /* 좌우 카드 높이 동일하게 */
+}
+
+/* 카드 자체가 세로로 동일 높이를 가지도록 */
+.section-box .row > .col-md-4,
+.section-box .row > .col-md-8 {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-box .card {
+  flex: 1; /* 양쪽 카드가 세로로 같은 높이 차지 */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 내부 스크롤 설정 — 세로만 허용, 가로 스크롤 제거 */
+#mypage-semester-list {
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  max-height: 100%;
+}
+
+#mypage-course-list {
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  max-height: 100%;
+}
+
+/* 스크롤 디자인 최소화 (선택사항) */
+#mypage-semester-list::-webkit-scrollbar,
+#mypage-course-list::-webkit-scrollbar {
+  width: 6px;
+}
+#mypage-semester-list::-webkit-scrollbar-thumb,
+#mypage-course-list::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 10px;
+}
+

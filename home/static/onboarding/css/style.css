@@ -1,35 +1,103 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap'); /* 기본 스타일 (이전 단계에서 복사) */
-body { background-color: #f8f9fa; }
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+/* 기본 배경 */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+}
 
 /* Stepper (진행 단계) UI 스타일 */
-.stepper-wrapper { display:flex; justify-content:space-between; gap: 12px; margin-bottom: 16px; position: relative; }
-.stepper-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: #e9ecef;
-    transform: translateY(-50%);
-    z-index: 1;
+:root {
+  --step-active: #ffb800;
+  --step-completed: #ffe28a;
+  --step-inactive: #e9ecef;
+  --step-text: #6c757d;
+  --circle-size: 44px;
+  --line-thickness: 3px;
+  --line-gap: 36px; /* ✅ 선 양끝 여백 */
 }
 
-.stepper-item { display:flex; flex-direction:column; align-items:center; position:relative; z-index:2; background-color:#f8f9fa; padding: 0 10px; }
+/* 전체 컨테이너 */
+.stepper-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 50px auto;
+  max-width: 800px;
+  padding: 0;
+}
 
-.step-counter { height:44px; width:44px; border-radius:50%; background:#e9ecef; color:#6c757d; display:flex; justify-content:center; align-items:center; margin-bottom:6px; font-weight:700; border:3px solid #e9ecef; transition:all .2s; font-size:1rem; }
+/* ✅ 회색 라인 (원 중심부터 중심까지) */
+.stepper-wrapper::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--circle-size) / 2 - var(--line-thickness) / 2); /* 원의 세로 중심 */
+  left: calc(var(--circle-size) / 2 + var(--line-gap));
+  width: calc(100% - var(--circle-size) - (var(--line-gap) * 2));
+  height: var(--line-thickness);
+  background-color: var(--step-inactive);
+  z-index: 1;
+}
 
-.step-name { font-size: .95rem; color:#6c757d; text-align:center; }
+.stepper-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  flex: 1;
+  text-align: center;
+}
 
+/* ✅ 원(circle) */
+.step-counter {
+  width: var(--circle-size);
+  height: var(--circle-size);
+  border-radius: 50%;
+  background: var(--step-inactive);
+  border: 3px solid var(--step-inactive);
+  color: var(--step-text);
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: all 0.3s ease;
+}
+
+/* ✅ 텍스트 */
+.step-name {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: var(--step-text);
+  text-align: center;
+}
+
+/* 현재 단계 */
 .stepper-item.active .step-counter {
-    background-color: #5865f2; /* var(--primary-color) */
-    color: white;
-    border-color: #5865f2;
+  background: var(--step-active);
+  border-color: var(--step-active);
+  color: #fff;
+  transform: scale(1.1);
 }
 .stepper-item.active .step-name {
-    color: #5865f2;
-    font-weight: 700;
+  color: var(--step-active);
+  font-weight: 600;
 }
+
+/* 완료 단계 */
+.stepper-item.completed .step-counter {
+ background: var(--step-inactive); /* ✅ 회색 그대로 */
+  border-color: var(--step-inactive);
+  color: var(--step-text);
+}
+.stepper-item.completed .step-name {
+  color: var(--step-text);
+  font-weight: normal;
+}
+
 
 /* File Upload Zone 스타일 */
 .drop-zone {
@@ -40,45 +108,78 @@ body { background-color: #f8f9fa; }
 }
 
 .drop-zone:hover {
-    border-color: #5865f2; /* var(--primary-color) */
+    border-color: #FFB800;
     background-color: #f8f9fa;
 }
 
 .drop-zone.dragover {
-    border-color: #5865f2;
-    background-color: #eef0ff;
+    border-color: #FFB800;
+    background-color: #FFF7E0;
 }
 
-/* Progress bar 내부 텍스트 스타일 조정 (선택사항) */
+/* Progress bar 내부 텍스트 스타일 */
 #parsing-progress {
     font-weight: 500;
 }
 
-.summary-box { background-color:#f8f9fa; border-radius:8px; padding:1rem; }
+/* 요약 박스 */
+.summary-box {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+}
 
+/* 강의 카드 */
 .course-card {
     transition: box-shadow 0.2s;
 }
-
 .course-card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* 6단계 Stepper를 위한 미디어 쿼리 조정 (필요 시) */
+/* 반응형 조정 */
 @media (max-width: 576px) {
     .stepper-item .step-name {
-        font-size: 0.75rem; /* 화면이 좁을 때 폰트 크기 줄이기 */
+        font-size: 0.75rem;
     }
     .stepper-item {
-        padding: 0 5px; /* 좌우 패딩 줄이기 */
+        padding: 0 5px;
     }
 }
 
-body {
-    background-color: #f8f9fa;
-    font-family: 'Noto+Sans+KR', sans-serif;
+/* 콘텐츠 컨테이너 */
+#step-content-container {
+    min-height: 520px;
+    transition: opacity .25s ease-in-out;
 }
-.stepper-wrapper{display:flex;justify-content:space-between;margin-bottom:20px;position:relative}.stepper-wrapper::before{content:'';position:absolute;top:50%;left:0;width:100%;height:2px;background-color:#e9ecef;transform:translateY(-50%);z-index:1}.stepper-item{display:flex;flex-direction:column;align-items:center;position:relative;z-index:2;background-color:#f8f9fa;padding:0 5px}.step-counter{height:40px;width:40px;border-radius:50%;background:#e9ecef;color:#6c757d;display:flex;justify-content:center;align-items:center;margin-bottom:6px;font-weight:700;border:3px solid #e9ecef;transition:all .3s}.step-name{font-size:.85rem;color:#6c757d;text-align:center}.stepper-item.active .step-counter{background-color:#5865f2;color:#fff;border-color:#5865f2}.stepper-item.active .step-name{color:#5865f2;font-weight:700}.stepper-item.completed .step-counter{background-color:#d1e7dd;color:#0f5132;border-color:#0f5132;font-weight:700}.stepper-item.completed .step-counter::before{content:'✓';font-size:1.2rem}.stepper-item.completed .step-name{color:#0f5132}
-#step-content-container { min-height: 520px; transition: opacity .25s ease-in-out; }
-.drop-zone{border:2px dashed #dee2e6;border-radius:8px;transition:border-color .2s,background-color .2s;cursor:pointer}.drop-zone:hover{border-color:#5865f2;background-color:#f8f9fa}.drop-zone.dragover{border-color:#5865f2;background-color:#eef0ff}
-.summary-box{background-color:#f8f9fa;border-radius:8px;padding:1rem}.course-card{transition:box-shadow .2s}.course-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+
+/* 버튼 기본 스타일 오버라이드 */
+.btn-primary {
+  background-color: #ffcd4a !important;
+  border-color: #ffcd4a !important;
+  color: #212529 !important; /* 검정 텍스트 */
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover 효과 */
+.btn-primary:hover {
+  background-color: #fdc128 !important;
+  border-color: #fdc128 !important;
+  color: #fff !important;
+}
+
+/* 클릭 시(active) */
+.btn-primary:active, 
+.btn-primary:focus {
+  background-color: #fdc128 !important;
+  border-color: #fdc128 !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 184, 0, 0.25) !important;
+}
+
+/* 비활성화된 상태 */
+.btn-primary:disabled {
+  background-color: #ffe7a0 !important;
+  border-color: #ffe7a0 !important;
+  color: #999 !important;
+}

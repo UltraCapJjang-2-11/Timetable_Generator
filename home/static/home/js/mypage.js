@@ -1,5 +1,3 @@
-// home/static/home/js/mypage.js
-
 document.addEventListener('DOMContentLoaded', function () {
   // ------- Utilities -------
   function parseJsonFromScript(id, fallback) {
@@ -15,14 +13,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   const gradeToPoint = {
-    'A+': 4.5,
-    'A0': 4.0,
-    'B+': 3.5,
-    'B0': 3.0,
-    'C+': 2.5,
-    'C0': 2.0,
-    'D+': 1.5,
-    'D0': 1.0,
+    'A+': 4.5, 'A0': 4.0,
+    'B+': 3.5, 'B0': 3.0,
+    'C+': 2.5, 'C0': 2.0,
+    'D+': 1.5, 'D0': 1.0,
     'F': 0.0,
   };
 
@@ -65,9 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ------- Data -------
   const courseHistory = parseJsonFromScript('course-history-data', []);
   const requirementsTree = parseJsonFromScript('requirements-tree-data', []);
-  const pageMeta = parseJsonFromScript('page-meta', { total_requirement: 0 });
 
-  // ------- Course history UI -------
   const semesterListEl = document.getElementById('mypage-semester-list');
   const courseListEl = document.getElementById('mypage-course-list');
   const semesterTitleEl = document.getElementById('mypage-semester-title');
@@ -84,6 +76,20 @@ document.addEventListener('DOMContentLoaded', function () {
     return termOrder(at) - termOrder(bt);
   });
 
+  // ✅ 학점별 색상 클래스 지정
+  function getGradeClass(grade) {
+    if (!grade) return '';
+    const g = grade.toUpperCase();
+    if (g === 'A+' || g === 'A0') return 'grade-badge grade-Aplus';
+    if (g === 'B+' || g === 'B0') return 'grade-badge grade-Bplus';
+    if (g === 'C+' || g === 'C0') return 'grade-badge grade-Cplus';
+    if (g === 'D+' || g === 'D0') return 'grade-badge grade-Dplus';
+    if (g === 'F') return 'grade-badge grade-F';
+    if (g === 'P') return 'grade-badge grade-P';
+    return 'grade-badge';
+  }
+
+  // ------- Course history UI -------
   function renderCourseListFor(semesterKey) {
     const list = bySemester.get(semesterKey) || [];
     const semCredits = list.reduce((sum, c) => sum + (Number(c.credit) || 0), 0);
@@ -100,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h6 class="mb-0">${course.course_name}</h6>
                 <small class="text-muted">${course.course_code} | ${course.credit}학점</small>
               </div>
-              <span class="badge bg-primary rounded-pill">${course.grade || ''}</span>
+              <span class="${getGradeClass(course.grade)}">${course.grade || ''}</span>
             </div>
           </div>
         </div>`;
@@ -124,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function () {
       semesterListEl.appendChild(li);
     });
     if (semesterKeys.length > 0) {
-      // activate the latest semester by default
       const last = semesterListEl.lastElementChild;
       if (last) last.click();
     }
@@ -135,15 +140,22 @@ document.addEventListener('DOMContentLoaded', function () {
   totalGpaEl && (totalGpaEl.textContent = calculateGpa(courseHistory));
   renderSemesterList();
 
-  // ------- Requirements table (hierarchical) -------
+  // ------- Requirements table -------
   const reqBody = document.getElementById('requirements-table-body');
-
   function renderNodeRow(node) {
-    const nameCell = `<td style="text-align:left; padding-left:${(node.level || 0) * 16}px;">${node.name}</td>`;
+    const level = node.level || 0;
+    const indent = 10 + level * 12; // ✅ 계층별 들여쓰기 계산
+
+    // ✅ 구분 열에 직접 들여쓰기 반영
+    const nameCell = `
+      <td style="text-align:left; padding-left:${indent}px;">
+        ${node.name}
+      </td>`;
     const earnedCell = `<td>${(node.earned ?? 0)}</td>`;
     const reqCell = `<td>${node.required != null ? node.required : '-'}</td>`;
     const remain = node.required != null ? Math.max(node.required - (Number(node.earned) || 0), 0) : '-';
     const shortCell = `<td>${remain}</td>`;
+
     let statusBadge = '-';
     if (node.required != null) {
       const satisfied = (Number(node.earned) || 0) >= Number(node.required);
@@ -152,7 +164,9 @@ document.addEventListener('DOMContentLoaded', function () {
         : '<span class="badge bg-warning text-dark">부족</span>';
     }
     const statusCell = `<td class="text-center">${statusBadge}</td>`;
+
     const tr = document.createElement('tr');
+    tr.classList.add(`requirement-level-${level}`);
     tr.innerHTML = `${nameCell}${earnedCell}${reqCell}${shortCell}${statusCell}`;
     reqBody.appendChild(tr);
   }
@@ -162,58 +176,33 @@ document.addEventListener('DOMContentLoaded', function () {
     reqBody.innerHTML = '';
     const dfs = (n) => {
       renderNodeRow(n);
-      if (Array.isArray(n.children)) {
-        n.children.forEach(child => dfs(child));
-      }
+      if (Array.isArray(n.children)) n.children.forEach(child => dfs(child));
     };
     (tree || []).forEach(root => dfs(root));
   }
 
   renderRequirements(requirementsTree);
 
-  // ------- Charts -------
-  const gpaCtx = document.getElementById('semesterGpaChart')?.getContext('2d');;
-
-  if (gpaCtx) {
-    // Build semester GPA series
+  // ========================================
+  // ✅ 상단 GPA 차트 (topGpaChart)
+  // ========================================
+  const topCtx = document.getElementById('topGpaChart')?.getContext('2d');
+  if (topCtx && semesterKeys.length > 0) {
     const labels = semesterKeys;
     const data = labels.map(key => {
       const list = bySemester.get(key) || [];
       return Number(calculateGpa(list));
     });
-    // Dynamically scale Y-axis to highlight changes
-    function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
-    const finiteVals = data.filter(v => Number.isFinite(v));
-    let yMin = 0, yMax = 4.5;
-    if (finiteVals.length > 0) {
-      const dMin = Math.min(...finiteVals);
-      const dMax = Math.max(...finiteVals);
-      if (dMin === dMax) {
-        const pad = 0.3; // small pad if flat
-        yMin = clamp(dMin - pad, 0, 4.5);
-        yMax = clamp(dMax + pad, 0.5, 4.5);
-      } else {
-        const pad = Math.max(0.15, (dMax - dMin) * 0.2);
-        yMin = clamp(dMin - pad, 0, 4.5);
-        yMax = clamp(dMax + pad, 0.5, 4.5);
-        const span = yMax - yMin;
-        if (span < 1.0) {
-          const extra = (1.0 - span) / 2;
-          yMin = clamp(yMin - extra, 0, 4.5);
-          yMax = clamp(yMax + extra, 0.5, 4.5);
-        }
-      }
-    }
-    const stepSize = (yMax - yMin) <= 1 ? 0.25 : 0.5;
-    new Chart(gpaCtx, {
+
+    new Chart(topCtx, {
       type: 'line',
       data: {
         labels,
         datasets: [{
           label: '학기별 GPA',
           data,
-          borderColor: '#4e79a7',
-          backgroundColor: 'rgba(78, 121, 167, 0.15)',
+          borderColor: '#ecc74eff',
+          backgroundColor: 'rgba(232, 235, 105, 0.15)',
           fill: true,
           tension: 0.3,
           pointRadius: 3,
@@ -221,19 +210,13 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       options: {
         responsive: true,
+        plugins: { legend: { display: false } },
         scales: {
-          y: {
-            min: yMin,
-            max: yMax,
-            ticks: { stepSize }
-          }
-        },
-        plugins: {
-          legend: { position: 'bottom' }
+          y: { min: 0, max: 4.5, ticks: { stepSize: 0.5 } }
         }
       }
     });
   }
 
-  console.log('MyPage 로드 완료 - 이수내역/요건/차트 렌더링 완료');
+  console.log('✅ MyPage 로드 완료 - 상단 GPA 차트 + 학점 색상 + 계층 들여쓰기 적용 완료');
 });

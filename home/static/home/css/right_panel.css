@@ -1,200 +1,364 @@
-/* right_panel.css (통합 및 수정된 최종본) */
-
-/* --- 1. 전체 패널 구조 --- */
+/* ==============================
+   RIGHT PANEL - Pastel Compact Independent Line (v4.6 Unified 1.2x)
+   ============================== */
 .right-panel {
-    flex: 1; /* 전체 3단 레이아웃의 비율은 유지 */
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 15px;
-
-    /* ✅ display:flex와 중앙 정렬 속성을 제거하여
-       내부 요소들(Bootstrap 그리드 등)이 스스로 레이아웃을 잡도록 허용합니다. */
-    display: block; /* 기본 블록 레벨 요소로 변경 */
-    text-align: left; /* 내부 텍스트 기본 정렬을 왼쪽으로 */
+  background-color: #ffffff;
+  padding: 10px 12px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 14px;
+  width: 100%;
+  max-width: 460px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 1.2rem; /* ✅ 전체 1.2배 확대 */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* --- 2. 좌측 제약조건 영역 --- */
-.goal-inputs h3, .day-off-settings h3 {
-    font-size: 1.1rem; /* h3 폰트 크기 통일 */
-    margin-bottom: 15px;
-    font-weight: 600;
+/* ==============================
+   입력 그룹 (목표·전공·교양)
+   ============================== */
+.input-group-section {
+  background-color: #fffdfd;
+  border: 1px solid #e9e7e7;
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  font-size: 1rem;
 }
 
-.goal-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
+.input-group-section h3 {
+   font-size: 1.05rem;
+  font-weight: 600;
+  color: #1d1d1d;
+  margin-bottom: 6px;
 }
 
-.goal-inputs label, .total-credits-display label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #343a40;
-    margin: 0;
+/* 한 줄 정렬 (label + input + pink box) */
+.credit-line {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-bottom: 5px;
 }
 
-.goal-inputs input[type="number"] {
-    width: 100%; /* 너비를 100%로 설정하여 정렬을 맞춤 */
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
+.credit-line label {
+  font-weight: 500;
+  color: #3a3a3a;
+  font-size: 0.9rem;
+  text-align: left;
+  flex-shrink: 0;
 }
 
-.total-credits-display {
-    display: flex;
-    justify-content: space-between; /* 라벨과 값 양쪽 정렬 */
-    align-items: center;
-    margin-bottom: 10px;
-    background-color: #e9ecef;
-    padding: 8px 12px;
-    border-radius: 4px;
+.credit-line input {
+  width: 73px;
+  padding: 6px 6px;
+  border-radius: 7px;
+  border: 1px solid #d9d9d9;
+  background-color: #fafafa;
+  font-size: 0.88rem;
+  text-align: center;
+  color: #333;
+  transition: all 0.2s ease;
+}
+.credit-line input:focus {
+  outline: none;
+  border-color: #ffbfbf;
+  background-color: #fff9f9;
 }
 
-#total-credits-display {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #0056b3;
+/* ✅ 핑크 박스 (고정된 학점) */
+.credit-display,
+.credit-badge {
+  background-color: #ffe8e8;
+  color: #b73636;
+  border: none;
+  border-radius: 9px;
+  padding: 6px 7px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  min-width: 32px;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(255, 170, 170, 0.25);
 }
 
-.day-off-settings {
-    margin-top: 25px;
+/* 전공 + 교양 한 줄 정렬 */
+.credit-dual-line {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+/* ==============================
+   공강 요일 선택
+   ============================== */
+.day-off-section h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1d1d1d;
+  margin-bottom: 6px;
 }
 
 .day-options {
-    display: flex;
-    justify-content: flex-start; /* 왼쪽부터 정렬 */
-    gap: 15px;
+  display: flex;
+  gap: 13px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* ✅ 체크박스 완전히 숨김 */
+.day-options input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
 }
 
 .day-options label {
-    font-size: 0.9rem;
-    cursor: pointer;
+  display: inline-block;
+  padding: 6px 13px;
+  font-size: 0.95rem;
+  color: #555;
+  background-color: #f6f6f6;
+  border: 1px solid #e3e3e3;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
 }
 
-
-/* --- 3. 우측 버튼 영역 --- */
-.right-panel-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 60px;
+.day-options input[type="checkbox"]:checked + label {
+  background-color: #ffefb8;
+  color: #2c2c2c;
+  border-color: #ffd04f;
+  font-weight: 600;
 }
 
-#generate-btn, #save-timetable-btn {
-    width: 100%;
-    padding: 10px 0;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: background 0.3s;
+/* ==============================
+   버튼
+   ============================== */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.action-buttons button {
+  padding: 11px 13px;
+  font-size: 1rem;
+  border-radius: 11px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 #generate-btn {
-    background-color: #1b1b1b;
-    color: white;
+  background-color: #353535;
+  color: #fff;
 }
-#generate-btn:hover { background-color: #000; }
 
 #save-timetable-btn {
-    background-color: #ffcd4a;
-    color: #212529;
+  background-color: #ffcd4a;
+  color: #ffffff;
 }
-#save-timetable-btn:hover { background-color: #ffc32b; }
 
+/* ==============================
+   시간표 탐색
+   ============================== */
 .timetable-navigation {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* 버튼과 인덱스 양쪽 정렬 */
-    width: 100%;
-    font-size: 1rem;
-    font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #555;
 }
-
 .nav-arrow {
-    background-color: #ffcd4a;
-    color: #212529;
-    border: none;
-    padding: 5px 12px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #ffcd4a;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.nav-arrow:hover { background-color: #ffc32b; }
 
-
-/* --- 4. 하단 강의 목록 (이전과 동일) --- */
+/* ==============================
+   강의 목록
+   ============================== */
 .current-courses-section {
-    margin-top: 20px;
-    border-top: 2px solid #e9ecef;
-    padding-top: 15px;
+  margin-top: 20px;
+  border-top: 1px solid #f1f1f1;
+  padding-top: 12px;
 }
 .current-courses-section h4 {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-    color: #333;
-    font-weight: 600;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #3a3a3a;
 }
 
-.current-course-list .placeholder {
-    color: #fff;
-    font-size: 0.9rem;
-    text-align: center;
-    padding: 20px 0;
-}
 .current-course-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin-bottom: 6px;
-    font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #ffffff;
+  border: 1px solid #f1f1f1;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.04);
+  transition: background-color 0.2s ease;
 }
-.current-course-item .course-title {
-    font-weight: 600;
-    color: #212529;
+.current-course-item:hover {
+  background-color: #fffafc;
 }
-.current-course-item .course-details {
-    font-size: 0.8rem;
-    color: #6c757d;
-    margin-top: 2px;
-}
-
-.current-course-item .course-content {
-    flex-grow: 1; /* 강의 제목이 남은 공간을 모두 차지하도록 */
+.current-course-item.pinned {
+  background-color: #fff6f6;
+  box-shadow: 0 2px 4px rgba(255, 150, 150, 0.08);
 }
 
-/* 목록에서 강의 제거 버튼 스타일 */
+/* placeholder */
+.empty-placeholder {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #666;
+  padding: 16px;
+  background-color: #fffdfd;
+  border-radius: 12px;
+  border: 1px dashed #c7c5c5;
+  box-shadow: 0 2px 3px rgba(255, 150, 150, 0.1);
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+/* ==============================
+   강의 카드 내부 버튼
+   ============================== */
 .remove-from-list-btn {
-    flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: none;
-    background-color: #dc3545; /* 빨간색 배경 */
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    line-height: 1;
-    padding-bottom: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #df4050;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  margin-right: 6px;
 }
 .remove-from-list-btn:hover {
-    background-color: #c82333;
+  background-color: #c82333;
 }
 
-/* 강의 평점 표시 스타일 */
-.course-rating {
-    color: #ffa500;  /* 골드/오렌지 색상 */
-    font-size: 0.9em;
-    margin-left: 8px;
-    font-weight: normal;
+.pin-toggle-btn {
+  border: none;
+  background-color: #f8f9fa;
+  color: #d63384;
+  border-radius: 10px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
+.pin-toggle-btn.active {
+  background-color: #ffcdd2;
+  color: #b71c1c;
+}
+
+/* 💬 강의 내용 텍스트 */
+.course-content {
+  flex-grow: 1;
+}
+.course-title {
+  font-weight: bold;
+  font-size: 1.05rem;
+  color: #212529;
+}
+.course-details {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 4px;
+}
+.course-rating {
+  color: #ffa500;
+  margin-left: 8px;
+  font-size: 0.9rem;
+}
+
+/* ==============================
+   버튼 hover 효과 (v5.2 - Clean Depth)
+   ============================== */
+
+/* 공통 transition */
+#generate-btn,
+#save-timetable-btn,
+.nav-arrow {
+  transition: all 0.25s ease;
+}
+
+/* 1️⃣ 시간표 생성 버튼 */
+#generate-btn {
+  background-color: #353535;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+#generate-btn:hover {
+  background-color: #1f1f1f;   /* 어두워짐 */
+  transform: translateY(2px);  /* 살짝 눌림 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); /* 그림자 약화 */
+}
+
+/* 2️⃣ 시간표 저장 버튼 */
+#save-timetable-btn {
+  background-color: #ffcd4a;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 6px rgba(255, 200, 100, 0.3);
+}
+#save-timetable-btn:hover {
+  background-color: #faa937;   /* 더 진한 노랑 */
+  transform: translateY(2px);
+  box-shadow: 0 1px 3px rgba(255, 190, 80, 0.4);
+}
+
+/* 3️⃣ 시간표 탐색 화살표 버튼 */
+.nav-arrow {
+  background-color: #ffcd4a;
+  color: #ffffff;
+  border: none;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(255, 200, 100, 0.25);
+}
+.nav-arrow:hover {
+  background-color: #faa937;   /* 더 진한 노랑 */
+  transform: translateY(1.5px);
+  box-shadow: 0 1px 2px rgba(255, 180, 80, 0.35);
+}
+
+
+

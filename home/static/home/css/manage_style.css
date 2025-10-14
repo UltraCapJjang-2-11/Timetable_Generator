@@ -307,3 +307,34 @@ body {
   color: #3ba55d;            /* ✅ 디스코드 초록색 (#3ba55d) */
   font-size: 12px;
 }
+
+/* ==============================
+   시간표 열람 버튼 (얇고 길게)
+   ============================== */
+.btn-view-timetable {
+  display: inline-block;
+  width: 100%;                  /* ✅ 중앙 영역 너비에 맞춤 */
+  background-color: #FFC000;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 0;              /* ✅ 얇게 */
+  font-size: 0.9rem;           /* ✅ 살짝 작게 */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  letter-spacing: 0.3px;
+}
+
+.btn-view-timetable:hover {
+  background-color: #FFD54F;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+.btn-view-timetable:active {
+  background-color: #E6B800;
+  transform: translateY(0);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}

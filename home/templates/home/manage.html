@@ -33,7 +33,7 @@
   </header>
 
   <!-- ✅ 메인 레이아웃 -->
-  <div class="manage-container manage-container animate__animated animate__fadeInUp">
+  <div class="manage-container manage-container">
 
     <!-- 좌측: 시간표 사이드바 -->
     <section class="timetable-side">
@@ -50,21 +50,31 @@
         </svg>
       </div>
       {% empty %}
-      <p>시간표</p>
       {% endfor %}
       <div class="timetable-add" data-title="시간표 추가" onclick="window.location.href='{% url 'timetable' %}'">+</div>
     </section>
 
     <!-- 가운데: 강의 리스트 -->
     <div class="lecture-list">
+      {% comment %} 드롭다운으로 시간표 선택하는 기능 -> 왼쪽 시간표 블럭 클릭으로 선택하면 좋을듯함{% endcomment %}
+      {% comment %}
       <div class="mb-2 p-2">
-        <select id="saved-timetable-select" class="form-select form-select-sm">
+         <select id="saved-timetable-select" class="form-select form-select-sm">
           <option value="">시간표를 선택하세요</option>
           {% for timetable in timetables %}
           <option value="{{ timetable.id }}">{{ timetable.title }}</option>
           {% endfor %}
-        </select>
+         </select> 
       </div>
+      {% endcomment %}
+
+      <div class="mb-2 p-2 text-center">
+          <button class="btn-view-timetable">
+            시간표 열람하기
+          </button>
+      </div>
+
+
       <ul id="lecture-list">
         <!-- 선택된 시간표의 과목들이 동적으로 채워집니다 -->
       </ul>
@@ -84,7 +94,7 @@
   <!-- JSON data for timetables -->
   <script id="timetables-json" type="application/json">{{ timetables_json|safe }}</script>
 
-  <!-- 풀스크린 시간표 컨테이너 -->
+  {% comment %} <!-- 풀스크린 시간표 컨테이너 -->
   <div id="timetable-overlay" class="timetable-overlay hidden">
     <button class="close-btn" onclick="hideTimetable()">×</button>
     <h2 id="timetable-title"></h2>
@@ -112,7 +122,7 @@
         </table>
       </div>
     </div>
-  </div>
+  </div> {% endcomment %}
 
   <!-- Socket.IO client -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>

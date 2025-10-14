@@ -1,65 +1,59 @@
+<!-- right_panel.html -->
 <div class="right-panel">
-    <div class="row">
-        <div class="col-md-7">
-            <div class="goal-inputs">
-                <h3>목표 학점 설정</h3>
-                <div class="total-credits-display">
-                    <label for="total-credits-display">총 목표 학점:</label>
-                    <span id="total-credits-display">0</span>
-                </div>
+  <div class="input-group-section">
+    <h3>목표 학점 설정</h3>
+    <div class="goal-section">
+  <!-- 총 목표 학점 -->
+  <div class="credit-line">
+    <label for="total-credits">전체 학점:</label>
+    <input type="number" id="total-credits" min="0" max="50" value="0">
+    <span id="total-credits-display" class="credit-display">0</span>
+  </div>
 
-                <div class="credit-input-group">
-                    <label for="major-credits">전공 학점:</label>
-                    <div class="row g-2 align-items-center">
-                        <div class="col-8">
-                            <input type="number" id="major-credits" class="form-control" min="0" max="24" value="0">
-                        </div>
-                        <div class="col-4">
-                            <button id="pinned-major-credits" class="btn btn-sm btn-outline-danger fw-bold w-100 active" style="font-size:1.1rem">0</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="credit-input-group">
-                    <label for="elective-credits">교양 학점:</label>
-                    <div class="row g-2 align-items-center">
-                        <div class="col-8">
-                            <input type="number" id="elective-credits" class="form-control" min="0" max="24" value="0">
-                        </div>
-                        <div class="col-4">
-                            <button id="pinned-elective-credits" class="btn btn-sm btn-outline-danger fw-bold w-100 active" style="font-size:1.1rem">0</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="day-off-settings">
-                <h3>희망 공강 요일</h3>
-                <div class="day-options">
-                    <label><input type="checkbox" value="월"> 월</label>
-                    <label><input type="checkbox" value="화"> 화</label>
-                    <label><input type="checkbox" value="수"> 수</label>
-                    <label><input type="checkbox" value="목"> 목</label>
-                    <label><input type="checkbox" value="금"> 금</label>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="right-panel-actions">
-                <button id="generate-btn" class="btn-block">시간표 생성</button>
-                <button id="save-timetable-btn" class="btn-block">현재 시간표 저장</button>
-                <div class="timetable-navigation">
-                    <button id="prev-timetable" class="nav-arrow">◀</button>
-                    <span id="timetable-index">0 / 0</span>
-                    <button id="next-timetable" class="nav-arrow">▶</button>
-                </div>
-            </div>
-        </div>
+  <!-- 전공 + 교양 -->
+  <div class="credit-dual-line">
+    <div class="credit-line">
+      <label for="major-credits">전공 학점:</label>
+      <input type="number" id="major-credits" min="0" max="24" value="0">
+      <button id="pinned-major-credits" class="credit-badge">0</button>
     </div>
 
-    <div class="current-courses-section">
-        <h4>현재 강의 목록</h4>
-        <div id="current-course-list" class="current-course-list">
-            <p class="placeholder">시간표를 생성하면 강의 목록이 여기에 표시됩니다.</p>
-        </div>
+    <div class="credit-line">
+      <label for="elective-credits">교양 학점:</label>
+      <input type="number" id="elective-credits" min="0" max="24" value="0">
+      <button id="pinned-elective-credits" class="credit-badge">0</button>
     </div>
+  </div>
+</div>
+
+
+    <!-- 공강 요일 -->
+    <div class="day-off-section">
+      <h3>희망 공강 요일</h3>
+      <div class="day-options">
+        <label for="elective-credits">요일 선택</label>
+        <input type="checkbox" id="mon" value="월"><label for="mon">월</label>
+        <input type="checkbox" id="tue" value="화"><label for="tue">화</label>
+        <input type="checkbox" id="wed" value="수"><label for="wed">수</label>
+        <input type="checkbox" id="thu" value="목"><label for="thu">목</label>
+        <input type="checkbox" id="fri" value="금"><label for="fri">금</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button id="generate-btn">시간표 생성</button>
+    <button id="save-timetable-btn">현재 시간표 저장</button>
+  </div>
+
+  <div class="timetable-navigation">
+    <button id="prev-timetable" class="nav-arrow">◀</button>
+    <span id="timetable-index">1 / 1</span>
+    <button id="next-timetable" class="nav-arrow">▶</button>
+  </div>
+
+  <div class="current-courses-section">
+    <h4>현재 강의 목록</h4>
+    <div id="current-course-list"></div>
+  </div>
 </div>

@@ -11,6 +11,10 @@
 html, body {
   font-family: 'Pretendard', 'Poppins', sans-serif !important;
   scrollbar-gutter: stable; /* ✅ 스크롤바 유무에 상관없이 레이아웃 흔들리지 않음 */
+  height: auto;          /* ✅ 고정 높이 제거 */
+  min-height: 100%;      /* 페이지 기본 높이 확보 */
+  overflow-x: hidden;    /* 좌우 스크롤 차단 */
+  overflow-y: auto;      /* ✅ 전체 스크롤 허용 */
 }
 
 header {

@@ -44,7 +44,7 @@
                data-timetable-id="{{ timetable.id }}"
                data-title="{{ timetable.title }}">
             <svg fill="none" height="24" viewBox="0 0 24 24" width="24" class="timetable-icon" aria-hidden="true">
-              <g clip-rule="evenodd" fill-rule="evenodd" stroke="#ffc000" stroke-linecap="round" stroke-width="2">
+              <g clip-rule="evenodd" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-width="2">
                 <path d="m3 7h17c.5523 0 1 .44772 1 1v11c0 .5523-.4477 1-1 1h-16c-.55228 0-1-.4477-1-1z"></path>
                 <path d="m3 4.5c0-.27614.22386-.5.5-.5h6.29289c.13261 0 .25981.05268.35351.14645l2.8536 2.85355h-10z"></path>
               </g>
@@ -78,9 +78,14 @@
           <span id="selected-timetable-name">시간표를 선택하세요</span>
         </div>
         <div class="list-actions">
-          <button class="btn-view-timetable" onclick="if(window.currentTimetable){ window.showTimetable(window.currentTimetable); }">시간표 열람하기</button>
-          <button class="btn-manage edit" onclick="window.editTimetable()">수정</button>
-          <button class="btn-manage delete" onclick="window.deleteTimetable()">삭제</button>
+           <button class="btn-view-timetable"
+               onclick="if(window.currentTimetable){ window.showTimetable(window.currentTimetable); }">
+                시간표 열람하기
+            </button>
+          <div class="list-actions-row">
+           <button class="btn-manage edit" onclick="window.editTimetable()">수정</button>
+           <button class="btn-manage delete" onclick="window.deleteTimetable()">삭제</button>
+          </div>
         </div>
       </div>
 
@@ -105,14 +110,10 @@
 
   <!-- 풀스크린 시간표 컨테이너 -->
   <div id="timetable-overlay" class="timetable-overlay hidden">
-    <button class="close-btn" onclick="hideTimetable()">×</button>
+    <button class="close-btn" onclick="hideTimetable()">
+      <i class='bx bx-x'></i>
+    </button>
     <h2 id="timetable-title"></h2>
-
-    <div class="timetable-buttons">
-      <button class="edit-btn" onclick="editTimetable()">수정하기</button>
-      <button class="delete-btn" onclick="deleteTimetable()">삭제하기</button>
-    </div>
-
     <div class="middle-panel">
       <div class="table-container">
         <table class="timetable">

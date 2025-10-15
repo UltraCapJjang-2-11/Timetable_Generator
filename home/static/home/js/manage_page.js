@@ -83,9 +83,11 @@ window.showTimetable = function showTimetable(timetableData) {
   window.currentTimetable = timetableData;
   window.currentTimetableId = timetableData.id;
 
+  // ✅ 제목 표시
   timetableTitle.textContent = timetableData.title;
   timetableBody.innerHTML = '';
 
+  // ✅ 시간대 고정 테이블 생성 (9시~20시)
   for (let hour = 9; hour <= 20; hour++) {
     const row = document.createElement('tr');
     const timeCell = document.createElement('td');
@@ -103,6 +105,7 @@ window.showTimetable = function showTimetable(timetableData) {
     timetableBody.appendChild(row);
   }
 
+  // ✅ 요일 매핑 및 색상 팔레트
   const dayMapping = { '월': 0, '화': 1, '수': 2, '목': 3, '금': 4 };
   const colors = ['#FFE5E5', '#E5F3FF', '#E5FFE5', '#FFF5E5', '#F5E5FF', '#FFE5F5'];
   let colorIndex = 0;
@@ -126,20 +129,22 @@ window.showTimetable = function showTimetable(timetableData) {
         );
         if (cell) {
           cell.style.backgroundColor = courseColor;
-          cell.innerHTML = (
-            '<div style="font-size: 12px; padding: 2px;">' +
-            `<strong>${course.course_name}</strong><br>` +
-            `<small>${(schedule.location || '')}</small>` +
-            '</div>'
-          );
+          cell.innerHTML = `
+            <div style="font-size: 12px; line-height:1.2;">
+              <strong>${course.course_name}</strong><br>
+              <small>${schedule.location || ''}</small>
+            </div>
+          `;
         }
       });
     });
   });
 
+  // ✅ 오버레이 표시
   overlay.classList.remove('hidden');
   overlay.style.display = 'flex';
 };
+
 
 window.hideTimetable = function hideTimetable() {
   const overlay = document.getElementById('timetable-overlay');

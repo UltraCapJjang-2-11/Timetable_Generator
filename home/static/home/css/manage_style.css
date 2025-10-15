@@ -18,102 +18,6 @@ body {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);  /* 깊이감 추가 */
 }
 
-/* 좌측 시간표 사이드바 */
-.timetable-side {
-  width: 140px;  /* 110px → 140px */
-  background: linear-gradient(180deg, #1e1e1e 0%, #252525 100%);  /* 그라데이션 추가 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 12px;  /* 패딩 증가 */
-  gap: 16px;  /* 간격 증가 */
-  border-right: 1px solid #3a3a3a;  /* 경계선 색상 개선 */
-  position: relative;
-}
-
-.timetable-side p {
-  margin: 4px 0;
-  font-size: 1.1rem;  /* 폰트 크기 증가 */
-  font-weight: 500;  /* 폰트 굵기 추가 */
-  color: #ffffff;
-  text-align: center;
-  letter-spacing: 0.3px;  /* 자간 추가 */
-}
-
-
-.timetable-card, .timetable-add {
-  width: 85px;  /* 70px → 85px */
-  height: 85px;
-  border-radius: 16px;  /* 12px → 16px */
-  background: linear-gradient(135deg, #3a3a3a 0%, #2e2e2e 100%);  /* 그라데이션 배경 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);  /* 부드러운 트랜지션 */
-  color: #fff;
-  font-size: 1.6rem;  /* 폰트 크기 증가 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);  /* 그림자 추가 */
-}
-
-.timetable-card:hover,
-.timetable-add:hover {
-  background: linear-gradient(135deg, #4a4a4a 0%, #3e3e3e 100%);  /* 호버 시 그라데이션 */
-  transform: translateY(-4px) scale(1.05);  /* Y축 이동 + 스케일 */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);  /* 호버 시 그림자 증가 */
-}
-
-/* 선택된 시간표 강조 */
-.timetable-card.active {
-  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);  /* 노란색 그라데이션 */
-  color: #000;
-  box-shadow: 0 0 0 3px rgba(255, 192, 0, 0.3), 0 6px 20px rgba(255, 192, 0, 0.4);  /* 글로우 효과 */
-  transform: scale(1.08);  /* 약간 더 크게 */
-}
-
-.timetable-card.active:hover {
-  transform: translateY(-4px) scale(1.1);  /* 호버 시 더 크게 */
-}
-
-/* 카드 라벨 */
-.timetable-label {
-  margin: 8px 0 12px 0;  /* 여백 증가 */
-  max-width: 110px;  /* 폭 증가 */
-  font-size: 0.85rem;  /* 폰트 크기 증가 */
-  font-weight: 500;  /* 폰트 굵기 */
-  color: #e0e0e0;  /* 색상 밝게 */
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 툴팁 */
-.timetable-card::after,
-.timetable-add::after {
-  content: attr(data-title);
-  position: absolute;
-  left: calc(100% + 10px);
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0,0,0,0.85);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  font-size: 0.85rem;
-}
-
-.timetable-card:hover::after,
-.timetable-add:hover::after {
-  opacity: 1;
-  transform: translateY(-50%) scale(1.05);
-}
-
 /* 가운데 강의 리스트 */
 .lecture-list {
   width: 340px;  /* 260px → 340px */
@@ -160,11 +64,31 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* ==============================
+   가운데 패널 버튼 2단 구조 (v2)
+   ============================== */
 .list-actions {
   display: flex;
-  flex-direction: column;  /* 버튼들을 세로로 배치 */
+  flex-direction: column;  /* 세로로 쌓기 */
+  gap: 8px;                /* 줄 간격 */
+}
+
+/* 첫 번째 버튼: 시간표 열람하기 */
+.list-actions .btn-view-timetable {
+  width: 100%;
+}
+
+/* 아래줄 수정/삭제 버튼 묶음 */
+.list-actions-row {
+  display: flex;
   gap: 8px;
 }
+
+.list-actions-row .btn-manage {
+  flex: 1;  /* 두 버튼 폭 동일 */
+}
+
+
 
 .lecture-list ul {
   list-style: none;
@@ -244,181 +168,6 @@ body {
   font-weight: 500;
 }
 
-/* 좌측 스크롤 영역과 항목 묶음 */
-.timetable-scroll {
-  width: 100%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;  /* 간격 증가 */
-  padding-bottom: 90px; /* 하단 추가 버튼 영역 확보 */
-  /* 스크롤바 스타일링 */
-  scrollbar-width: thin;
-  scrollbar-color: #4a4a4a #1e1e1e;
-}
-
-.timetable-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.timetable-scroll::-webkit-scrollbar-track {
-  background: #1e1e1e;
-}
-
-.timetable-scroll::-webkit-scrollbar-thumb {
-  background: #4a4a4a;
-  border-radius: 3px;
-}
-
-.timetable-scroll::-webkit-scrollbar-thumb:hover {
-  background: #5a5a5a;
-}
-
-.timetable-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: fadeInUp 0.4s ease backwards;
-}
-
-/* 시간표 아이템 페이드인 애니메이션 */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 각 아이템에 지연 효과 추가 (CSS로는 제한적이지만 기본 효과) */
-.timetable-item:nth-child(1) { animation-delay: 0.05s; }
-.timetable-item:nth-child(2) { animation-delay: 0.1s; }
-.timetable-item:nth-child(3) { animation-delay: 0.15s; }
-.timetable-item:nth-child(4) { animation-delay: 0.2s; }
-.timetable-item:nth-child(5) { animation-delay: 0.25s; }
-
-/* 하단 고정 추가 버튼 */
-.timetable-add {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateX(-50%) translateY(0);
-  }
-  50% {
-    transform: translateX(-50%) translateY(-5px);
-  }
-}
-
-.timetable-add:hover {
-  animation: none;  /* 호버 시 바운스 중지 */
-}
-
-/* 빈 상태 */
-.no-timetables {
-  color: #bbb;
-  text-align: center;
-  padding: 16px 12px;
-}
-
-.no-timetables p {
-  margin-bottom: 12px;
-  font-size: 0.95rem;
-}
-
-.btn-create-timetable {
-  display: inline-block;
-  margin-top: 12px;
-  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(255, 192, 0, 0.3);
-}
-
-.btn-create-timetable:hover {
-  background: linear-gradient(135deg, #ffd54f 0%, #ffc000 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 192, 0, 0.4);
-}
-
-/* 반응형 개선 */
-@media (max-width: 1200px) {
-  .manage-container {
-    max-width: 95%;
-    margin: 120px auto 0 auto;
-  }
-  .lecture-list {
-    width: 300px;
-  }
-}
-
-@media (max-width: 992px) {
-  .manage-container {
-    max-width: 100%;
-    margin: 120px 12px 0 12px;
-  }
-  .timetable-side {
-    width: 120px;
-  }
-  .timetable-card, .timetable-add {
-    width: 75px;
-    height: 75px;
-  }
-  .lecture-list {
-    width: 280px;
-  }
-}
-
-@media (max-width: 768px) {
-  .manage-container {
-    flex-direction: column;
-    height: auto;
-    max-height: none;
-    margin: 100px 8px 0 8px;
-  }
-  .timetable-side {
-    width: 100%;
-    flex-direction: row;
-    align-items: flex-start;
-    overflow-x: auto;
-    border-right: none;
-    border-bottom: 1px solid #3a3a3a;
-    padding: 12px;
-  }
-  .timetable-scroll {
-    flex-direction: row;
-    align-items: center;
-    padding-bottom: 0;
-    gap: 12px;
-  }
-  .timetable-add {
-    position: static;
-    transform: none;
-  }
-  .lecture-list {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #3a3a3a;
-  }
-  .chatroom-view {
-    padding: 16px;
-  }
-}
 
 /* 채팅방 컨테이너 */
 .lecture-chat-widget {
@@ -620,45 +369,80 @@ body {
 
 .chatroom-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between;  /* ✅ 왼쪽/오른쪽 분리 */
   align-items: center;
   margin-bottom: 16px;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);  /* 노란색 배경 */
+  padding: 14px 18px;
+
+  background: linear-gradient(135deg, #363636 0%, #2e2e2e 100%);  
+  border: 1px solid #3a3a3a;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(255, 192, 0, 0.2);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 0 4px rgba(255, 255, 255, 0.05);
+  color: #fff;
+  transition: all 0.3s ease;
 }
 
+
+/* ✅ 왼쪽 영역: 제목 + 참여자 수 묶기 */
+.chatroom-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 제목 */
 .chatroom-title {
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #000;
+  color: #f2f2f2;
   letter-spacing: 0.3px;
 }
 
+/* ✅ 참여자 수 (작고 은은하게) */
 .chatroom-user-count {
-  font-size: 0.9rem;
-  color: #333;
+  font-size: 0.78rem;
+  color: #aaa;
+  background: none;
+  border: none;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.5);
-  padding: 4px 12px;
-  border-radius: 20px;
+  gap: 4px;
+  padding: 0;
 }
 
 .chatroom-user-count::before {
   content: "●";
-  color: #3ba55d;  /* 초록색 온라인 표시 */
-  font-size: 12px;
+  color: #3ba55d;
+  font-size: 9px;
   animation: pulse 2s infinite;
+}
+
+/* ✅ 닫기 버튼 (오른쪽 끝) */
+.chatroom-header button {
+  background: none;
+  color: #ccc;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.chatroom-header button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
 
 /* ==============================
    시간표 열람 버튼 (강조)
@@ -806,50 +590,42 @@ body {
   margin: 12px 0 16px;
 }
 
-.edit-btn, .delete-btn {
-  background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.edit-btn:hover, .delete-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.delete-btn {
-  background: linear-gradient(135deg, #a74a4a 0%, #8a1f1f 100%);
-}
-
+/* ==============================
+   Timetable Overlay Close Button (v4 - Icon Version)
+   ============================== */
 .close-btn {
   position: absolute;
-  top: 20px;
-  right: 24px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  border: none;
-  font-size: 32px;
-  cursor: pointer;
+  top: 18px;
+  right: 22px;
   width: 40px;
   height: 40px;
+  border: none;
   border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+/* 아이콘 크기 */
+.close-btn i {
+  font-size: 28px;
   line-height: 1;
 }
 
+/* hover 효과: 부드러운 밝기만 */
 .close-btn:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: rotate(90deg);
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
 }
+
+.close-btn:active {
+  transform: scale(0.95);
+}
+
 
 /* 접근성: 시각적으로 숨김 */
 .visually-hidden {
@@ -858,4 +634,290 @@ body {
   padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0,0,0,0);
   white-space: nowrap; border: 0;
+}
+
+/* ==============================
+   LEFT PANEL - COMPACT STABLE (v3.4)
+   ============================== */
+.timetable-side {
+  position: relative;
+  width: 160px; /* ✅ 좌측 패널 폭 축소 */
+  background: linear-gradient(180deg, #1f1f1f 0%, #2a2a2a 100%);
+  border-right: 1px solid #3a3a3a;
+  padding: 12px 6px 0; /* ✅ 좌우 여백 축소 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* ✅ 좌우 정렬 맞춤 */
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* ✅ 카드 리스트 (세로 스크롤 안정화) */
+.timetable-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* ✅ 간격 축소 */
+  padding: 0 0 4px 0; /* ✅ 스크롤 하단 여유 최소화 */
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4a transparent;
+  overflow: visible; /* ✅ 추가 */
+}
+
+.timetable-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.timetable-scroll::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 3px;
+}
+
+/* ✅ 카드 아이템 */
+.timetable-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: fadeInUp 0.3s ease backwards;
+}
+
+.timetable-card {
+  width: 85px;  /* ✅ 크기 축소 */
+  height: 85px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3a3a3a 0%, #2e2e2e 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.timetable-card:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #4a4a4a 0%, #383838 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.timetable-card.active {
+  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);
+  color: #000;
+  transform: scale(1.04);
+  box-shadow: 0 0 0 2px rgba(255, 192, 0, 0.4),
+              0 5px 10px rgba(255, 192, 0, 0.25);
+}
+
+/* ✅ 카드 라벨 */
+.timetable-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #ddd;
+  text-align: center;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* ✅ 하단 추가 버튼 (패널 하단 고정, 카드 크기와 통일) */
+.timetable-add {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85px;
+  height: 85px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);
+  color: #000;
+  font-size: 1.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(255, 192, 0, 0.25);
+  transition: all 0.25s ease;
+  z-index: 10;
+}
+
+.timetable-add:hover {
+  transform: translateX(-50%) translateY(-3px);
+  background: linear-gradient(135deg, #ffd54f 0%, #ffc000 100%);
+  box-shadow: 0 5px 12px rgba(255, 192, 0, 0.35);
+}
+
+/* ✅ 기본 상태: 노란색 */
+.timetable-icon {
+  color: #ffc000;
+  transition: color 0.3s ease;
+}
+
+/* ✅ 카드 hover 시: 더 밝은 노란색 */
+.timetable-card:hover .timetable-icon {
+  color: #ffe066;
+}
+
+/* ✅ 카드 선택(active) 시: 검은색으로 변경 */
+.timetable-card.active .timetable-icon {
+  color: #000;
+}
+
+/* 전체 컨테이너 축소 */
+.manage-container {
+  display: flex;
+  height: calc(100vh - 80px);
+  margin: 120px auto 0 auto;
+  max-width: 1100px;     /* ✅ 1400 → 1100 */
+  max-height: 700px;     /* ✅ 800 → 700 */
+  border: 1px solid #3a3a3a;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+
+/* 좌측 패널 */
+.timetable-side {
+  width: 110px;          /* ✅ 150 → 110 */
+  padding: 10px 6px;
+}
+
+/* 중앙 패널 */
+.lecture-list {
+  width: 280px;          /* ✅ 340 → 280 */
+  padding: 16px;
+}
+
+/* 우측 채팅 */
+.chatroom-view {
+  flex: 1;
+  padding: 18px;         /* ✅ 24 → 18 */
+}
+
+/* 카드/버튼 크기 균형 */
+.timetable-card {
+  width: 65px;           /* ✅ 90 → 65 */
+  height: 65px;
+  border-radius: 10px;
+}
+.timetable-add {
+  width: 65px;
+  height: 65px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+}
+
+.timetable-add {
+  text-decoration: none !important;  /* ✅ 밑줄 제거 */
+  text-decoration: none !important;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* ==============================
+   TIMETABLE OVERLAY - JS Color + Rounded Uniform Cells
+   ============================== */
+.table-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  overflow-x: auto;
+}
+
+/* ✅ 스크롤바 */
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+.table-container::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 8px;
+}
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* ✅ 테이블 기본 구조 */
+.timetable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px; /* 셀 간격 */
+  table-layout: fixed;
+  text-align: center;
+  color: #000;
+  background: transparent;
+  font-size: 0.9rem;
+}
+
+/* 헤더 */
+.timetable th {
+  background-color: #fff8e1;
+  color: #333;
+  font-weight: 700;
+  padding: 12px 0;
+  border: none;
+  border-radius: 12px;
+}
+
+/* ✅ 셀 (둥근 + 일정 간격 + 살짝 커진 세로 높이) */
+.timetable td {
+  height: 70px; /* ✅ 기존 60px → 70px */
+  background: #fafafa;
+  border-radius: 14px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.25s ease;
+  vertical-align: middle;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ✅ 빈 셀 hover 시 */
+.timetable td:hover {
+  background-color: #fff9e6;
+  border-color: #ffc000;
+}
+
+/* ✅ 강의 셀 내부 */
+.timetable td div {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #000;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  line-height: 1.1;   /* ✅ 줄 간격 좁힘 (1.3 → 1.1) */
+  padding: 2px 4px;   /* ✅ 내부 여백 축소 (4px → 2px) */
+}
+
+/* ✅ 강의명 */
+.timetable td div strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0px;  /* ✅ 완전 붙이기 */
+  color: #000;
+}
+
+/* ✅ 강의실 */
+.timetable td div small {
+  font-size: 0.74rem;
+  color: #333;
+  opacity: 0.85;
+  margin-top: -3px;  /* ✅ 살짝 위로 올려서 더 타이트하게 */
 }

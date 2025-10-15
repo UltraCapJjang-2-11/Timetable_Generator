@@ -404,7 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const preferCompact = document.querySelector('input[name="compact"]:checked')?.value === 'yes';
         const preferMorning = document.getElementById('prefer-morning')?.checked || false;
         const preferAfternoon = document.getElementById('prefer-afternoon')?.checked || false;
-        const optimizationLevel = document.getElementById('optimization-level')?.value || 'ADVANCED';
+        const optimizationLevel = document.querySelector('input[name="optimization"]:checked')?.value || 'ADVANCED';
 
         const surveyData = {
             majorCredit: parseInt(major),

@@ -313,16 +313,37 @@
                         </div>
                     </div>
                     <div class="preference-group">
-                        <label>최적화 수준</label>
-                        <select id="optimization-level">
-                            <option value="BASIC">Basic - 빠른 결과 (약 30초, 100개 탐색)</option>
-                            <option value="ADVANCED" selected>Advanced - 균형잡힌 결과 (약 1분, 500개 탐색)</option>
-                            <option value="EXPERT">Expert - 고품질 결과 (약 2분, 1000개 탐색)</option>
-                            <option value="ULTRA">Ultra - 최상의 결과 (약 4분, 3000개 탐색)</option>
-                        </select>
-                        <small class="input-hint">
-                            높은 수준일수록 더 많은 시간표를 탐색하여 최적의 결과를 찾습니다
-                        </small>
+                        <label>모델 선택</label>
+                        <div class="radio-options-card" style="grid-template-columns: 1fr 1fr;">
+                            <div class="radio-card">
+                                <input type="radio" id="opt-lite" name="optimization" value="BASIC">
+                                <label for="opt-lite">
+                                    <div class="radio-card-title">Lite</div>
+                                    <div class="radio-card-desc">빠른 생성<br>간단한 시간표</div>
+                                </label>
+                            </div>
+                            <div class="radio-card">
+                                <input type="radio" id="opt-standard" name="optimization" value="ADVANCED" checked>
+                                <label for="opt-standard">
+                                    <div class="radio-card-title">Standard</div>
+                                    <div class="radio-card-desc">추천<br>균형잡힌 품질</div>
+                                </label>
+                            </div>
+                            <div class="radio-card">
+                                <input type="radio" id="opt-pro" name="optimization" value="EXPERT">
+                                <label for="opt-pro">
+                                    <div class="radio-card-title">Pro</div>
+                                    <div class="radio-card-desc">고품질<br>까다로운 조건에 적합</div>
+                                </label>
+                            </div>
+                            <div class="radio-card">
+                                <input type="radio" id="opt-ultra" name="optimization" value="ULTRA">
+                                <label for="opt-ultra">
+                                    <div class="radio-card-title">Ultra</div>
+                                    <div class="radio-card-desc">최상급<br>완벽한 맞춤 시간표</div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

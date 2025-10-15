@@ -228,34 +228,9 @@ class CandidateFilter:
         if course.target_year != GENERAL_EDUCATION_TARGET_YEAR:
             return False
 
-        # 시간대 선호도 필터링 (교양 과목에만 강하게 적용)
-        if criteria.prefer_morning or criteria.prefer_afternoon:
-            schedules = course.courseschedule_set.all()
-            morning_count = 0
-            afternoon_count = 0
-
-            for sch in schedules:
-                times = parse_time_slots(sch.times, add_base_hour=True)
-                for hour in times:
-                    if hour < MORNING_END_HOUR:
-                        morning_count += 1
-                    else:
-                        afternoon_count += 1
-
-            total_hours = morning_count + afternoon_count
-            if total_hours > 0:
-                morning_ratio = morning_count / total_hours
-                afternoon_ratio = afternoon_count / total_hours
-
-                # 오전 선호시: 오전 80% 미만인 교양 과목 제외 (오후가 20% 초과면 제외)
-                if criteria.prefer_morning and afternoon_ratio > 0.2:
-                    print(f"DEBUG: 교양 과목 '{course.course_name}' 제외 - 오전 선호인데 오후 비율 {afternoon_ratio:.0%} (기준: 오전 80% 이상 필요)")
-                    return False
-
-                # 오후 선호시: 오후 80% 미만인 교양 과목 제외 (오전이 20% 초과면 제외)
-                if criteria.prefer_afternoon and morning_ratio > 0.2:
-                    print(f"DEBUG: 교양 과목 '{course.course_name}' 제외 - 오후 선호인데 오전 비율 {morning_ratio:.0%} (기준: 오후 80% 이상 필요)")
-                    return False
+        # 시간대 선호도는 Hard Constraint에서 제거
+        # → course_scorer.py에서 Soft Constraint(점수)로만 처리
+        # 이유: 오전 선호 시 오전 과목 우선이지만, 오전이 부족하면 오후도 선택 가능해야 함
 
         # 교양 세부 항목 확인
         if criteria.missing_gen_sub:

@@ -405,6 +405,16 @@ document.addEventListener('DOMContentLoaded', function() {
         window.currentTimetable = tt;
         window.currentTimetableId = tt.id;
         openAllCourseChats(tt);
+        // 좌측 카드 active 및 제목 반영: .timetable-item 기준으로 개선
+        const side = document.querySelector('.timetable-side');
+        const titleEl = document.getElementById('selected-timetable-name');
+        if (side) {
+          side.querySelectorAll('.timetable-card').forEach(el => el.classList.remove('active'));
+          const item = side.querySelector(`.timetable-item[data-timetable-id="${id}"]`);
+          const card = item ? item.querySelector('.timetable-card') : null;
+          if (card) card.classList.add('active');
+        }
+        if (titleEl) titleEl.textContent = tt.title;
       } else {
         console.log('No timetable selected or found, clearing chats');
         for (const key of Array.from(openRooms.keys())) {

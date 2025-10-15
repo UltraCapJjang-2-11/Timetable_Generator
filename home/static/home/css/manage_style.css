@@ -10,52 +10,83 @@ body {
   display: flex;
   height: calc(100vh - 80px);
   margin: 140px auto 0 auto;   /* ✅ 가운데 정렬 */
-  max-width: 1100px;          /* ✅ 전체 최대 폭 제한 */
-  max-height: 700px;          /* ✅ 전체 최대 폭 제한 */
-  border: 1px solid #333;     /* (선택) 경계 확인용 */
-  border-radius: 8px;         /* (선택) 모서리 둥글게 */
+  max-width: 1400px;          /* ✅ 전체 최대 폭 제한 (1100px → 1400px) */
+  max-height: 800px;          /* ✅ 전체 최대 높이 (700px → 800px) */
+  border: 1px solid #3a3a3a;     /* 경계선 색상 개선 */
+  border-radius: 16px;         /* 모서리 더 둥글게 (8px → 16px) */
   overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);  /* 깊이감 추가 */
 }
 
 /* 좌측 시간표 사이드바 */
 .timetable-side {
-  width: 90px;
-  background-color: #1e1e1e;
+  width: 140px;  /* 110px → 140px */
+  background: linear-gradient(180deg, #1e1e1e 0%, #252525 100%);  /* 그라데이션 추가 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 0;
-  gap: 12px;
-  border-right: 1px solid #333;
+  padding: 16px 12px;  /* 패딩 증가 */
+  gap: 16px;  /* 간격 증가 */
+  border-right: 1px solid #3a3a3a;  /* 경계선 색상 개선 */
+  position: relative;
 }
 
 .timetable-side p {
-  margin: 4px 0;      /* ✅ 위아래 간격 최소화 */
-  font-size: 1rem;
+  margin: 4px 0;
+  font-size: 1.1rem;  /* 폰트 크기 증가 */
+  font-weight: 500;  /* 폰트 굵기 추가 */
   color: #ffffff;
   text-align: center;
+  letter-spacing: 0.3px;  /* 자간 추가 */
 }
 
 
 .timetable-card, .timetable-add {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  background-color: #333;
+  width: 85px;  /* 70px → 85px */
+  height: 85px;
+  border-radius: 16px;  /* 12px → 16px */
+  background: linear-gradient(135deg, #3a3a3a 0%, #2e2e2e 100%);  /* 그라데이션 배경 */
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   position: relative;
-  transition: background 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);  /* 부드러운 트랜지션 */
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.6rem;  /* 폰트 크기 증가 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);  /* 그림자 추가 */
 }
 
 .timetable-card:hover,
 .timetable-add:hover {
-  background-color: #555;
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #4a4a4a 0%, #3e3e3e 100%);  /* 호버 시 그라데이션 */
+  transform: translateY(-4px) scale(1.05);  /* Y축 이동 + 스케일 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);  /* 호버 시 그림자 증가 */
+}
+
+/* 선택된 시간표 강조 */
+.timetable-card.active {
+  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);  /* 노란색 그라데이션 */
+  color: #000;
+  box-shadow: 0 0 0 3px rgba(255, 192, 0, 0.3), 0 6px 20px rgba(255, 192, 0, 0.4);  /* 글로우 효과 */
+  transform: scale(1.08);  /* 약간 더 크게 */
+}
+
+.timetable-card.active:hover {
+  transform: translateY(-4px) scale(1.1);  /* 호버 시 더 크게 */
+}
+
+/* 카드 라벨 */
+.timetable-label {
+  margin: 8px 0 12px 0;  /* 여백 증가 */
+  max-width: 110px;  /* 폭 증가 */
+  font-size: 0.85rem;  /* 폰트 크기 증가 */
+  font-weight: 500;  /* 폰트 굵기 */
+  color: #e0e0e0;  /* 색상 밝게 */
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* 툴팁 */
@@ -85,11 +116,54 @@ body {
 
 /* 가운데 강의 리스트 */
 .lecture-list {
-  width: 240px;
-  background-color: #2e2e2e;
-  padding: 15px;
+  width: 340px;  /* 260px → 340px */
+  background: linear-gradient(180deg, #2a2a2a 0%, #2e2e2e 100%);  /* 그라데이션 배경 */
+  padding: 20px;  /* 패딩 증가 */
   overflow-y: auto;
-  border-right: 1px solid #333;
+  border-right: 1px solid #3a3a3a;
+  /* 스크롤바 스타일링 */
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4a #2e2e2e;
+}
+
+.lecture-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lecture-list::-webkit-scrollbar-track {
+  background: #2e2e2e;
+}
+
+.lecture-list::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 4px;
+}
+
+.lecture-list::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+/* 리스트 상단 툴바 */
+.list-toolbar {
+  display: flex;
+  flex-direction: column;  /* 세로 배치로 변경 */
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #3a3a3a;  /* 구분선 추가 */
+}
+
+.list-meta {
+  color: #ffc000;  /* 액센트 컬러로 변경 */
+  font-size: 1.1rem;  /* 폰트 크기 증가 */
+  font-weight: 600;  /* 폰트 굵기 */
+  letter-spacing: 0.5px;
+}
+
+.list-actions {
+  display: flex;
+  flex-direction: column;  /* 버튼들을 세로로 배치 */
+  gap: 8px;
 }
 
 .lecture-list ul {
@@ -99,79 +173,343 @@ body {
 }
 
 .lecture-list li {
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 8px;
+  padding: 16px;  /* 패딩 증가 */
+  border-radius: 12px;  /* 더 둥글게 */
+  margin-bottom: 12px;  /* 간격 증가 */
   cursor: pointer;
-  color: #ccc;
-  transition: background 0.2s ease, color 0.2s ease;
+  color: #e0e0e0;  /* 텍스트 밝게 */
+  background: linear-gradient(135deg, #363636 0%, #2e2e2e 100%);  /* 그라데이션 배경 */
+  border: 1px solid #404040;  /* 테두리 추가 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);  /* 그림자 */
+  font-size: 0.95rem;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.lecture-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: #ffc000;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
 }
 
 .lecture-list li:hover {
-  background-color: #000000;
+  background: linear-gradient(135deg, #404040 0%, #363636 100%);
   color: #fff;
+  transform: translateX(4px);  /* 오른쪽으로 약간 이동 */
+  box-shadow: 0 4px 16px rgba(255, 192, 0, 0.2);  /* 노란색 그림자 */
+  border-color: #ffc000;
+}
+
+.lecture-list li:hover::before {
+  transform: scaleY(1);  /* 왼쪽 바 나타남 */
+}
+
+.lecture-list li.active {
+  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);
+  color: #000;
+  border-color: #ffc000;
+  box-shadow: 0 4px 16px rgba(255, 192, 0, 0.4);
+  transform: translateX(4px);
 }
 
 /* 오른쪽 채팅 뷰 */
 .chatroom-view {
   flex: 1;
-  background-color: #f5f5f5;
+  background: linear-gradient(180deg, #f8f8f8 0%, #f0f0f0 100%);  /* 밝은 그라데이션 */
   color: #000;
-  padding: 20px;
+  padding: 24px;  /* 패딩 증가 */
   display: flex;
   flex-direction: column;
+}
+
+#chat-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+#chat-placeholder p {
+  color: #888;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* 좌측 스크롤 영역과 항목 묶음 */
+.timetable-scroll {
+  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;  /* 간격 증가 */
+  padding-bottom: 90px; /* 하단 추가 버튼 영역 확보 */
+  /* 스크롤바 스타일링 */
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4a #1e1e1e;
+}
+
+.timetable-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.timetable-scroll::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.timetable-scroll::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 3px;
+}
+
+.timetable-scroll::-webkit-scrollbar-thumb:hover {
+  background: #5a5a5a;
+}
+
+.timetable-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.4s ease backwards;
+}
+
+/* 시간표 아이템 페이드인 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 각 아이템에 지연 효과 추가 (CSS로는 제한적이지만 기본 효과) */
+.timetable-item:nth-child(1) { animation-delay: 0.05s; }
+.timetable-item:nth-child(2) { animation-delay: 0.1s; }
+.timetable-item:nth-child(3) { animation-delay: 0.15s; }
+.timetable-item:nth-child(4) { animation-delay: 0.2s; }
+.timetable-item:nth-child(5) { animation-delay: 0.25s; }
+
+/* 하단 고정 추가 버튼 */
+.timetable-add {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+.timetable-add:hover {
+  animation: none;  /* 호버 시 바운스 중지 */
+}
+
+/* 빈 상태 */
+.no-timetables {
+  color: #bbb;
+  text-align: center;
+  padding: 16px 12px;
+}
+
+.no-timetables p {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.btn-create-timetable {
+  display: inline-block;
+  margin-top: 12px;
+  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 192, 0, 0.3);
+}
+
+.btn-create-timetable:hover {
+  background: linear-gradient(135deg, #ffd54f 0%, #ffc000 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 192, 0, 0.4);
+}
+
+/* 반응형 개선 */
+@media (max-width: 1200px) {
+  .manage-container {
+    max-width: 95%;
+    margin: 120px auto 0 auto;
+  }
+  .lecture-list {
+    width: 300px;
+  }
+}
+
+@media (max-width: 992px) {
+  .manage-container {
+    max-width: 100%;
+    margin: 120px 12px 0 12px;
+  }
+  .timetable-side {
+    width: 120px;
+  }
+  .timetable-card, .timetable-add {
+    width: 75px;
+    height: 75px;
+  }
+  .lecture-list {
+    width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .manage-container {
+    flex-direction: column;
+    height: auto;
+    max-height: none;
+    margin: 100px 8px 0 8px;
+  }
+  .timetable-side {
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid #3a3a3a;
+    padding: 12px;
+  }
+  .timetable-scroll {
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 0;
+    gap: 12px;
+  }
+  .timetable-add {
+    position: static;
+    transform: none;
+  }
+  .lecture-list {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #3a3a3a;
+  }
+  .chatroom-view {
+    padding: 16px;
+  }
 }
 
 /* 채팅방 컨테이너 */
 .lecture-chat-widget {
   display: flex;
   flex-direction: column;
-  height: 65vh;               /* ✅ 화면 높이의 70% */
+  height: 100%;  /* 전체 높이 사용 */
   background-color: #fff;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  padding: 15px;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 16px;  /* 더 둥글게 */
+  border: 1px solid #d0d0d0;
+  padding: 20px;  /* 패딩 증가 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);  /* 외부 그림자로 변경 */
 }
 
 /* 채팅 내용 영역 */
 .lecture-chat-body {
-  flex: 1;                    /* ✅ 남는 공간 채움 */
-  overflow-y: auto;           /* ✅ 메시지 많으면 스크롤 */
-  padding: 15px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
   display: flex;
   flex-direction: column;
+  gap: 4px;  /* 메시지 간격 */
+  /* 스크롤바 스타일링 */
+  scrollbar-width: thin;
+  scrollbar-color: #d0d0d0 #f5f5f5;
+}
+
+.lecture-chat-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lecture-chat-body::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.lecture-chat-body::-webkit-scrollbar-thumb {
+  background: #d0d0d0;
+  border-radius: 4px;
+}
+
+.lecture-chat-body::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0;
 }
 
 .lecture-chat-input {
   display: flex;
-  border-top: 1px solid #ccc;
-  padding-top: 10px;
-  gap: 10px;
+  border-top: 2px solid #e0e0e0;
+  padding-top: 16px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .lecture-chat-input input {
   flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
   outline: none;
+  transition: all 0.3s ease;
+  background-color: #f8f8f8;
+}
+
+.lecture-chat-input input:focus {
+  border-color: #ffc000;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 192, 0, 0.1);
 }
 
 .lecture-chat-input button {
-  background-color: #222;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
   color: #fff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .lecture-chat-input button:hover {
-  background-color: #333;
+  background: linear-gradient(135deg, #3a3a3a 0%, #2e2e2e 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.lecture-chat-input button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* 채팅 메시지 - 카카오톡 스타일 */
@@ -232,7 +570,7 @@ body {
   background-color: #FFE400; /* 카카오톡 노란색 */
   color: #000;
   border-radius: 18px 18px 4px 18px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* 그림자 강화 */
 }
 
 .chat-bubble.other {
@@ -240,7 +578,7 @@ body {
   color: #333;
   border: 1px solid #e5e5e5;
   border-radius: 18px 18px 18px 4px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);  /* 그림자 강화 */
 }
 
 /* 시간 표시 */
@@ -282,59 +620,242 @@ body {
 
 .chatroom-header {
   display: flex;
-  justify-content: space-between; /* 제목 왼쪽 / 인원 오른쪽 */
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding: 0 5px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #ffc000 0%, #ffb000 100%);  /* 노란색 배경 */
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(255, 192, 0, 0.2);
 }
 
 .chatroom-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.chatroom-user-count {
-  font-size: 14px;
-  color: #666;
-  display: flex;
-  align-items: center;
-  gap: 6px;  /* 아이콘과 글자 간격 */
-}
-
-.chatroom-user-count::before {
-  content: "●";              /* 동그라미 아이콘 */
-  color: #3ba55d;            /* ✅ 디스코드 초록색 (#3ba55d) */
-  font-size: 12px;
-}
-
-/* ==============================
-   시간표 열람 버튼 (얇고 길게)
-   ============================== */
-.btn-view-timetable {
-  display: inline-block;
-  width: 100%;                  /* ✅ 중앙 영역 너비에 맞춤 */
-  background-color: #FFC000;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: #000;
-  border: none;
-  border-radius: 6px;
-  padding: 7px 0;              /* ✅ 얇게 */
-  font-size: 0.9rem;           /* ✅ 살짝 작게 */
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   letter-spacing: 0.3px;
 }
 
+.chatroom-user-count {
+  font-size: 0.9rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.chatroom-user-count::before {
+  content: "●";
+  color: #3ba55d;  /* 초록색 온라인 표시 */
+  font-size: 12px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ==============================
+   시간표 열람 버튼 (강조)
+   ============================== */
+.btn-view-timetable {
+  display: inline-block;
+  width: 100%;
+  background: linear-gradient(135deg, #FFC000 0%, #FFB000 100%);  /* 그라데이션 */
+  color: #000;
+  border: none;
+  border-radius: 10px;  /* 더 둥글게 */
+  padding: 12px 0;  /* 패딩 증가 */
+  font-size: 1rem;  /* 폰트 크기 증가 */
+  font-weight: 700;  /* 더 굵게 */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(255, 192, 0, 0.3);  /* 그림자 */
+  letter-spacing: 0.5px;
+  text-transform: uppercase;  /* 대문자 변환 제거하고 원래대로 */
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-view-timetable::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-view-timetable:hover::before {
+  left: 100%;  /* 반짝이는 효과 */
+}
+
 .btn-view-timetable:hover {
-  background-color: #FFD54F;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #FFD54F 0%, #FFC000 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 192, 0, 0.4);
 }
 
 .btn-view-timetable:active {
-  background-color: #E6B800;
+  background: linear-gradient(135deg, #E6B800 0%, #D9A800 100%);
   transform: translateY(0);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(255, 192, 0, 0.3);
+}
+
+/* 보조 버튼 */
+.btn-manage {
+  width: 100%;  /* 전체 너비 */
+  background: linear-gradient(135deg, #3a3a3a 0%, #2e2e2e 100%);
+  color: #fff;
+  border: 1px solid #4a4a4a;
+  border-radius: 8px;
+  padding: 10px 16px;  /* 패딩 증가 */
+  font-size: 0.9rem;  /* 폰트 크기 증가 */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-manage:hover {
+  background: linear-gradient(135deg, #4a4a4a 0%, #3e3e3e 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: #5a5a5a;
+}
+
+.btn-manage:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-manage.edit {
+  border-color: #4a7ba7;
+}
+
+.btn-manage.edit:hover {
+  background: linear-gradient(135deg, #4a7ba7 0%, #3d6890 100%);
+  border-color: #5a8bb7;
+}
+
+.btn-manage.delete {
+  border-color: #a74a4a;
+}
+
+.btn-manage.delete:hover {
+  background: linear-gradient(135deg, #a74a4a 0%, #903d3d 100%);
+  border-color: #b75a5a;
+}
+
+/* 오버레이 */
+.timetable-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);  /* 더 어둡게 */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);  /* 블러 효과 */
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.timetable-overlay.hidden {
+  display: none;
+}
+
+.timetable-overlay .table-container {
+  background: #fff;
+  color: #000;
+  padding: 24px;  /* 패딩 증가 */
+  border-radius: 16px;  /* 더 둥글게 */
+  max-width: 900px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);  /* 그림자 추가 */
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timetable-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.edit-btn, .delete-btn {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.edit-btn:hover, .delete-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #a74a4a 0%, #8a1f1f 100%);
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: rotate(90deg);
+}
+
+/* 접근성: 시각적으로 숨김 */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
 }

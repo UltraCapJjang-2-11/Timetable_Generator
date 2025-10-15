@@ -36,44 +36,53 @@
   <div class="manage-container manage-container">
 
     <!-- 좌측: 시간표 사이드바 -->
-    <section class="timetable-side">
-      {% for timetable in timetables %}
-      <div class="timetable-card"
-           data-timetable-id="{{ timetable.id }}"
-           data-title="{{ timetable.title }}"
-           onclick="showTimetableById({{ timetable.id }})">
-        <svg fill="none" height="24" viewBox="0 0 24 24" width="24" class="timetable-icon">
-          <g clip-rule="evenodd" fill-rule="evenodd" stroke="#ffc000" stroke-linecap="round" stroke-width="2">
-            <path d="m3 7h17c.5523 0 1 .44772 1 1v11c0 .5523-.4477 1-1 1h-16c-.55228 0-1-.4477-1-1z"></path>
-            <path d="m3 4.5c0-.27614.22386-.5.5-.5h6.29289c.13261 0 .25981.05268.35351.14645l2.8536 2.85355h-10z"></path>
-          </g>
-        </svg>
+    <section class="timetable-side" aria-label="저장된 시간표 목록">
+      <div class="timetable-scroll">
+        {% for timetable in timetables %}
+        <div class="timetable-item" data-timetable-id="{{ timetable.id }}" data-title="{{ timetable.title }}" role="button" aria-label="시간표 {{ timetable.title }} 선택">
+          <div class="timetable-card"
+               data-timetable-id="{{ timetable.id }}"
+               data-title="{{ timetable.title }}">
+            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" class="timetable-icon" aria-hidden="true">
+              <g clip-rule="evenodd" fill-rule="evenodd" stroke="#ffc000" stroke-linecap="round" stroke-width="2">
+                <path d="m3 7h17c.5523 0 1 .44772 1 1v11c0 .5523-.4477 1-1 1h-16c-.55228 0-1-.4477-1-1z"></path>
+                <path d="m3 4.5c0-.27614.22386-.5.5-.5h6.29289c.13261 0 .25981.05268.35351.14645l2.8536 2.85355h-10z"></path>
+              </g>
+            </svg>
+          </div>
+          <p class="timetable-label">{{ timetable.title }}</p>
+        </div>
+        {% empty %}
+        <div class="no-timetables" role="status" aria-live="polite">
+          <p>저장된 시간표가 없습니다.</p>
+          <a class="btn-create-timetable" href="{% url 'timetable' %}">시간표 만들기</a>
+        </div>
+        {% endfor %}
       </div>
-      {% empty %}
-      {% endfor %}
-      <div class="timetable-add" data-title="시간표 추가" onclick="window.location.href='{% url 'timetable' %}'">+</div>
+      <a class="timetable-add" data-title="시간표 추가" href="{% url 'timetable' %}" aria-label="시간표 추가">+</a>
     </section>
 
     <!-- 가운데: 강의 리스트 -->
     <div class="lecture-list">
-      {% comment %} 드롭다운으로 시간표 선택하는 기능 -> 왼쪽 시간표 블럭 클릭으로 선택하면 좋을듯함{% endcomment %}
-      {% comment %}
       <div class="mb-2 p-2">
-         <select id="saved-timetable-select" class="form-select form-select-sm">
+         <select id="saved-timetable-select" class="form-select form-select-sm visually-hidden" aria-label="저장된 시간표 선택">
           <option value="">시간표를 선택하세요</option>
           {% for timetable in timetables %}
           <option value="{{ timetable.id }}">{{ timetable.title }}</option>
           {% endfor %}
-         </select> 
-      </div>
-      {% endcomment %}
-
-      <div class="mb-2 p-2 text-center">
-          <button class="btn-view-timetable">
-            시간표 열람하기
-          </button>
+         </select>
       </div>
 
+      <div class="list-toolbar">
+        <div class="list-meta">
+          <span id="selected-timetable-name">시간표를 선택하세요</span>
+        </div>
+        <div class="list-actions">
+          <button class="btn-view-timetable" onclick="if(window.currentTimetable){ window.showTimetable(window.currentTimetable); }">시간표 열람하기</button>
+          <button class="btn-manage edit" onclick="window.editTimetable()">수정</button>
+          <button class="btn-manage delete" onclick="window.deleteTimetable()">삭제</button>
+        </div>
+      </div>
 
       <ul id="lecture-list">
         <!-- 선택된 시간표의 과목들이 동적으로 채워집니다 -->
@@ -82,7 +91,7 @@
 
     <!-- 오른쪽: 채팅 뷰 -->
     <div class="chatroom-view">
-      <div id="chat-placeholder">
+      <div id="chat-placeholder" role="region" aria-live="polite" aria-label="채팅 영역">
         <p style="color:#555;">시간표를 선택한 후 강의를 클릭하면 채팅방이 표시됩니다.</p>
       </div>
     </div>
@@ -94,12 +103,11 @@
   <!-- JSON data for timetables -->
   <script id="timetables-json" type="application/json">{{ timetables_json|safe }}</script>
 
-  {% comment %} <!-- 풀스크린 시간표 컨테이너 -->
+  <!-- 풀스크린 시간표 컨테이너 -->
   <div id="timetable-overlay" class="timetable-overlay hidden">
     <button class="close-btn" onclick="hideTimetable()">×</button>
     <h2 id="timetable-title"></h2>
 
-    <!-- 버튼 컨테이너 -->
     <div class="timetable-buttons">
       <button class="edit-btn" onclick="editTimetable()">수정하기</button>
       <button class="delete-btn" onclick="deleteTimetable()">삭제하기</button>
@@ -122,7 +130,7 @@
         </table>
       </div>
     </div>
-  </div> {% endcomment %}
+  </div>
 
   <!-- Socket.IO client -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -132,7 +140,6 @@
 
   <!-- Scripts -->
   <script src="{% static 'home/js/manage_page.js' %}"></script>
-  <script src="{% static 'home/js/manage.js' %}"></script>
   <script src="{% static 'home/js/manage_chat.js' %}"></script>
 
 </body>

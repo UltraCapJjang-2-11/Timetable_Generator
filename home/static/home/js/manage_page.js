@@ -17,6 +17,27 @@ document.addEventListener('DOMContentLoaded', function () {
   if (Array.isArray(window.timetablesData)) {
     // console.log('Loaded timetables:', window.timetablesData.length);
   }
+
+  // 좌측 항목 클릭 시 시간표 선택, 액티브 표시 및 이름 반영
+  const side = document.querySelector('.timetable-side');
+  const titleEl = document.getElementById('selected-timetable-name');
+  if (side) {
+    side.addEventListener('click', (e) => {
+      const item = e.target.closest('.timetable-item');
+      if (!item) return;
+      const id = Number(item.dataset.timetableId);
+      // 선택 로직 호출 (채팅/리스트 연동)
+      if (typeof window.showTimetableById === 'function') {
+        window.showTimetableById(id);
+      }
+      // active toggle
+      side.querySelectorAll('.timetable-card').forEach(el => el.classList.remove('active'));
+      const card = item.querySelector('.timetable-card');
+      if (card) card.classList.add('active');
+      const tt = (Array.isArray(window.timetablesData) ? window.timetablesData : []).find(t => Number(t.id) === id);
+      if (tt && titleEl) titleEl.textContent = tt.title;
+    });
+  }
 });
 
 // Expose functions used by template and manage.js
@@ -40,8 +61,18 @@ window.showTimetableById = function showTimetableById(id) {
   } else {
     console.error('Dropdown select element not found!');
   }
-
-  window.showTimetable(timetableData);
+  // 현재 선택 시간표 상태만 동기화 (오버레이는 버튼으로 열기)
+  window.currentTimetable = timetableData;
+  window.currentTimetableId = timetableData.id;
+  // 좌측 카드 active 및 제목 반영
+  const side = document.querySelector('.timetable-side');
+  const titleEl = document.getElementById('selected-timetable-name');
+  if (side) {
+    side.querySelectorAll('.timetable-card').forEach(el => el.classList.remove('active'));
+    const activeCard = side.querySelector(`.timetable-card[data-timetable-id="${id}"]`);
+    if (activeCard) activeCard.classList.add('active');
+  }
+  if (titleEl) titleEl.textContent = timetableData.title;
 };
 
 window.showTimetable = function showTimetable(timetableData) {

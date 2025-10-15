@@ -34,7 +34,7 @@ function addMessageToChat(text, type, buttons = null) {
 function showWelcomeMessage() {
     addMessageToChat(`안녕하세요! 저는 시간표 생성 도우미 Timey입니다! 🤖
 
-자연어로 원하는 시간표를 설명해주세요:
+원하는 시간표를 설명해주세요:
 
 • "월화는 공강이고 전공 12학점 원해"
 • "오전 수업 피하고 오후로 만들어줘"

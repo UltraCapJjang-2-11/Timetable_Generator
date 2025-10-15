@@ -333,7 +333,7 @@ class ModelBuilder:
                             penalty = gap * ScoringWeights.COMPACTNESS_GAP_PENALTY * 2  # 페널티 강화
                             both_selected = model.NewBoolVar(f'gap_{day}_{i}')
                             model.AddMultiplicationEquality(both_selected, [x[id1], x[id2]])
-                            compactness_bonus -= both_selected * penalty
+                            compactness_bonus += both_selected * (-penalty)
                             print(f"DEBUG:     공강 {gap}시간 발생: {name1} → {name2} (패널티 {penalty}점)")
                         elif gap == 0:
                             # 연속된 수업인 경우 보너스
@@ -363,7 +363,7 @@ class ModelBuilder:
                             # 요일이 활성화되면 패널티 적용 (강화)
                             model.Add(span_penalty_var == total_gap * 50).OnlyEnforceIf(day_active)  # 20 -> 50
                             model.Add(span_penalty_var == 0).OnlyEnforceIf(day_active.Not())
-                            compactness_bonus -= span_penalty_var
+                            compactness_bonus = compactness_bonus - span_penalty_var
 
                             print(f"DEBUG:   {day}요일 전체 범위: {first_start}~{last_end}교시 (총 공강 {total_gap}시간)")
 

@@ -513,30 +513,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         console.log('변환된 제약조건:', convertedConstraints);
-        
-        // 시간표 생성 진행 표시
-        showSurveyProgressMessage('설문조사 기반으로 시간표를 생성합니다...', true);
-        
-        // 짧은 지연 후 시간표 생성 시작
-        setTimeout(() => {
-            // requestTimetableAction 커스텀 이벤트 발생
-            document.dispatchEvent(new CustomEvent('requestTimetableAction', {
-                detail: convertedConstraints
-            }));
-            
-            // 시간표 생성 완료 후 피드백 메시지 표시
-            document.addEventListener('timetableRendered', function onTimetableRendered(e) {
-                if (e.detail.timetable && e.detail.timetable.courses.length > 0) {
-                    // 한 번만 실행되도록 이벤트 리스너 제거
-                    document.removeEventListener('timetableRendered', onTimetableRendered);
-                    
-                    // 설문조사 기반으로 생성된 시간표에 대한 피드백 메시지
-                    if (window.showBotMessage) {
-                        window.showBotMessage(`설문조사 응답을 바탕으로 ${e.detail.timetable.courses.length}개의 강의로 구성된 시간표를 생성했습니다! 마음에 드시나요?`);
-                    }
+
+        // 설문조사 오버레이 닫기
+        hideSurvey();
+
+        // requestTimetableAction 커스텀 이벤트 발생
+        // main.js의 setupSseConnection이 자동으로 progress-overlay를 관리함
+        document.dispatchEvent(new CustomEvent('requestTimetableAction', {
+            detail: convertedConstraints
+        }));
+
+        // 시간표 생성 완료 후 피드백 메시지 표시
+        document.addEventListener('timetableRendered', function onTimetableRendered(e) {
+            if (e.detail.timetable && e.detail.timetable.courses.length > 0) {
+                // 한 번만 실행되도록 이벤트 리스너 제거
+                document.removeEventListener('timetableRendered', onTimetableRendered);
+
+                // 설문조사 기반으로 생성된 시간표에 대한 피드백 메시지
+                if (window.showBotMessage) {
+                    window.showBotMessage(`설문조사 응답을 바탕으로 ${e.detail.timetable.courses.length}개의 강의로 구성된 시간표를 생성했습니다! 마음에 드시나요?`);
                 }
-            });
-        }, 500);
+            }
+        });
     }
 
     // 설문조사용 진행 메시지 표시 함수

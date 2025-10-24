@@ -248,6 +248,25 @@ async function handleSendMessage() {
     const sessionId = sessionStorage.getItem('nlSessionId') || `user_${Date.now()}`;
     sessionStorage.setItem('nlSessionId', sessionId);
 
+    // Progress overlay 표시
+    const progressOverlay = document.getElementById("progress-overlay");
+    const progressText = document.getElementById("progress-text");
+    if (progressOverlay && progressText) {
+        progressOverlay.style.display = "block";
+        progressText.textContent = "AI가 시간표 생성 중...";
+
+        // Dots 애니메이션
+        const baseText = "AI가 시간표 생성 중";
+        let dotCount = 0;
+        const dotsInterval = setInterval(() => {
+            dotCount = (dotCount + 1) % 4;
+            progressText.textContent = baseText + ".".repeat(dotCount === 0 ? 3 : dotCount);
+        }, 500);
+
+        // interval ID 저장 (나중에 중지하기 위해)
+        progressOverlay._dotsInterval = dotsInterval;
+    }
+
     try {
         const response = await fetch("/api/nl-timetable/chat/", {
             method: "POST",
@@ -274,6 +293,15 @@ async function handleSendMessage() {
         // 에러 처리
         if (data.error) {
             addMessageToChat(`❌ ${data.error}`, "bot error");
+
+            // 에러 시 progress-overlay 숨김
+            if (progressOverlay) {
+                if (progressOverlay._dotsInterval) {
+                    clearInterval(progressOverlay._dotsInterval);
+                    progressOverlay._dotsInterval = null;
+                }
+                progressOverlay.style.display = "none";
+            }
             return;
         }
 
@@ -291,12 +319,45 @@ async function handleSendMessage() {
         // 시간표 결과 표시
         if (data.timetables && data.timetables.length > 0) {
             showTimetableCards(data.timetables);
+
+            // 시간표 렌더링 완료 후 progress-overlay 숨김
+            if (progressOverlay) {
+                // Dots 애니메이션 중지
+                if (progressOverlay._dotsInterval) {
+                    clearInterval(progressOverlay._dotsInterval);
+                    progressOverlay._dotsInterval = null;
+                }
+                // 렌더링 완료 후 오버레이 숨김
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        progressOverlay.style.display = "none";
+                    }, 1500);
+                });
+            }
+        } else {
+            // 시간표가 없으면 바로 오버레이 숨김
+            if (progressOverlay) {
+                if (progressOverlay._dotsInterval) {
+                    clearInterval(progressOverlay._dotsInterval);
+                    progressOverlay._dotsInterval = null;
+                }
+                progressOverlay.style.display = "none";
+            }
         }
 
     } catch (error) {
         loadingBubble.remove();
         console.error('Chat error:', error);
         addMessageToChat(`❌ ${error.message || '연결 문제가 발생했습니다.'}`, "bot error");
+
+        // 에러 시 progress-overlay 숨김
+        if (progressOverlay) {
+            if (progressOverlay._dotsInterval) {
+                clearInterval(progressOverlay._dotsInterval);
+                progressOverlay._dotsInterval = null;
+            }
+            progressOverlay.style.display = "none";
+        }
     }
 }
 

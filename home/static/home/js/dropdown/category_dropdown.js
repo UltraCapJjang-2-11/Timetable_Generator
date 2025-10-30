@@ -110,9 +110,14 @@ export function buildCategorySearchParams() {
     const cid = ($grand && $grand.value) || ($child && $child.value) || ($root && $root.value) || '';
     if (cid) params.append('category_id', cid);
   }
+
+  // 강의명 또는 교수명 검색 (OR 조건)
   if ($courseNameSearch && $courseNameSearch.value.trim()) {
-    params.append('course_name', $courseNameSearch.value.trim());
+    const searchValue = $courseNameSearch.value.trim();
+    params.append('course_name', searchValue);
+    params.append('instructor_name', searchValue);
   }
+
   if ($root && $root.selectedOptions.length && $root.selectedOptions[0].textContent === '전공') {
     if ($college && $college.value.trim()) params.append('college_name', $college.value.trim());
     if ($dept && $dept.value.trim()) params.append('dept_name', $dept.value.trim());

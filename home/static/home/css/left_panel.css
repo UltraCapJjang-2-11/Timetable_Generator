@@ -148,17 +148,6 @@
 .search-input-section:hover {
   border-color: var(--border-color);
 }
-.divider-or {
-  margin: 16px 0;
-  position: relative;
-}
-.divider-or span {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  padding: 0 12px;
-  letter-spacing: 0.05em;
-}
 #course-name-search-container label {
   font-size: 0.82rem;
   font-weight: 600;
@@ -745,5 +734,123 @@
 .modal-backdrop.show {
   opacity: 0.6 !important;
   background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* ===================================
+   AUTOCOMPLETE STYLES
+   =================================== */
+.autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  max-height: 320px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  display: none;
+  margin-top: 4px;
+}
+
+.autocomplete-dropdown.active {
+  display: block;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.autocomplete-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-light);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.autocomplete-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, #EEF2F7 100%);
+  border-left: 3px solid var(--primary-color);
+  padding-left: 11px;
+}
+
+.autocomplete-text {
+  flex: 1;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.autocomplete-tag {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.autocomplete-tag.course-tag {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  color: #1565C0;
+  border: 1px solid #90CAF9;
+}
+
+.autocomplete-tag.instructor-tag {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+  color: #6A1B9A;
+  border: 1px solid #CE93D8;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb {
+  background: #CBD5E0;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
 

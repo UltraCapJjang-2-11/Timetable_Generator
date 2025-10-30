@@ -2,9 +2,174 @@ import { Course } from "../models/Course.js";
 import { initializeCategoryDropdowns, buildCategorySearchParams } from "../dropdown/category_dropdown.js";
 import { timetableState } from "./state.js";
 
+// 자동완성 관리자
+const searchAutocompleteManager = {
+    currentFocus: -1,
+    debounceTimer: null,
+    inputElement: null,
+    dropdownElement: null,
+
+    async fetchSuggestions(query) {
+        if (!query || query.length < 1) return { courses: [], instructors: [] };
+
+        try {
+            // 강의명과 교수명 자동완성을 동시에 가져옴
+            const [coursesRes, instructorsRes] = await Promise.all([
+                fetch(`/api/autocomplete/courses/?q=${encodeURIComponent(query)}`),
+                fetch(`/api/autocomplete/instructors/?q=${encodeURIComponent(query)}`)
+            ]);
+
+            const coursesData = await coursesRes.json();
+            const instructorsData = await instructorsRes.json();
+
+            return {
+                courses: (coursesData.results || []).slice(0, 5),
+                instructors: (instructorsData.results || []).slice(0, 5)
+            };
+        } catch (error) {
+            console.error('자동완성 데이터 로드 실패:', error);
+            return { courses: [], instructors: [] };
+        }
+    },
+
+    renderDropdown(data) {
+        this.dropdownElement.innerHTML = '';
+
+        const { courses, instructors } = data;
+        const hasResults = courses.length > 0 || instructors.length > 0;
+
+        if (!hasResults) {
+            this.dropdownElement.classList.remove('active');
+            return;
+        }
+
+        // 강의명 결과
+        if (courses.length > 0) {
+            const courseHeader = document.createElement('div');
+            courseHeader.className = 'autocomplete-header';
+            courseHeader.textContent = '강의명';
+            this.dropdownElement.appendChild(courseHeader);
+
+            courses.forEach(course => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `
+                    <span class="autocomplete-text">${course}</span>
+                    <span class="autocomplete-tag course-tag">강의</span>
+                `;
+                item.addEventListener('click', () => this.selectItem(course));
+                this.dropdownElement.appendChild(item);
+            });
+        }
+
+        // 교수명 결과
+        if (instructors.length > 0) {
+            const instructorHeader = document.createElement('div');
+            instructorHeader.className = 'autocomplete-header';
+            instructorHeader.textContent = '교수명';
+            this.dropdownElement.appendChild(instructorHeader);
+
+            instructors.forEach(instructor => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `
+                    <span class="autocomplete-text">${instructor}</span>
+                    <span class="autocomplete-tag instructor-tag">교수</span>
+                `;
+                item.addEventListener('click', () => this.selectItem(instructor));
+                this.dropdownElement.appendChild(item);
+            });
+        }
+
+        this.dropdownElement.classList.add('active');
+        this.currentFocus = -1;
+    },
+
+    selectItem(value) {
+        this.inputElement.value = value;
+        this.dropdownElement.classList.remove('active');
+        this.dropdownElement.innerHTML = '';
+    },
+
+    handleKeyDown(e) {
+        const items = this.dropdownElement.querySelectorAll('.autocomplete-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            this.currentFocus++;
+            if (this.currentFocus >= items.length) this.currentFocus = 0;
+            this.setActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.currentFocus--;
+            if (this.currentFocus < 0) this.currentFocus = items.length - 1;
+            this.setActive(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (this.currentFocus > -1 && items[this.currentFocus]) {
+                items[this.currentFocus].click();
+            }
+        } else if (e.key === 'Escape') {
+            this.dropdownElement.classList.remove('active');
+            this.dropdownElement.innerHTML = '';
+        }
+    },
+
+    setActive(items) {
+        items.forEach((item, index) => {
+            if (index === this.currentFocus) {
+                item.classList.add('selected');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    },
+
+    initialize(inputId, dropdownId) {
+        this.inputElement = document.getElementById(inputId);
+        this.dropdownElement = document.getElementById(dropdownId);
+
+        if (!this.inputElement || !this.dropdownElement) {
+            console.warn(`자동완성 초기화 실패: ${inputId}, ${dropdownId}`);
+            return;
+        }
+
+        this.inputElement.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+
+            clearTimeout(this.debounceTimer);
+
+            if (!query) {
+                this.dropdownElement.classList.remove('active');
+                this.dropdownElement.innerHTML = '';
+                return;
+            }
+
+            this.debounceTimer = setTimeout(async () => {
+                const data = await this.fetchSuggestions(query);
+                this.renderDropdown(data);
+            }, 300);
+        });
+
+        this.inputElement.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
+        // 외부 클릭 시 드롭다운 닫기
+        document.addEventListener('click', (e) => {
+            if (!this.inputElement.contains(e.target) && !this.dropdownElement.contains(e.target)) {
+                this.dropdownElement.classList.remove('active');
+            }
+        });
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     // 드롭다운 초기화
     try { initializeCategoryDropdowns(); } catch (_) {}
+
+    // 자동완성 초기화
+    searchAutocompleteManager.initialize('course_name_search', 'course-search-autocomplete');
 
     // DOM 요소 캐싱
     const $panelElements = {

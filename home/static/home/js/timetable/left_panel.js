@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 공용 드롭다운 유틸을 통해 검색 파라미터 구성
         const params = buildCategorySearchParams();
         if (!params.get('category_id') && !params.get('course_name')) {
-            alert('교과목 분류를 선택하거나 강의명을 입력하세요.');
+            alert('교과목 분류를 선택하거나 강의명 또는 교수명을 입력하세요.');
             return;
         }
 
@@ -506,9 +506,16 @@ document.addEventListener('DOMContentLoaded', () => {
             dept.disabled = true;
         }
 
-        // 강의명 검색 입력 초기화
+        // 강의명/교수명 검색 입력 초기화
         if ($panelElements.courseNameSearch) {
             $panelElements.courseNameSearch.value = '';
+        }
+
+        // 자동완성 dropdown 닫기
+        const autocompleteDropdown = document.getElementById('course-search-autocomplete');
+        if (autocompleteDropdown) {
+            autocompleteDropdown.classList.remove('active');
+            autocompleteDropdown.innerHTML = '';
         }
 
         // 결과 영역 초기화

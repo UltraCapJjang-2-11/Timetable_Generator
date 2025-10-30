@@ -144,6 +144,8 @@
   box-shadow: var(--shadow-sm);
   margin-bottom: 16px;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 100;
 }
 .search-input-section:hover {
   border-color: var(--border-color);
@@ -183,6 +185,8 @@
   display: flex;
   gap: 12px;
   margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
 }
 #search-button {
   flex: 1;
@@ -755,7 +759,7 @@
   max-height: 320px;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  z-index: 1000;
+  z-index: 9999;
   display: none;
   margin-top: 4px;
 }

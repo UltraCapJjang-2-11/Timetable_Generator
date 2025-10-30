@@ -111,11 +111,10 @@ export function buildCategorySearchParams() {
     if (cid) params.append('category_id', cid);
   }
 
-  // 강의명 또는 교수명 검색 (OR 조건)
+  // 강의명 또는 교수명 검색 (course_name 파라미터로 통합 검색)
   if ($courseNameSearch && $courseNameSearch.value.trim()) {
     const searchValue = $courseNameSearch.value.trim();
     params.append('course_name', searchValue);
-    params.append('instructor_name', searchValue);
   }
 
   if ($root && $root.selectedOptions.length && $root.selectedOptions[0].textContent === '전공') {

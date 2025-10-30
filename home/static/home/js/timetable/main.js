@@ -135,7 +135,19 @@ function setupSseConnection(url, onComplete) {
     const progressOverlay = document.getElementById("progress-overlay");
     const progressText = document.getElementById("progress-text");
     progressOverlay.style.display = "block";
-    progressText.textContent = "시간표 생성 중…";
+
+    // Dots 애니메이션을 위한 변수
+    const baseText = "시간표 생성 중";
+    let dotCount = 0;
+
+    // 초기 텍스트 설정
+    progressText.textContent = baseText + "...";
+
+    // Dots 애니메이션 시작 (500ms마다)
+    const dotsInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        progressText.textContent = baseText + ".".repeat(dotCount === 0 ? 3 : dotCount);
+    }, 500);
 
     const evtSource = new EventSource(url);
 
@@ -150,6 +162,9 @@ function setupSseConnection(url, onComplete) {
         });
 
         if (data.progress === "완료") {
+            // Dots 애니메이션 중지
+            clearInterval(dotsInterval);
+
             // 시간표 데이터 검증
             if (!data.timetables || data.timetables.length === 0) {
                 console.error('시간표 데이터가 없습니다.');
@@ -161,6 +176,7 @@ function setupSseConnection(url, onComplete) {
             }
 
             console.log(`${data.timetables.length}개의 시간표 생성 완료`);
+            progressText.textContent = `${data.timetables.length}개의 시간표 생성 완료!`;
 
             timetables = data.timetables.map((timetableCourseData, index) => {
                 console.log(`시간표 ${index + 1} 처리 중:`, {
@@ -185,18 +201,27 @@ function setupSseConnection(url, onComplete) {
             if (constraints.is_modification) {
                 constraints.is_modification = false;
             }
-            setTimeout(() => progressOverlay.style.display = "none", 800);
+
+            // 먼저 시간표 렌더링
             applyTimetableToMiddlePanel();
             evtSource.close();
-            if (onComplete) onComplete(true);
+
+            // 렌더링 완료 후 오버레이 숨김 (최소 1.5초 표시 보장)
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    progressOverlay.style.display = "none";
+                    if (onComplete) onComplete(true);
+                }, 1500);
+            });
         } else {
-            progressText.textContent = (data.processed !== undefined && data.found !== undefined)
-                ? `처리된 조합: ${data.processed}, 후보: ${data.found}`
-                : "시간표 생성 중...";
+            // 진행 중 메시지 업데이트 (dots 애니메이션은 계속 진행)
+            // progressText는 dots 애니메이션이 처리하므로 건드리지 않음
         }
     };
 
     evtSource.onerror = () => {
+        // Dots 애니메이션 중지
+        clearInterval(dotsInterval);
         progressText.textContent = "오류 발생";
         evtSource.close();
         setTimeout(() => { progressOverlay.style.display = "none"; }, 2000);

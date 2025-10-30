@@ -39,3 +39,6 @@ media/transcripts/
 
 # Markdown (temporary - remove if needed)
 *.md
+
+#Docs
+/docs

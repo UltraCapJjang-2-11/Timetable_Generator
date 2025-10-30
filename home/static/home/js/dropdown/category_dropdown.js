@@ -34,9 +34,19 @@ export function initializeCategoryDropdowns() {
   };
 
   ensureCategories().then(categoriesData => {
-    // 루트 채우기
-    categoriesData.filter(c => c.parent_category_id === null)
-      .forEach(c => $root.add(new Option(c.category_name, c.category_id)));
+    // 루트 채우기 - 특정 순서로 정렬 (전공 → 교양 → 일선 → 교직)
+    const categoryOrder = ['전공', '교양', '일선', '교직'];
+    const rootCategories = categoriesData.filter(c => c.parent_category_id === null);
+
+    // 순서대로 정렬
+    rootCategories.sort((a, b) => {
+      const indexA = categoryOrder.indexOf(a.category_name);
+      const indexB = categoryOrder.indexOf(b.category_name);
+      return indexA - indexB;
+    });
+
+    // 드롭다운에 추가
+    rootCategories.forEach(c => $root.add(new Option(c.category_name, c.category_id)));
 
     $root.onchange = () => {
       resetSelect($child); resetSelect($grand);
@@ -49,6 +59,13 @@ export function initializeCategoryDropdowns() {
       if(!$root.value) return;
       const rootText = $root.selectedOptions[0].textContent;
 
+      // 일선과 교직은 중분류가 없으므로 중분류 박스를 표시하지 않음
+      if(rootText === '일선' || rootText === '교직') {
+        // 중분류 박스를 숨김 상태로 유지
+        return;
+      }
+
+      // 전공과 교양은 중분류 박스 표시
       $childBox.style.display = '';
       $child.disabled = false;
       categoriesData.filter(c => c.parent_category_id == $root.value)
@@ -93,9 +110,13 @@ export function buildCategorySearchParams() {
     const cid = ($grand && $grand.value) || ($child && $child.value) || ($root && $root.value) || '';
     if (cid) params.append('category_id', cid);
   }
+
+  // 강의명 또는 교수명 검색 (course_name 파라미터로 통합 검색)
   if ($courseNameSearch && $courseNameSearch.value.trim()) {
-    params.append('course_name', $courseNameSearch.value.trim());
+    const searchValue = $courseNameSearch.value.trim();
+    params.append('course_name', searchValue);
   }
+
   if ($root && $root.selectedOptions.length && $root.selectedOptions[0].textContent === '전공') {
     if ($college && $college.value.trim()) params.append('college_name', $college.value.trim());
     if ($dept && $dept.value.trim()) params.append('dept_name', $dept.value.trim());

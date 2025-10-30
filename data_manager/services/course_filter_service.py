@@ -187,9 +187,12 @@ class CourseFilterService:
     # -----------------------------
     def filter_by_course_name(self, queryset, course_name):
         """
-        course_name 부분 일치 검색
+        course_name 부분 일치 검색 (강의명 또는 교수명)
+        강의명이나 교수명 중 하나라도 일치하면 검색 결과에 포함 (OR 조건)
         """
-        return queryset.filter(course_name__icontains=course_name)
+        return queryset.filter(
+            Q(course_name__icontains=course_name) | Q(instructor_name__icontains=course_name)
+        )
 
     # -----------------------------
     # (7) 학기 필터: 학년도와 학기를 이용하여 필터링

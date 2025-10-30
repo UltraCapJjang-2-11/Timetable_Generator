@@ -243,25 +243,34 @@ document.addEventListener('DOMContentLoaded', function() {
     panel.className = 'lecture-chat-widget';
     panel.id = `chat-panel-${roomKey}`;
 
+    // ✅ 헤더 생성
     const header = document.createElement('div');
     header.className = 'chatroom-header';
 
+    // ✅ 왼쪽 그룹 (제목 + 참여자 수)
+    const left = document.createElement('div');
+    left.className = 'chatroom-header-left';
+
     const title = document.createElement('h3');
     title.className = 'chatroom-title';
-    title.textContent = `${course.course_name} 채팅방`;
+    title.textContent = `${course.course_name}`;
 
     const countEl = document.createElement('div');
     countEl.className = 'chatroom-user-count';
     countEl.textContent = '0명 참여 중';
 
+    left.appendChild(title);
+    left.appendChild(countEl);
+
+    // ✅ 닫기 버튼
     const closeBtn = document.createElement('button');
-    closeBtn.className = 'btn btn-sm btn-outline-secondary';
     closeBtn.textContent = '닫기';
     closeBtn.addEventListener('click', () => closeRoom(roomKey));
 
-    header.appendChild(title);
-    header.appendChild(countEl);
-    header.appendChild(closeBtn);
+    // ✅ 헤더에 추가
+    header.appendChild(left);      // 왼쪽 묶음
+    header.appendChild(closeBtn);  // 오른쪽 닫기 버튼
+
 
     const body = document.createElement('div');
     body.className = 'lecture-chat-body';

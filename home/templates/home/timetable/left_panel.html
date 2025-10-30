@@ -17,14 +17,14 @@
         {% org_dropdowns %}
     </div>
 
-    {# 강의명 검색 섹션 #}
+    {# 강의명/교수명 검색 섹션 #}
     <div class="search-input-section mb-3">
-        <div class="divider-or text-center my-3">
-            <span class="bg-light px-2">또는</span>
-        </div>
         <div id="course-name-search-container" class="mb-3">
-            <label for="course_name_search" class="form-label fw-bold">강의명으로 검색</label>
-            <input type="text" id="course_name_search" class="form-control" placeholder="강의명을 입력하세요">
+            <label for="course_name_search" class="form-label fw-bold">강의명 또는 교수명으로 검색</label>
+            <div class="autocomplete-wrapper">
+                <input type="text" id="course_name_search" class="form-control" placeholder="강의명 또는 교수명을 입력하세요" autocomplete="off">
+                <div id="course-search-autocomplete" class="autocomplete-dropdown"></div>
+            </div>
         </div>
     </div>
 

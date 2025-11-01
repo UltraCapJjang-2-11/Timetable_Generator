@@ -22,7 +22,8 @@
       "Bash(xargs cat:*)",
       "Bash(open /Users/yunsihun/1capjjang/capstone/Timetable_Generator/test_visualization.html)",
       "Bash(python3:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(system_profiler:*)"
     ],
     "deny": [],
     "ask": []

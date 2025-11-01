@@ -239,33 +239,24 @@ async function handleSendMessage() {
     addMessageToChat(text, "user");
     input.value = "";
 
-    // 로딩 메시지 표시
+    // 타이핑 인디케이터 표시
     const loadingBubble = document.createElement("div");
     loadingBubble.className = "chat-bubble bot loading";
-    loadingBubble.textContent = "...";
+    loadingBubble.innerHTML = `
+        <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    `;
     document.querySelector(".ai-chat-body").appendChild(loadingBubble);
 
     const sessionId = sessionStorage.getItem('nlSessionId') || `user_${Date.now()}`;
     sessionStorage.setItem('nlSessionId', sessionId);
 
-    // Progress overlay 표시
+    // Progress overlay 요소 참조만 가져오기 (아직 표시하지 않음)
     const progressOverlay = document.getElementById("progress-overlay");
     const progressText = document.getElementById("progress-text");
-    if (progressOverlay && progressText) {
-        progressOverlay.style.display = "block";
-        progressText.textContent = "AI가 시간표 생성 중...";
-
-        // Dots 애니메이션
-        const baseText = "AI가 시간표 생성 중";
-        let dotCount = 0;
-        const dotsInterval = setInterval(() => {
-            dotCount = (dotCount + 1) % 4;
-            progressText.textContent = baseText + ".".repeat(dotCount === 0 ? 3 : dotCount);
-        }, 500);
-
-        // interval ID 저장 (나중에 중지하기 위해)
-        progressOverlay._dotsInterval = dotsInterval;
-    }
 
     try {
         const response = await fetch("/api/nl-timetable/chat/", {
@@ -293,16 +284,24 @@ async function handleSendMessage() {
         // 에러 처리
         if (data.error) {
             addMessageToChat(`❌ ${data.error}`, "bot error");
-
-            // 에러 시 progress-overlay 숨김
-            if (progressOverlay) {
-                if (progressOverlay._dotsInterval) {
-                    clearInterval(progressOverlay._dotsInterval);
-                    progressOverlay._dotsInterval = null;
-                }
-                progressOverlay.style.display = "none";
-            }
             return;
+        }
+
+        // stage가 "generating"일 때만 전체 화면 progress overlay 표시
+        if (data.stage === 'generating' && progressOverlay && progressText) {
+            progressOverlay.style.display = "block";
+            progressText.textContent = "AI가 시간표 생성 중...";
+
+            // Dots 애니메이션
+            const baseText = "AI가 시간표 생성 중";
+            let dotCount = 0;
+            const dotsInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                progressText.textContent = baseText + ".".repeat(dotCount === 0 ? 3 : dotCount);
+            }, 500);
+
+            // interval ID 저장
+            progressOverlay._dotsInterval = dotsInterval;
         }
 
         // AI 응답 표시
@@ -321,7 +320,7 @@ async function handleSendMessage() {
             showTimetableCards(data.timetables);
 
             // 시간표 렌더링 완료 후 progress-overlay 숨김
-            if (progressOverlay) {
+            if (progressOverlay && progressOverlay.style.display === "block") {
                 // Dots 애니메이션 중지
                 if (progressOverlay._dotsInterval) {
                     clearInterval(progressOverlay._dotsInterval);
@@ -334,15 +333,6 @@ async function handleSendMessage() {
                     }, 1500);
                 });
             }
-        } else {
-            // 시간표가 없으면 바로 오버레이 숨김
-            if (progressOverlay) {
-                if (progressOverlay._dotsInterval) {
-                    clearInterval(progressOverlay._dotsInterval);
-                    progressOverlay._dotsInterval = null;
-                }
-                progressOverlay.style.display = "none";
-            }
         }
 
     } catch (error) {
@@ -350,8 +340,8 @@ async function handleSendMessage() {
         console.error('Chat error:', error);
         addMessageToChat(`❌ ${error.message || '연결 문제가 발생했습니다.'}`, "bot error");
 
-        // 에러 시 progress-overlay 숨김
-        if (progressOverlay) {
+        // 에러 시 progress-overlay 숨김 (혹시 표시되었을 경우)
+        if (progressOverlay && progressOverlay.style.display === "block") {
             if (progressOverlay._dotsInterval) {
                 clearInterval(progressOverlay._dotsInterval);
                 progressOverlay._dotsInterval = null;

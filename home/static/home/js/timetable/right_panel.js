@@ -3,50 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const courseListContainer = document.getElementById('current-course-list');
     const majorCreditsInput = document.getElementById('major-credits');
     const electiveCreditsInput = document.getElementById('elective-credits');
-    const totalCreditsDisplay = document.getElementById('total-credits-display');
-
-    // 고정 학점 표시를 위한 버튼 요소 추가
-    const pinnedMajorDisplay = document.getElementById('pinned-major-credits');
-    const pinnedElectiveDisplay = document.getElementById('pinned-elective-credits');
-
-    // 총 학점 동적 업데이트 함수
-    function updateTotalCredits() {
-        const majorCredits = parseInt(majorCreditsInput.value, 10) || 0;
-        const electiveCredits = parseInt(electiveCreditsInput.value, 10) || 0;
-        totalCreditsDisplay.textContent = majorCredits + electiveCredits;
-    }
-
-    /**
-     * 고정된 강의의 학점을 계산하고 UI에 업데이트하는 함수
-     * @param {Timetable | null} timetable
-     */
-    function updatePinnedCreditsDisplay(timetable) {
-        let pinnedMajorCredits = 0;
-        let pinnedElectiveCredits = 0;
-
-        if (timetable && timetable.courses) {
-            timetable.courses.forEach(course => {
-                if (course.isPinned) { // 고정된 강의인지 확인
-                    if (course.categoryName.includes('전공')) {
-                        pinnedMajorCredits += course.credits;
-                    } else {
-                        pinnedElectiveCredits += course.credits;
-                    }
-                }
-            });
-        }
-
-        // 계산된 값으로 버튼 텍스트 업데이트
-        pinnedMajorDisplay.textContent = `${pinnedMajorCredits}`;
-        pinnedElectiveDisplay.textContent = `${pinnedElectiveCredits}`;
-    }
 
 
     // --- 이벤트 리스너 할당 ---
-
-    // 전공/교양 학점 변경 시 총 학점 업데이트
-    majorCreditsInput.addEventListener('input', updateTotalCredits);
-    electiveCreditsInput.addEventListener('input', updateTotalCredits);
 
 
     // 현재 시간표 강의 목록 업데이트 (이전과 동일)
@@ -102,11 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             courseListContainer.appendChild(itemDiv);
         });
-
-         updatePinnedCreditsDisplay(timetable);
     });
-
-    // 페이지 로드 시 초기 총 학점 계산
-    updateTotalCredits();
 
 });

@@ -113,50 +113,121 @@ class ModelBuilder:
         constraints: ConstraintData
     ) -> None:
         """학점 제약 조건"""
-        # 총 학점
+        # 미리 추가된 과목과 새로 추가할 과목 분리
+        pre_added_courses = [data for data in candidate_data if data.get('pre_added', False)]
+        new_courses = [data for data in candidate_data if not data.get('pre_added', False)]
+
+        # 미리 추가된 과목의 학점 계산
+        pre_added_total = sum(data['credit'] for data in pre_added_courses)
+
+        pre_added_major = sum(
+            data['credit'] for data in pre_added_courses
+            if data['category'] in MAJOR_CATEGORIES
+        )
+
+        pre_added_elective = sum(
+            data['credit'] for data in pre_added_courses
+            if get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)}))
+            or data['category'] not in MAJOR_CATEGORIES
+        )
+
+        # 남은 학점 계산
+        remaining_total = constraints.target_total - pre_added_total
+        remaining_major = constraints.target_major - pre_added_major
+        remaining_elective = constraints.target_elective - pre_added_elective
+
+        if pre_added_courses:
+            print(f"DEBUG: 미리 추가된 과목 학점 - 총 {pre_added_total}학점 (전공 {pre_added_major}학점, 교양 {pre_added_elective}학점)")
+            print(f"DEBUG: 남은 학점 - 총 {remaining_total}학점 (전공 {remaining_major}학점, 교양 {remaining_elective}학점)")
+
+        # 총 학점 제약 (전체 과목 대상)
         model.Add(
             sum(data['credit'] * x[data['id']] for data in candidate_data)
             == constraints.target_total
         )
 
-        # 전공 학점
-        model.Add(
-            sum(data['credit'] * x[data['id']] for data in candidate_data
-                if data['category'] in MAJOR_CATEGORIES)
-            == constraints.target_major
-        )
+        # 전공 학점 제약 (새로 추가할 과목만 대상)
+        if remaining_major > 0:
+            model.Add(
+                sum(data['credit'] * x[data['id']] for data in new_courses
+                    if data['category'] in MAJOR_CATEGORIES)
+                == remaining_major
+            )
+        elif remaining_major == 0:
+            # 전공 학점을 이미 다 채웠으면 새로운 전공 과목을 추가하지 않음
+            model.Add(
+                sum(x[data['id']] for data in new_courses
+                    if data['category'] in MAJOR_CATEGORIES)
+                == 0
+            )
 
-        # 교양 학점
-        model.Add(
-            sum(data['credit'] * x[data['id']] for data in candidate_data
-                if get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)}))
-                or data['category'] not in MAJOR_CATEGORIES)
-            == constraints.target_elective
-        )
+        # 교양 학점 제약 (새로 추가할 과목만 대상)
+        if remaining_elective > 0:
+            model.Add(
+                sum(data['credit'] * x[data['id']] for data in new_courses
+                    if get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)}))
+                    or data['category'] not in MAJOR_CATEGORIES)
+                == remaining_elective
+            )
+        elif remaining_elective == 0:
+            # 교양 학점을 이미 다 채웠으면 새로운 교양 과목을 추가하지 않음
+            model.Add(
+                sum(x[data['id']] for data in new_courses
+                    if get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)}))
+                    or data['category'] not in MAJOR_CATEGORIES)
+                == 0
+            )
 
         # 교양 세부 카테고리별 제약 (상한 및 하한 체크)
         if constraints.missing_gen_sub:
             print("DEBUG: 교양 세부 카테고리별 제약 추가 중...")
             for category_name, shortage_credits in constraints.missing_gen_sub.items():
+                # 해당 카테고리의 모든 과목과 미리 추가된 과목 분리
                 category_courses = [
                     data for data in candidate_data
                     if data.get('effective_category') == category_name
                 ]
+
+                category_pre_added = [
+                    data for data in category_courses
+                    if data.get('pre_added', False)
+                ]
+
+                category_new_courses = [
+                    data for data in category_courses
+                    if not data.get('pre_added', False)
+                ]
+
                 if category_courses:
-                    # 카테고리별 선택된 학점 합계
-                    category_credit_sum = sum(data['credit'] * x[data['id']] for data in category_courses)
+                    # 미리 추가된 과목의 학점 계산
+                    pre_added_category_credits = sum(data['credit'] for data in category_pre_added)
 
-                    # 상한 제약: 필요 이상 수강하지 않도록
-                    model.Add(category_credit_sum <= shortage_credits)
+                    # 남은 부족 학점 계산
+                    remaining_shortage = shortage_credits - pre_added_category_credits
 
-                    # 하한 제약: 가능한 범위 내에서 최대한 충족하도록
-                    # 2학점 과목만 있는 경우를 고려하여 유연하게 처리
-                    available_credits = sum(data['credit'] for data in category_courses)
-                    min_achievable = min(shortage_credits, available_credits)
+                    if remaining_shortage > 0:
+                        # 새로 추가할 과목의 학점 합계
+                        new_category_credit_sum = sum(data['credit'] * x[data['id']] for data in category_new_courses)
 
-                    # 최소한 달성 가능한 만큼은 채우도록 soft constraint 추가
-                    # (hard constraint로 하면 해가 없을 수 있으므로 objective에 반영)
-                    print(f"DEBUG: {category_name} 카테고리 - 목표 {shortage_credits}학점, 가능 {available_credits}학점, 과목 {len(category_courses)}개")
+                        # 상한 제약: 필요 이상 수강하지 않도록
+                        model.Add(new_category_credit_sum <= remaining_shortage)
+
+                        # 하한 제약: 가능한 범위 내에서 최대한 충족하도록
+                        # 2학점 과목만 있는 경우를 고려하여 유연하게 처리
+                        available_credits = sum(data['credit'] for data in category_new_courses)
+                        min_achievable = min(remaining_shortage, available_credits)
+
+                        # 최소한 달성 가능한 만큼은 채우도록 soft constraint 추가
+                        # (hard constraint로 하면 해가 없을 수 있으므로 objective에 반영)
+                        print(f"DEBUG: {category_name} 카테고리 - 목표 {shortage_credits}학점, 미리 추가 {pre_added_category_credits}학점, 남은 목표 {remaining_shortage}학점, 가능 {available_credits}학점, 과목 {len(category_new_courses)}개")
+                    elif remaining_shortage == 0:
+                        # 해당 카테고리는 이미 충족되었으므로 새로운 과목을 추가하지 않음
+                        if category_new_courses:
+                            model.Add(sum(x[data['id']] for data in category_new_courses) == 0)
+                        print(f"DEBUG: {category_name} 카테고리 - 이미 충족됨 (미리 추가 {pre_added_category_credits}학점)")
+                    else:
+                        # 미리 추가된 학점이 목표보다 많은 경우 (초과)
+                        print(f"DEBUG: {category_name} 카테고리 - 초과 (미리 추가 {pre_added_category_credits}학점 > 목표 {shortage_credits}학점)")
 
     def _add_conflict_constraints(
         self,

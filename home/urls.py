@@ -2,7 +2,7 @@ from django.urls import path
 from .views import *
 from . import views as root_views
 from data_manager.views import CourseSearchView
-from .views.nl_timetable_views import nl_timetable_chat, nl_reset_session
+from .views.nl_timetable_views import nl_timetable_chat, nl_generate_timetable, nl_reset_session
 
 urlpatterns = [
     path('', index_view, name='index'), # 기본 페이지 : 로그인 세션 확인
@@ -21,6 +21,7 @@ urlpatterns = [
 
     # 자연어 기반 시간표 생성 API
     path('api/nl-timetable/chat/', nl_timetable_chat, name='nl-timetable-chat'),
+    path('api/nl-timetable/generate/', nl_generate_timetable, name='nl-timetable-generate'),
     path('api/nl-timetable/reset/', nl_reset_session, name='nl-timetable-reset'),
 
     path('manage/', root_views.manage_view, name='manage'),

@@ -26,7 +26,7 @@ def nl_timetable_chat(request):
 
     Response:
         {
-            "message": "AI 응답 메시지",
+            "message": "챗봇 응답 메시지",
             "stage": "gathering" | "confirming" | "generating",
             "constraints": {...},  // stage가 generating일 때만
             "timetables": [...],   // stage가 generating일 때만 (생성 완료)
@@ -67,41 +67,14 @@ def nl_timetable_chat(request):
             response_data['constraints'] = constraints
             response_data['summary'] = nl_service.generate_summary(constraints)
 
-        # 시간표 생성 단계인 경우
-        if stage == 'generating' and constraints:
-            try:
-                # TimetableRequest로 변환
-                timetable_request = nl_service.constraints_to_timetable_request(
-                    constraints, user
-                )
+        # stage가 'confirming'일 때는 사용자 확인 필요
+        if stage == 'confirming':
+            response_data['confirmation_required'] = True
 
-                # 시간표 생성
-                generation_service = TimetableGenerationService()
-                result = generation_service.generate(user, timetable_request)
-
-                # 생성 결과 추가
-                if result.get('error'):
-                    response_data['error'] = result['error']
-                    response_data['message'] = f"😔 {result['error']}"
-                else:
-                    response_data['timetables'] = result.get('timetables', [])
-                    timetable_count = len(response_data['timetables'])
-
-                    if timetable_count > 0:
-                        response_data['message'] = f"✅ {timetable_count}개의 시간표를 생성했습니다!"
-                    else:
-                        response_data['message'] = "😔 조건을 만족하는 시간표를 생성하지 못했습니다."
-
-                # 세션 초기화
-                nl_service.clear_session(user.id, session_id)
-
-            except Exception as e:
-                print(f"Timetable generation error: {str(e)}")
-                import traceback
-                traceback.print_exc()
-
-                response_data['error'] = str(e)
-                response_data['message'] = f"시간표 생성 중 오류가 발생했습니다: {str(e)}"
+        # stage가 'generating'일 때는 시간표 생성하지 않고 constraints만 반환
+        # 프론트엔드에서 별도로 생성 API 호출
+        if stage == 'generating':
+            response_data['ready_to_generate'] = True
 
         return JsonResponse(response_data)
 
@@ -111,6 +84,92 @@ def nl_timetable_chat(request):
         }, status=400)
     except Exception as e:
         print(f"NL Timetable Chat Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+        return JsonResponse({
+            'error': f'서버 오류가 발생했습니다: {str(e)}'
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def nl_generate_timetable(request):
+    """
+    시간표 생성 API (2단계: 실제 생성)
+
+    Request Body:
+        {
+            "constraints": {...},
+            "session_id": "user_1234567890"
+        }
+
+    Response:
+        {
+            "timetables": [...],
+            "message": "생성 완료 메시지"
+        }
+    """
+    try:
+        data = json.loads(request.body)
+        constraints = data.get('constraints', {})
+        session_id = data.get('session_id', 'default')
+
+        user = request.user
+        if not user.is_authenticated:
+            return JsonResponse({'error': '로그인이 필요합니다.'}, status=401)
+
+        if not constraints:
+            return JsonResponse({'error': '제약조건이 필요합니다.'}, status=400)
+
+        nl_service = NaturalLanguageTimetableService()
+
+        try:
+            # TimetableRequest로 변환
+            timetable_request = nl_service.constraints_to_timetable_request(
+                constraints, user
+            )
+
+            # 시간표 생성
+            generation_service = TimetableGenerationService()
+            result = generation_service.generate(user, timetable_request)
+
+            response_data = {}
+
+            # 생성 결과 추가
+            if result.get('error'):
+                response_data['error'] = result['error']
+                response_data['message'] = f"😔 {result['error']}"
+            else:
+                response_data['timetables'] = result.get('timetables', [])
+                timetable_count = len(response_data['timetables'])
+
+                if timetable_count > 0:
+                    response_data['message'] = f"✅ {timetable_count}개의 시간표를 생성했습니다!"
+                else:
+                    response_data['message'] = "😔 조건을 만족하는 시간표를 생성하지 못했습니다."
+
+            # 세션 초기화
+            nl_service.clear_session(user.id, session_id)
+
+            return JsonResponse(response_data)
+
+        except Exception as e:
+            print(f"Timetable generation error: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
+            return JsonResponse({
+                'error': str(e),
+                'message': f"시간표 생성 중 오류가 발생했습니다: {str(e)}"
+            }, status=500)
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'error': '잘못된 JSON 형식입니다.'
+        }, status=400)
+    except Exception as e:
+        print(f"NL Generate Timetable Error: {str(e)}")
         import traceback
         traceback.print_exc()
 

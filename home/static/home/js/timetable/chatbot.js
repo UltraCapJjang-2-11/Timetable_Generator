@@ -34,7 +34,7 @@ function addMessageToChat(text, type, buttons = null) {
 function showWelcomeMessage() {
     addMessageToChat(`안녕하세요! 저는 시간표 생성 도우미 Timey입니다! 🤖
 
-원하는 시간표를 설명해주세요:
+원하는 시간표 조건을 자유롭게 말씀해주세요:
 
 • "월화는 공강이고 전공 12학점 원해"
 • "오전 수업 피하고 오후로 만들어줘"
@@ -42,7 +42,7 @@ function showWelcomeMessage() {
 • "밀집 시간표로 만들어줘"`, "bot");
 }
 
-// 제약조건 요약 표시
+// 제약조건 요약 표시 (간단 버전)
 function showConstraintsSummary(constraints) {
     if (!constraints || Object.keys(constraints).length === 0) return;
 
@@ -61,6 +61,106 @@ function showConstraintsSummary(constraints) {
         const summary = parts.join(' • ');
         addMessageToChat(`📋 ${summary}`, "bot info");
     }
+}
+
+// 제약조건 확인 카드 표시 (확인 단계용)
+function showConfirmationCard(constraints, sessionId) {
+    const chatBody = document.querySelector(".ai-chat-body");
+    if (!chatBody) return;
+
+    // 제약조건 요약 카드 생성
+    const confirmCard = document.createElement("div");
+    confirmCard.className = "confirmation-card";
+
+    // 제약조건 목록 생성
+    const parts = [];
+    if (constraints.target_total) parts.push(`• 총 ${constraints.target_total}학점`);
+    if (constraints.target_major) parts.push(`• 전공 ${constraints.target_major}학점`);
+    if (constraints.target_elective) parts.push(`• 교양 ${constraints.target_elective}학점`);
+
+    if (constraints.free_days && constraints.free_days.length > 0) {
+        parts.push(`• ${constraints.free_days.join(', ')} 공강`);
+    }
+
+    if (constraints.avoid_time_ranges && constraints.avoid_time_ranges.length > 0) {
+        constraints.avoid_time_ranges.forEach(range => {
+            const days = range.days.join(', ');
+            if (range.start_hour === 9 && range.end_hour === 12) {
+                parts.push(`• ${days} 오전 회피`);
+            } else if (range.start_hour === 13 && range.end_hour === 18) {
+                parts.push(`• ${days} 오후 회피`);
+            } else {
+                parts.push(`• ${days} ${range.start_hour}-${range.end_hour}시 회피`);
+            }
+        });
+    }
+
+    // 특정 시간 회피 (avoid_times)
+    if (constraints.avoid_times && constraints.avoid_times.length > 0) {
+        // 요일별로 그룹화
+        const timesByDay = {};
+        constraints.avoid_times.forEach(time => {
+            if (!timesByDay[time.day]) {
+                timesByDay[time.day] = [];
+            }
+            timesByDay[time.day].push(time.hour);
+        });
+
+        // 요일별로 표시
+        Object.keys(timesByDay).forEach(day => {
+            const hours = timesByDay[day].sort((a, b) => a - b);
+            const hoursStr = hours.map(h => `${h}시`).join(', ');
+            parts.push(`• ${day}요일 ${hoursStr} 회피`);
+        });
+    }
+
+    if (constraints.prefer_morning) parts.push('• 오전 선호');
+    if (constraints.prefer_afternoon) parts.push('• 오후 선호');
+    if (constraints.prefer_compact) parts.push('• 밀집 시간표');
+    if (constraints.preferred_instructors && constraints.preferred_instructors.length > 0) {
+        parts.push(`• 선호 교수: ${constraints.preferred_instructors.join(', ')}`);
+    }
+    if (constraints.required_courses && constraints.required_courses.length > 0) {
+        parts.push(`• 필수 과목: ${constraints.required_courses.join(', ')}`);
+    }
+
+    const summaryHTML = parts.length > 0
+        ? parts.join('<br>')
+        : '• 기본 설정으로 시간표 생성';
+
+    confirmCard.innerHTML = `
+        <div class="confirmation-header">
+            <span class="confirmation-icon">📋</span>
+            <span class="confirmation-title">시간표 생성 조건</span>
+        </div>
+        <div class="confirmation-body">
+            ${summaryHTML}
+        </div>
+        <div class="confirmation-actions">
+            <button class="btn-modify">조건 수정</button>
+            <button class="btn-generate">시간표 생성하기</button>
+        </div>
+    `;
+
+    chatBody.appendChild(confirmCard);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    // 버튼 이벤트 리스너
+    const modifyBtn = confirmCard.querySelector('.btn-modify');
+    const generateBtn = confirmCard.querySelector('.btn-generate');
+
+    modifyBtn.onclick = () => {
+        addMessageToChat("어떤 조건을 수정하시겠어요?", "bot");
+    };
+
+    generateBtn.onclick = async () => {
+        // 버튼 비활성화
+        generateBtn.disabled = true;
+        generateBtn.textContent = '생성 중...';
+
+        // 시간표 생성 호출
+        await triggerTimetableGeneration(constraints, sessionId);
+    };
 }
 
 // 시간표 카드 표시
@@ -202,6 +302,84 @@ function updateCardHighlight(currentIndex) {
     });
 }
 
+// 시간표 생성 트리거 (확인 버튼 클릭 시 호출)
+async function triggerTimetableGeneration(constraints, sessionId) {
+    const progressOverlay = document.getElementById("progress-overlay");
+    const progressText = document.getElementById("progress-text");
+
+    try {
+        // 전체 화면 progress overlay 표시
+        if (progressOverlay && progressText) {
+            progressOverlay.style.display = "block";
+            progressText.textContent = "최적화 시간표 생성 중...";
+
+            // Dots 애니메이션
+            const baseText = "최적화 시간표 생성 중";
+            let dotCount = 0;
+            const dotsInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                progressText.textContent = baseText + ".".repeat(dotCount === 0 ? 3 : dotCount);
+            }, 500);
+
+            // interval ID 저장
+            progressOverlay._dotsInterval = dotsInterval;
+        }
+
+        // 시간표 생성 API 호출
+        const generateResponse = await fetch("/api/nl-timetable/generate/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify({
+                constraints: constraints,
+                session_id: sessionId
+            })
+        });
+
+        if (!generateResponse.ok) {
+            const errorData = await generateResponse.json();
+            throw new Error(errorData.error || `HTTP 오류: ${generateResponse.status}`);
+        }
+
+        const generateData = await generateResponse.json();
+
+        // 생성 완료 메시지
+        if (generateData.message) {
+            addMessageToChat(generateData.message, "bot success");
+        }
+
+        // 시간표 결과 표시
+        if (generateData.timetables && generateData.timetables.length > 0) {
+            showTimetableCards(generateData.timetables);
+        }
+
+        // 에러 처리
+        if (generateData.error) {
+            addMessageToChat(`❌ ${generateData.error}`, "bot error");
+        }
+
+    } catch (error) {
+        console.error('Generate error:', error);
+        addMessageToChat(`❌ ${error.message || '시간표 생성 중 오류가 발생했습니다.'}`, "bot error");
+    } finally {
+        // progress-overlay 숨김
+        if (progressOverlay) {
+            if (progressOverlay._dotsInterval) {
+                clearInterval(progressOverlay._dotsInterval);
+                progressOverlay._dotsInterval = null;
+            }
+            // 렌더링 완료 후 오버레이 숨김
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    progressOverlay.style.display = "none";
+                }, 1500);
+            });
+        }
+    }
+}
+
 // 시간표 저장
 async function saveTimetable(courses) {
     try {
@@ -212,7 +390,7 @@ async function saveTimetable(courses) {
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({
-                title: `AI 생성 시간표 ${new Date().toLocaleDateString()}`,
+                title: `최적화 시간표 ${new Date().toLocaleDateString()}`,
                 courses: courses
             })
         });
@@ -230,7 +408,7 @@ async function saveTimetable(courses) {
     }
 }
 
-// --- Core Chatbot Logic (OpenAI 기반) ---
+// --- Core Chatbot Logic ---
 async function handleSendMessage() {
     const input = document.querySelector(".ai-chat-input input");
     const text = input.value.trim();
@@ -287,52 +465,26 @@ async function handleSendMessage() {
             return;
         }
 
-        // stage가 "generating"일 때만 전체 화면 progress overlay 표시
-        if (data.stage === 'generating' && progressOverlay && progressText) {
-            progressOverlay.style.display = "block";
-            progressText.textContent = "AI가 시간표 생성 중...";
-
-            // Dots 애니메이션
-            const baseText = "AI가 시간표 생성 중";
-            let dotCount = 0;
-            const dotsInterval = setInterval(() => {
-                dotCount = (dotCount + 1) % 4;
-                progressText.textContent = baseText + ".".repeat(dotCount === 0 ? 3 : dotCount);
-            }, 500);
-
-            // interval ID 저장
-            progressOverlay._dotsInterval = dotsInterval;
-        }
-
-        // AI 응답 표시
+        // 챗봇 응답 표시
         if (data.message) {
-            const messageType = data.stage === 'generating' ? 'bot generating' : 'bot';
-            addMessageToChat(data.message, messageType);
+            addMessageToChat(data.message, 'bot');
         }
 
-        // 제약조건 요약 표시
-        if (data.constraints) {
-            showConstraintsSummary(data.constraints);
-        }
-
-        // 시간표 결과 표시
-        if (data.timetables && data.timetables.length > 0) {
-            showTimetableCards(data.timetables);
-
-            // 시간표 렌더링 완료 후 progress-overlay 숨김
-            if (progressOverlay && progressOverlay.style.display === "block") {
-                // Dots 애니메이션 중지
-                if (progressOverlay._dotsInterval) {
-                    clearInterval(progressOverlay._dotsInterval);
-                    progressOverlay._dotsInterval = null;
-                }
-                // 렌더링 완료 후 오버레이 숨김
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        progressOverlay.style.display = "none";
-                    }, 1500);
-                });
+        // stage별 처리
+        if (data.stage === 'confirming' && data.confirmation_required) {
+            // Confirming 단계: 확인 카드 표시
+            if (data.constraints) {
+                showConfirmationCard(data.constraints, sessionId);
             }
+        } else if (data.stage === 'gathering') {
+            // Gathering 단계: 간단한 요약만 표시
+            if (data.constraints) {
+                showConstraintsSummary(data.constraints);
+            }
+        } else if (data.stage === 'generating' && data.ready_to_generate) {
+            // Generating 단계: 사용자가 confirming 단계에서 버튼을 클릭한 경우
+            // 즉시 시간표 생성 (백엔드에서 사용자가 "네", "확인" 등을 입력한 경우)
+            await triggerTimetableGeneration(data.constraints, sessionId);
         }
 
     } catch (error) {

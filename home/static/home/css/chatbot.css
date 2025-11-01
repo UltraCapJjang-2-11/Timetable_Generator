@@ -85,36 +85,38 @@
 .chat-bubble.loading {
     text-align: center !important;
     padding: 14px 18px !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     min-width: 60px !important;
 }
-.chat-bubble.loading .typing-indicator {
-    display: flex !important;
+
+.typing-indicator {
+    display: inline-flex !important;
     align-items: center !important;
     gap: 4px !important;
 }
-.chat-bubble.loading .typing-dot {
+
+.typing-dot {
     width: 8px !important;
     height: 8px !important;
     border-radius: 50% !important;
-    background: #999 !important;
+    background-color: #999 !important;
+    display: inline-block !important;
     animation: typingBounce 1.4s infinite ease-in-out both !important;
 }
-.chat-bubble.loading .typing-dot:nth-child(1) {
+
+.typing-dot:nth-child(1) {
     animation-delay: 0s !important;
 }
-.chat-bubble.loading .typing-dot:nth-child(2) {
+
+.typing-dot:nth-child(2) {
     animation-delay: 0.2s !important;
 }
-.chat-bubble.loading .typing-dot:nth-child(3) {
+
+.typing-dot:nth-child(3) {
     animation-delay: 0.4s !important;
 }
-.chat-bubble.error { background: #fee2e2 !important; border: 1px solid #fca5a5 !important; color: #991b1b !important; }
-.chat-bubble.success { background: #d1fae5 !important; border: 1px solid #6ee7b7 !important; color: #065f46 !important; }
-.chat-bubble.info { background: #e0f2fe !important; border: 1px solid #7dd3fc !important; color: #075985 !important; }
-.chat-bubble.generating { background: #dbeafe !important; border: 1px solid #93c5fd !important; color: #1e40af !important; }
 
 @keyframes typingBounce {
     0%, 60%, 100% {
@@ -126,6 +128,11 @@
         opacity: 1 !important;
     }
 }
+
+.chat-bubble.error { background: #fee2e2 !important; border: 1px solid #fca5a5 !important; color: #991b1b !important; }
+.chat-bubble.success { background: #d1fae5 !important; border: 1px solid #6ee7b7 !important; color: #065f46 !important; }
+.chat-bubble.info { background: #e0f2fe !important; border: 1px solid #7dd3fc !important; color: #075985 !important; }
+.chat-bubble.generating { background: #dbeafe !important; border: 1px solid #93c5fd !important; color: #1e40af !important; }
 .ai-chat-input { display: flex !important; border-top: 1px solid #eee !important; padding: 10px 8px !important; background-color: #fff !important; }
 .ai-chat-input input { flex: 1 !important; border: 1px solid #ccc !important; border-radius: 8px !important; padding: 8px !important; font-size: 14px !important; outline: none !important; }
 .ai-chat-input button { margin-left: 6px !important; background: #FFD700 !important; color: #000 !important; border: none !important; border-radius: 8px !important; padding: 8px 12px !important; cursor: pointer !important; font-weight: bold !important; }
@@ -140,3 +147,96 @@
 .bookmarkBtn:active { transform: scale(0.95) !important; }
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Confirmation Card Styles */
+.confirmation-card {
+    background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%) !important;
+    border: 2px solid #FFD700 !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    margin: 12px 0 !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2) !important;
+    animation: fadeInUp 0.3s ease both !important;
+}
+
+.confirmation-header {
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 2px solid #FFD700 !important;
+}
+
+.confirmation-icon {
+    font-size: 24px !important;
+    margin-right: 8px !important;
+}
+
+.confirmation-title {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: #000 !important;
+}
+
+.confirmation-body {
+    background: #ffffff !important;
+    padding: 14px !important;
+    border-radius: 8px !important;
+    margin-bottom: 14px !important;
+    font-size: 14px !important;
+    line-height: 1.8 !important;
+    color: #333 !important;
+    border: 1px solid #f0f0f0 !important;
+}
+
+.confirmation-actions {
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: flex-end !important;
+}
+
+.confirmation-actions button {
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    outline: none !important;
+}
+
+.btn-modify {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border: 1px solid #d1d5db !important;
+}
+
+.btn-modify:hover {
+    background: #e5e7eb !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-generate {
+    background: linear-gradient(90deg, #FFD700, #FFC107) !important;
+    color: #000 !important;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
+}
+
+.btn-generate:hover {
+    background: linear-gradient(90deg, #FFC107, #FFB300) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4) !important;
+}
+
+.btn-generate:disabled {
+    background: #d1d5db !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btn-generate:active:not(:disabled) {
+    transform: translateY(0) !important;
+}

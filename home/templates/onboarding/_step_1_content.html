@@ -1,31 +1,53 @@
 <div class="card">
     <div class="card-body p-4 p-md-5">
-        <h3 class="card-title text-center mb-4">계정 정보 입력</h3>
+        <div class="text-center mb-4">
+            <div class="mb-3">
+                <i class="bi bi-person-circle" style="font-size: 3rem; color: #ffcd4a;"></i>
+            </div>
+            <h3 class="card-title mb-2">계정 정보 입력</h3>
+            <p class="card-subtitle">안전하게 계정을 생성하세요</p>
+        </div>
+
         <form id="account-form" novalidate>
             {% csrf_token %}
-            <div class="mb-3">
-                <label for="email" class="form-label">이메일 주소</label>
-                <input type="email" class="form-control" id="email" required>
-                <div id="email-feedback" class="form-text text-danger"></div> </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">비밀번호</label>
-                <div class="input-group">
-                    <input type="password" class="form-control" id="password" required>
-                    <button class="btn btn-outline-secondary" type="button" id="toggle-password-btn" ><i class="bi bi-eye"></i></button>
-                </div>
-                <div id="password-feedback" class="form-text text-danger"></div> </div>
+            <div class="mb-4">
+                <label for="email" class="form-label">
+                    <i class="bi bi-envelope me-2"></i>이메일 주소
+                </label>
+                <input type="email" class="form-control" id="email" placeholder="example@email.com" required>
+                <div id="email-feedback" class="form-text text-danger"></div>
+            </div>
 
             <div class="mb-4">
-                <label for="password-confirm" class="form-label">비밀번호 확인</label>
+                <label for="password" class="form-label">
+                    <i class="bi bi-lock me-2"></i>비밀번호
+                </label>
                 <div class="input-group">
-                    <input type="password" class="form-control" id="password-confirm" required>
-                    <button class="btn btn-outline-secondary" type="button" id="toggle-password-confirm-btn"><i class="bi bi-eye"></i></button>
+                    <input type="password" class="form-control" id="password" placeholder="8자 이상 입력하세요" required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggle-password-btn">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </div>
-                <div id="password-confirm-feedback" class="form-text"></div> </div>
+                <div id="password-feedback" class="form-text text-danger"></div>
+            </div>
 
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg next-btn">다음 단계로</button>
+            <div class="mb-4">
+                <label for="password-confirm" class="form-label">
+                    <i class="bi bi-lock-fill me-2"></i>비밀번호 확인
+                </label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="password-confirm" placeholder="비밀번호를 다시 입력하세요" required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggle-password-confirm-btn">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <div id="password-confirm-feedback" class="form-text"></div>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg next-btn">
+                    다음 단계로 <i class="bi bi-arrow-right ms-2"></i>
+                </button>
             </div>
         </form>
     </div>

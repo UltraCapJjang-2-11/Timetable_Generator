@@ -1,20 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css');
 
 /* 기본 배경 */
 body {
-    background-color: #f8f9fa;
-    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
 }
 
 /* Stepper (진행 단계) UI 스타일 */
 :root {
-  --step-active: #ffb800;
-  --step-completed: #ffe28a;
+  --step-active: #ffcd4a;
+  --step-completed: #ffe8a0;
   --step-inactive: #e9ecef;
   --step-text: #6c757d;
-  --circle-size: 44px;
-  --line-thickness: 3px;
-  --line-gap: 36px; /* ✅ 선 양끝 여백 */
+  --circle-size: 50px;
+  --line-thickness: 4px;
+  --line-gap: 40px;
+  --main-yellow: #ffcd4a;
+  --main-black: #000000;
 }
 
 /* 전체 컨테이너 */
@@ -23,9 +27,9 @@ body {
   justify-content: space-between;
   align-items: center;
   position: relative;
-  margin: 50px auto;
-  max-width: 800px;
-  padding: 0;
+  margin: 40px auto 60px;
+  max-width: 850px;
+  padding: 0 20px;
 }
 
 /* ✅ 회색 라인 (원 중심부터 중심까지) */
@@ -50,7 +54,7 @@ body {
   text-align: center;
 }
 
-/* ✅ 원(circle) */
+/* 원(circle) */
 .step-counter {
   width: var(--circle-size);
   height: var(--circle-size);
@@ -59,62 +63,94 @@ body {
   border: 3px solid var(--step-inactive);
   color: var(--step-text);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 3;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ 텍스트 */
+/* 텍스트 */
 .step-name {
-  margin-top: 8px;
-  font-size: 0.9rem;
+  margin-top: 12px;
+  font-size: 0.95rem;
   color: var(--step-text);
   text-align: center;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 /* 현재 단계 */
 .stepper-item.active .step-counter {
-  background: var(--step-active);
-  border-color: var(--step-active);
-  color: #fff;
-  transform: scale(1.1);
+  background: linear-gradient(135deg, var(--main-yellow) 0%, #ffd966 100%);
+  border-color: var(--main-black);
+  color: var(--main-black);
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(255, 205, 74, 0.4);
 }
 .stepper-item.active .step-name {
-  color: var(--step-active);
-  font-weight: 600;
+  color: var(--main-black);
+  font-weight: 700;
 }
 
 /* 완료 단계 */
 .stepper-item.completed .step-counter {
- background: var(--step-inactive); /* ✅ 회색 그대로 */
-  border-color: var(--step-inactive);
-  color: var(--step-text);
+  background: var(--step-completed);
+  border-color: var(--main-yellow);
+  color: var(--main-black);
 }
 .stepper-item.completed .step-name {
-  color: var(--step-text);
-  font-weight: normal;
+  color: var(--main-black);
+  font-weight: 500;
 }
 
+
+/* 폼 입력 필드 스타일 */
+.form-control,
+.form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--main-yellow);
+    box-shadow: 0 0 0 0.2rem rgba(255, 205, 74, 0.15);
+    outline: none;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--main-black);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
 
 /* File Upload Zone 스타일 */
 .drop-zone {
-    border: 2px dashed #dee2e6;
-    border-radius: 8px;
-    transition: border-color 0.2s, background-color 0.2s;
+    border: 3px dashed #dee2e6;
+    border-radius: 16px;
+    transition: all 0.3s ease;
     cursor: pointer;
+    background-color: #fafafa;
 }
 
 .drop-zone:hover {
-    border-color: #FFB800;
-    background-color: #f8f9fa;
+    border-color: var(--main-yellow);
+    background-color: #fffbf0;
+    transform: translateY(-2px);
 }
 
 .drop-zone.dragover {
-    border-color: #FFB800;
-    background-color: #FFF7E0;
+    border-color: var(--main-yellow);
+    background-color: #fff9e6;
+    box-shadow: 0 8px 24px rgba(255, 205, 74, 0.2);
 }
 
 /* Progress bar 내부 텍스트 스타일 */
@@ -124,27 +160,167 @@ body {
 
 /* 요약 박스 */
 .summary-box {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
+    background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
+    border: 2px solid var(--main-yellow);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(255, 205, 74, 0.1);
 }
 
 /* 강의 카드 */
 .course-card {
-    transition: box-shadow 0.2s;
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    background-color: #fff;
 }
+
 .course-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-color: var(--main-yellow);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+}
+
+/* 모달 스타일 개선 */
+.modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    border-bottom: 2px solid #f0f0f0;
+    padding: 1.5rem;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.modal-title {
+    font-weight: 700;
+    color: var(--main-black);
+}
+
+.list-group-item {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #fffbf0;
+    border-color: var(--main-yellow);
+    transform: translateX(4px);
+}
+
+/* 로딩 오버레이 */
+#loading-overlay {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+}
+
+/* 알림 및 피드백 메시지 */
+.alert {
+    border-radius: 12px;
+    border: none;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.alert-danger {
+    background-color: #fff5f5;
+    color: #c53030;
+    border-left: 4px solid #fc8181;
+}
+
+.alert-success {
+    background-color: #f0fff4;
+    color: #22543d;
+    border-left: 4px solid #68d391;
 }
 
 /* 반응형 조정 */
+@media (max-width: 992px) {
+    .card-title {
+        font-size: 1.5rem;
+    }
+
+    :root {
+        --circle-size: 45px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.3rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+
+    :root {
+        --circle-size: 40px;
+        --line-gap: 30px;
+    }
+}
+
 @media (max-width: 576px) {
     .stepper-item .step-name {
         font-size: 0.75rem;
     }
+
     .stepper-item {
         padding: 0 5px;
     }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .card-body {
+        padding: 1.5rem !important;
+    }
+
+    :root {
+        --circle-size: 36px;
+        --line-thickness: 3px;
+    }
+}
+
+/* 메인 카드 스타일 */
+.card {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-title {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--main-black);
+    margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+    font-size: 1rem;
+    color: #666;
+    font-weight: 400;
 }
 
 /* 콘텐츠 컨테이너 */
@@ -153,33 +329,91 @@ body {
     transition: opacity .25s ease-in-out;
 }
 
+#step-content {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* 버튼 기본 스타일 오버라이드 */
 .btn-primary {
-  background-color: #ffcd4a !important;
-  border-color: #ffcd4a !important;
-  color: #212529 !important; /* 검정 텍스트 */
-  font-weight: 600;
-  transition: all 0.2s ease-in-out;
+  background-color: var(--main-yellow) !important;
+  border: 2px solid var(--main-black) !important;
+  border-radius: 12px !important;
+  color: var(--main-black) !important;
+  font-weight: 700;
+  padding: 12px 28px;
+  font-size: 1.05rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Hover 효과 */
 .btn-primary:hover {
-  background-color: #fdc128 !important;
-  border-color: #fdc128 !important;
+  background-color: var(--main-black) !important;
+  border-color: var(--main-black) !important;
   color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* 클릭 시(active) */
-.btn-primary:active, 
+.btn-primary:active,
 .btn-primary:focus {
-  background-color: #fdc128 !important;
-  border-color: #fdc128 !important;
-  box-shadow: 0 0 0 0.2rem rgba(255, 184, 0, 0.25) !important;
+  background-color: var(--main-black) !important;
+  border-color: var(--main-black) !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 0.25rem rgba(255, 205, 74, 0.3) !important;
+  transform: translateY(0);
 }
 
 /* 비활성화된 상태 */
 .btn-primary:disabled {
-  background-color: #ffe7a0 !important;
-  border-color: #ffe7a0 !important;
-  color: #999 !important;
+  background-color: #e9ecef !important;
+  border-color: #dee2e6 !important;
+  color: #6c757d !important;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 보조 버튼 스타일 */
+.btn-secondary {
+  background-color: #fff !important;
+  border: 2px solid var(--main-black) !important;
+  border-radius: 12px !important;
+  color: var(--main-black) !important;
+  font-weight: 600;
+  padding: 12px 28px;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--main-black) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-primary {
+  border: 2px solid var(--main-yellow) !important;
+  color: var(--main-black) !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--main-yellow) !important;
+  border-color: var(--main-black) !important;
+  color: var(--main-black) !important;
 }

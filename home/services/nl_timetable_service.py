@@ -453,6 +453,26 @@ class NaturalLanguageTimetableService:
                 else:
                     summary_parts.append(f"{days} {start}-{end}시 회피")
 
+        if constraints.get('avoid_times'):
+            time_map: Dict[str, List[int]] = {}
+
+            for time_slot in constraints['avoid_times']:
+                day = time_slot.get('day')
+                hour = time_slot.get('hour')
+
+                if day and isinstance(hour, int):
+                    time_map.setdefault(day, []).append(hour)
+
+            if time_map:
+                formatted_slots = []
+
+                for day, hours in time_map.items():
+                    unique_hours = sorted(set(hours))
+                    hour_str = ', '.join(f"{hour}시" for hour in unique_hours)
+                    formatted_slots.append(f"{day} {hour_str}")
+
+                summary_parts.append(f"회피 시간: {', '.join(formatted_slots)}")
+
         if constraints.get('prefer_morning'):
             summary_parts.append("오전 선호")
         if constraints.get('prefer_afternoon'):
@@ -465,6 +485,12 @@ class NaturalLanguageTimetableService:
         if constraints.get('required_courses'):
             courses = ', '.join(constraints['required_courses'])
             summary_parts.append(f"필수 과목: {courses}")
+        if constraints.get('exclude_courses'):
+            courses = ', '.join(constraints['exclude_courses'])
+            summary_parts.append(f"제외 과목: {courses}")
+        if constraints.get('avoid_courses'):
+            courses = ', '.join(constraints['avoid_courses'])
+            summary_parts.append(f"기피 과목: {courses}")
 
         if not summary_parts:
             return "기본 설정으로 시간표 생성"

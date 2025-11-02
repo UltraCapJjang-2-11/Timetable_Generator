@@ -326,17 +326,13 @@ class CandidateFilter:
 
         print("DEBUG: Applying exclude_courses filter:", exclude_names)
         filtered = []
+        excluded_count = 0
 
         for d in candidate_data:
-            # 필수 과목은 항상 포함
-            if d.get('pre_added', False):
-                filtered.append(d)
-                print(f"DEBUG: 필수 과목 제외 필터 무시 - {d['course_name']}")
-                continue
-
             course_name = d['course_name'].strip()
             should_exclude = False
 
+            # 제외 목록 확인
             for exclude_name in exclude_names:
                 exclude_name = exclude_name.strip()
                 if not exclude_name:
@@ -360,10 +356,28 @@ class CandidateFilter:
                     print(f"DEBUG: Reverse partial match exclusion: '{course_name}' in '{exclude_name}'")
                     break
 
+            # 필수 과목은 제외하지 않음 (하지만 경고)
+            if should_exclude and d.get('pre_added', False):
+                print(f"WARNING: 제외 과목 '{course_name}'이 필수 과목으로 지정되어 있어 제외하지 않습니다.")
+                filtered.append(d)
+                continue
+
+            # 제외하지 않을 과목만 추가
             if not should_exclude:
                 filtered.append(d)
             else:
-                print(f"DEBUG: Excluded course: {course_name}")
+                excluded_count += 1
+                print(f"DEBUG: 과목 제외됨: '{course_name}'")
 
-        print("DEBUG: after exclude_courses filter:", len(filtered))
+        print(f"DEBUG: 제외 과목 필터링 완료 - {excluded_count}개 과목 제외, {len(filtered)}개 과목 남음 (전체: {len(candidate_data)}개)")
+        
+        # 검증: 제외된 과목이 실제로 필터링되었는지 확인
+        for exclude_name in exclude_names:
+            exclude_name = exclude_name.strip().lower()
+            for d in filtered:
+                course_name = d['course_name'].strip().lower()
+                # 필수 과목이 아닌데 제외 목록에 있는 경우 경고
+                if not d.get('pre_added', False) and (course_name == exclude_name or exclude_name in course_name):
+                    print(f"ERROR: 제외 과목 '{exclude_name}'이 여전히 후보 목록에 포함되어 있습니다! (과목명: '{d['course_name']}')")
+
         return filtered

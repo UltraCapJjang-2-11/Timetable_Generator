@@ -3,6 +3,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const courseListContainer = document.getElementById('current-course-list');
     const majorCreditsInput = document.getElementById('major-credits');
     const electiveCreditsInput = document.getElementById('elective-credits');
+    const pinnedSummaryContainer = document.getElementById('pinned-credit-summary');
+    const pinnedSummaryValue = document.getElementById('pinned-credit-value');
+    const pinnedWarning = document.getElementById('pinned-credit-warning');
+
+
+    function computePinnedSummary(timetable) {
+        const summaryFn = window.getPinnedCourseCreditSummary;
+        if (typeof summaryFn === 'function') {
+            return summaryFn(timetable);
+        }
+
+        const result = {
+            total: 0,
+            major: 0,
+            elective: 0,
+            count: 0
+        };
+
+        if (!timetable || !Array.isArray(timetable.courses)) {
+            return result;
+        }
+
+        const MAJOR_NAMES = ['전공필수', '전공선택'];
+
+        timetable.courses.forEach(course => {
+            if (!course.isPinned) return;
+
+            const credits = Number(course.credits) || 0;
+            result.count += 1;
+            result.total += credits;
+
+            if (MAJOR_NAMES.includes(course.categoryName)) {
+                result.major += credits;
+            } else {
+                result.elective += credits;
+            }
+        });
+
+        return result;
+    }
+
+    function refreshPinnedSummary(timetable = null) {
+        if (!pinnedSummaryContainer || !pinnedSummaryValue || !pinnedWarning) {
+            return;
+        }
+
+        const summary = computePinnedSummary(timetable);
+
+        if (!summary || summary.count === 0) {
+            pinnedSummaryContainer.classList.remove('active');
+            pinnedWarning.classList.remove('visible');
+            return;
+        }
+
+        pinnedSummaryContainer.classList.add('active');
+        pinnedSummaryValue.textContent = `총 ${summary.total}학점 (전공 ${summary.major} / 교양 ${summary.elective})`;
+
+        const targetMajor = Number(majorCreditsInput?.value) || 0;
+        const targetElective = Number(electiveCreditsInput?.value) || 0;
+
+        const needsWarning = summary.major > targetMajor || summary.elective > targetElective;
+        pinnedWarning.classList.toggle('visible', needsWarning);
+    }
 
 
     // --- 이벤트 리스너 할당 ---
@@ -15,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!timetable || !timetable.courses || timetable.courses.length === 0) {
             courseListContainer.innerHTML = '<p class="placeholder">표시할 강의가 없습니다.</p>';
+            refreshPinnedSummary(null);
             return;
         }
 
@@ -23,9 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`Course: ${course.name}, Rating: ${course.rating}`);
 
             const itemDiv = document.createElement('div');
-            let text = '고정';
-            if(course.isPinned) text = '고정됨'
-
             itemDiv.className = 'current-course-item';
             itemDiv.innerHTML = `
                 <button class="remove-from-list-btn" title="${course.name} 삭제">-</button>
@@ -61,6 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             courseListContainer.appendChild(itemDiv);
         });
+
+        refreshPinnedSummary(timetable);
     });
 
+    [majorCreditsInput, electiveCreditsInput].forEach(input => {
+        if (!input) return;
+        input.addEventListener('input', () => {
+            refreshPinnedSummary();
+        });
+    });
 });

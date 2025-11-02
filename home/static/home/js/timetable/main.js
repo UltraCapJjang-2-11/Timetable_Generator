@@ -9,6 +9,8 @@ import { timetableState } from './state.js';
  * ----------------------------------------------------------------
  */
 
+const MAJOR_CATEGORY_NAMES = ['전공필수', '전공선택'];
+
 const constraints = {
     total_credits: 0,
     major_credits: 0,
@@ -29,6 +31,48 @@ let timetables = [];  // 생성된 Timetable 객체의 배열
 let currentIndex = 0;  // 현재 렌더링(선택된)시간표의 인덱스
 // 시간표 생성 시 고정 상태를 유지하기 위한 Set 변수
 let pinnedCourseIdsToPreserve = new Set();
+
+function getPinnedCourseCreditSummary(explicitTimetable = null) {
+    const targetTimetable = explicitTimetable ?? timetableState.currentTimetable;
+    const summary = {
+        total: 0,
+        major: 0,
+        elective: 0,
+        count: 0,
+        courseIds: [],
+        missingIdCourses: []
+    };
+
+    if (!targetTimetable || !Array.isArray(targetTimetable.courses)) {
+        return summary;
+    }
+
+    targetTimetable.courses.forEach(course => {
+        if (!course.isPinned) {
+            return;
+        }
+
+        summary.count += 1;
+        const credits = Number(course.credits) || 0;
+        summary.total += credits;
+
+        if (MAJOR_CATEGORY_NAMES.includes(course.categoryName)) {
+            summary.major += credits;
+        } else {
+            summary.elective += credits;
+        }
+
+        if (course.id === undefined || course.id === null || Number.isNaN(Number(course.id))) {
+            summary.missingIdCourses.push(course.name || '(ID 미상 과목)');
+        } else {
+            summary.courseIds.push(Number(course.id));
+        }
+    });
+
+    return summary;
+}
+
+window.getPinnedCourseCreditSummary = getPinnedCourseCreditSummary;
 
 // 외부에서 접근 가능하도록 노출
 window.getCurrentTimetableIndex = () => currentIndex;
@@ -325,12 +369,40 @@ function handleGenerateButtonClick() {
     });
 
     // 현재 시간표에서 고정된(pinned) 강의들의 ID를 수집합니다.
-    if (timetableState.currentTimetable) {
-        constraints.existing_courses = timetableState.currentTimetable.courses
-            .filter(course => course.isPinned)
-            .map(course => course.id);
+    const pinnedSummary = getPinnedCourseCreditSummary();
+
+    if (pinnedSummary.missingIdCourses.length > 0) {
+        console.warn('ID를 찾을 수 없는 고정 과목이 있습니다:', pinnedSummary.missingIdCourses);
+    }
+
+    if (pinnedSummary.courseIds.length > 0) {
+        const uniqueIds = Array.from(new Set(pinnedSummary.courseIds.filter(id => Number.isFinite(id))));
+        constraints.existing_courses = uniqueIds.map(id => String(id));
     } else {
         constraints.existing_courses = [];
+    }
+
+    let creditsAdjusted = false;
+
+    if (constraints.major_credits < pinnedSummary.major) {
+        constraints.major_credits = pinnedSummary.major;
+        document.getElementById('major-credits').value = constraints.major_credits;
+        creditsAdjusted = true;
+    }
+
+    if (constraints.elective_credits < pinnedSummary.elective) {
+        constraints.elective_credits = pinnedSummary.elective;
+        document.getElementById('elective-credits').value = constraints.elective_credits;
+        creditsAdjusted = true;
+    }
+
+    if (creditsAdjusted) {
+        console.info('고정된 강의 학점보다 작은 목표 학점을 자동으로 보정했습니다.', {
+            target_major: constraints.major_credits,
+            target_elective: constraints.elective_credits,
+            pinned_major: pinnedSummary.major,
+            pinned_elective: pinnedSummary.elective
+        });
     }
 
     // 현재 고정된 강의 ID들을 저장합니다.

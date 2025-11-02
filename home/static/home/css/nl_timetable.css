@@ -726,6 +726,60 @@
   background: #059669;
 }
 
+/* 평가 점수 상세 정보 테이블 스타일 */
+.evaluation-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.evaluation-table tbody {
+  display: table;
+  width: 100%;
+}
+
+.evaluation-table th {
+  padding: 12px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.evaluation-table td {
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.evaluation-table tr:last-child td {
+  border-bottom: none;
+}
+
+.evaluation-table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.evaluation-table tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* 평가 버튼 스타일 */
+.evaluation-btn {
+  background-color: #6366f1 !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.2s ease;
+}
+
+.evaluation-btn:hover {
+  background-color: #4f46e5 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
 /* 반응형 */
 @media (max-width: 768px) {
   .timetable-cards-grid {
@@ -769,32 +823,155 @@
 .courses-list-expanded {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   margin-top: 8px;
-  max-height: 200px;
+  max-height: 140px;
   overflow-y: auto;
+}
+
+/* 추천 이유 섹션 */
+.recommendation-reasons {
+  margin-top: 12px;
+  padding: 14px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.reasons-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #cbd5e1;
+  letter-spacing: -0.3px;
+}
+
+.reasons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reason-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.reason-item:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.reason-item.highlight {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border-color: #fdba74;
+  box-shadow: 0 2px 4px rgba(251, 146, 60, 0.15);
+}
+
+.reason-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.reason-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.reason-text {
+  flex: 1;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  font-family: 'Courier New', monospace;
+  letter-spacing: -0.2px;
+}
+
+.reason-item.highlight .reason-text {
+  color: #9a3412;
+  font-weight: 600;
+}
+
+/* 컴팩트한 과목 아이템 */
+.course-item-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+  border-left: 3px solid #4a90e2;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.course-item-compact .course-name-text {
+  flex: 1;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-item-compact .course-meta-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.course-item-compact .course-credits-text {
+  color: #6366f1;
+  font-weight: 500;
+}
+
+.course-item-compact .course-rating {
+  color: #f59e0b;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 /* 스크롤바 스타일 */
 .modal-content::-webkit-scrollbar,
-.courses-list::-webkit-scrollbar {
+.courses-list::-webkit-scrollbar,
+.courses-list-expanded::-webkit-scrollbar {
   width: 6px;
 }
 
 .modal-content::-webkit-scrollbar-track,
-.courses-list::-webkit-scrollbar-track {
+.courses-list::-webkit-scrollbar-track,
+.courses-list-expanded::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 3px;
 }
 
 .modal-content::-webkit-scrollbar-thumb,
-.courses-list::-webkit-scrollbar-thumb {
+.courses-list::-webkit-scrollbar-thumb,
+.courses-list-expanded::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
 }
 
 .modal-content::-webkit-scrollbar-thumb:hover,
-.courses-list::-webkit-scrollbar-thumb:hover {
+.courses-list::-webkit-scrollbar-thumb:hover,
+.courses-list-expanded::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 

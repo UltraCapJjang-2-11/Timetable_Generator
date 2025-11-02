@@ -149,6 +149,10 @@ def nl_generate_timetable(request):
                 else:
                     response_data['message'] = "😔 조건을 만족하는 시간표를 생성하지 못했습니다."
 
+                # 필수 과목 및 제외 과목 정보 추가 (평가 모달에서 사용)
+                response_data['required_courses'] = constraints.get('required_courses', [])
+                response_data['exclude_courses'] = constraints.get('exclude_courses', [])
+
             # 세션 초기화
             nl_service.clear_session(user.id, session_id)
 

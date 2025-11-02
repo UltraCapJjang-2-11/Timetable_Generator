@@ -27,6 +27,11 @@ const constraints = {
     existing_courses: [],
     optimization_level: 'ADVANCED'  // 최적화 수준 기본값
 };
+
+// 전역 접근을 위해 window 객체에 노출 (chatbot.js에서 사용)
+if (typeof window !== 'undefined') {
+    window.constraints = constraints;
+}
 let timetables = [];  // 생성된 Timetable 객체의 배열
 let currentIndex = 0;  // 현재 렌더링(선택된)시간표의 인덱스
 // 시간표 생성 시 고정 상태를 유지하기 위한 Set 변수

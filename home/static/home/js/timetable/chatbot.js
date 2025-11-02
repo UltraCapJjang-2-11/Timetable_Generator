@@ -183,15 +183,35 @@ function showTimetableCards(timetables) {
     }
 
     // 전역 상태 업데이트
-    // timetables는 배열의 배열: [[course1, course2, ...], [course1, course2, ...], ...]
-    allTimetablesList = timetables.map((timetableArray, idx) => {
-        // timetableArray가 배열인 경우 그대로 사용, 아니면 courses 속성 추출
-        const courses = Array.isArray(timetableArray) ? timetableArray : (timetableArray.courses || []);
+    // timetables는 배열의 배열 또는 객체 배열: [[course1, course2, ...], ...] 또는 [{courses: [...], ...}, ...]
+    allTimetablesList = timetables.map((timetableData, idx) => {
+        // timetableData가 객체인 경우 (추천 정보 포함)
+        let courses = [];
+        let recommendationInfo = null;
+        
+        if (timetableData && typeof timetableData === 'object' && timetableData.courses) {
+            // 새로운 형식: {courses: [...], preference_score: ..., matched_preferences: ...}
+            courses = timetableData.courses;
+            recommendationInfo = {
+                preference_score: timetableData.preference_score || 0,
+                matched_preferences: timetableData.matched_preferences || {},
+                recommendation_level: timetableData.recommendation_level || '★★★',
+                objective_value: timetableData.objective_value || 0,
+                objective_percentage: timetableData.objective_percentage || 0,
+                combined_score: timetableData.combined_score || 0
+            };
+        } else if (Array.isArray(timetableData)) {
+            // 기존 형식: [course1, course2, ...]
+            courses = timetableData;
+        } else {
+            courses = timetableData.courses || [];
+        }
         
         return {
             courses: courses,
             originalIndex: idx,
-            stats: calculateTimetableStats({ courses: courses })
+            stats: calculateTimetableStats({ courses: courses }),
+            recommendationInfo: recommendationInfo
         };
     });
 
@@ -454,10 +474,6 @@ function createTimetableCard(timetable, index, allTimetables) {
         toggleCardExpand(card, index);
     };
 
-    // 시간표 미리보기 (펼쳐진 상태에서만 표시)
-    const preview = generateTimetablePreview(courses);
-    preview.className = "timetable-preview";
-
     // 통계 정보 (펼쳐진 상태에서만 표시)
     const statsSection = document.createElement("div");
     statsSection.className = "timetable-stats";
@@ -485,10 +501,28 @@ function createTimetableCard(timetable, index, allTimetables) {
     if (courses.length > 0) {
         courses.forEach(course => {
             const courseItem = document.createElement("div");
-            courseItem.className = "course-item";
+            courseItem.className = "course-item-compact";
+            
             const courseName = course.course_name || course.name || '';
             const credits = course.credit || course.credits || 0;
-            courseItem.textContent = `${courseName} (${credits}학점)`;
+            const rating = course.avg_rating || course.rating || null;
+            
+            // 평점 표시 (있을 경우만)
+            let ratingDisplay = '';
+            if (rating !== null && rating !== undefined) {
+                const ratingValue = parseFloat(rating);
+                if (!isNaN(ratingValue)) {
+                    ratingDisplay = `<span class="course-rating">⭐ ${ratingValue.toFixed(1)}</span>`;
+                }
+            }
+            
+            courseItem.innerHTML = `
+                <span class="course-name-text">${courseName}</span>
+                <span class="course-meta-compact">
+                    <span class="course-credits-text">${credits}학점</span>
+                    ${ratingDisplay}
+                </span>
+            `;
             coursesList.appendChild(courseItem);
         });
     } else {
@@ -507,14 +541,6 @@ function createTimetableCard(timetable, index, allTimetables) {
         showTimetableDetailModal(timetable, index, allTimetables);
     };
 
-    const applyBtn = document.createElement("button");
-    applyBtn.className = "btn btn-sm btn-apply";
-    applyBtn.textContent = '적용하기';
-    applyBtn.onclick = (e) => {
-        e.stopPropagation();
-        switchToTimetableByIndex(index, allTimetables);
-    };
-
     const saveBtn = document.createElement("button");
     saveBtn.className = "btn btn-sm btn-success";
     saveBtn.textContent = '저장';
@@ -524,15 +550,34 @@ function createTimetableCard(timetable, index, allTimetables) {
     };
 
     actions.appendChild(viewBtn);
-    actions.appendChild(applyBtn);
     actions.appendChild(saveBtn);
+
+    // 평가 점수 버튼 섹션 (펼쳐진 상태에서만 표시)
+    const recommendationSection = document.createElement("div");
+    recommendationSection.className = "recommendation-reasons";
+    
+    const reasons = generateRecommendationReasons(timetable, stats);
+    if (reasons.length > 0) {
+        const evaluationBtn = document.createElement("button");
+        evaluationBtn.className = "btn btn-sm btn-info evaluation-btn";
+        evaluationBtn.style.cssText = "width: 100%; margin-top: 12px; padding: 10px; font-size: 14px;";
+        evaluationBtn.innerHTML = "💡 시간표 평가 점수 보기";
+        evaluationBtn.onclick = (e) => {
+            e.stopPropagation();
+            showEvaluationDetailModal(timetable, stats, index);
+        };
+        
+        recommendationSection.appendChild(evaluationBtn);
+    }
 
     // 카드 조립
     const body = document.createElement("div");
     body.className = "timetable-card-body";
-    body.appendChild(preview);
     body.appendChild(statsSection);
     body.appendChild(coursesList);
+    if (recommendationSection.children.length > 0) {
+        body.appendChild(recommendationSection);
+    }
 
     card.appendChild(header);
     card.appendChild(body);
@@ -542,6 +587,102 @@ function createTimetableCard(timetable, index, allTimetables) {
     // 페이지 변경 시에는 renderTimetablePage에서 처리하므로 여기서는 제거
 
     return card;
+}
+
+// 추천 이유 생성 함수 (수치 기반)
+function generateRecommendationReasons(timetable, stats) {
+    const reasons = [];
+    const recommendationInfo = timetable.recommendationInfo;
+    
+    // 백엔드 추천 정보가 있는 경우
+    if (recommendationInfo) {
+        // 목적함수 값 및 충족도
+        const objectiveValue = recommendationInfo.objective_value || 0;
+        const objectivePercentage = recommendationInfo.objective_percentage || 0;
+        
+        if (objectiveValue > 0) {
+            reasons.push({
+                icon: '🎯',
+                text: `목적함수 값: ${objectiveValue.toLocaleString()}점 (${objectivePercentage.toFixed(1)}%)`,
+                highlight: objectivePercentage >= 90
+            });
+        }
+        
+        // 선호도 점수
+        const preferenceScore = recommendationInfo.preference_score || 0;
+        if (preferenceScore !== 0) {
+            const scoreSign = preferenceScore > 0 ? '+' : '';
+            reasons.push({
+                icon: '⭐',
+                text: `선호도 점수: ${scoreSign}${preferenceScore}점`,
+                highlight: preferenceScore > 100
+            });
+        }
+        
+        // 종합 점수
+        const combinedScore = recommendationInfo.combined_score || 0;
+        if (combinedScore > 0) {
+            reasons.push({
+                icon: '📊',
+                text: `종합 점수: ${combinedScore.toFixed(1)}점`,
+                highlight: combinedScore > 100
+            });
+        }
+        
+        // 추천 레벨
+        const recommendationLevel = recommendationInfo.recommendation_level || '';
+        if (recommendationLevel) {
+            reasons.push({
+                icon: '🏆',
+                text: `추천 레벨: ${recommendationLevel}`,
+                highlight: recommendationLevel.includes('★★★') || recommendationLevel.includes('★★★★')
+            });
+        }
+        
+        // 매칭된 선호사항 상세
+        const matched = recommendationInfo.matched_preferences || {};
+        if (matched.instructors > 0) {
+            reasons.push({
+                icon: '👨‍🏫',
+                text: `선호 교수 매칭: ${matched.instructors}개`,
+                highlight: false
+            });
+        }
+        
+        if (matched.courses > 0) {
+            reasons.push({
+                icon: '📚',
+                text: `선호 과목 매칭: ${matched.courses}개`,
+                highlight: false
+            });
+        }
+    }
+    
+    // 통계 기반 정보
+    reasons.push({
+        icon: '📅',
+        text: `공강 일수: ${stats.freeDays}일`,
+        highlight: stats.freeDays >= 2
+    });
+    
+    if (stats.avgHours > 0) {
+        reasons.push({
+            icon: '⏰',
+            text: `평균 수업 시간: ${stats.avgHours.toFixed(1)}시간/일`,
+            highlight: stats.avgHours <= 3.5 && stats.avgHours >= 2.5
+        });
+    }
+    
+    // 기본 추천 이유 (위의 이유가 없을 때)
+    if (reasons.length === 0) {
+        reasons.push({
+            icon: '✨',
+            text: '최적화된 시간표로 생성되었습니다',
+            highlight: false
+        });
+    }
+    
+    return reasons;
 }
 
 // 카드 아코디언 토글 함수
@@ -729,10 +870,20 @@ function getStarsDisplay(score) {
 
 // 시간표 배열을 main.js에 전달하고 특정 인덱스로 전환
 function applyTimetablesArray(timetables, index = 0) {
-    // timetables는 배열의 배열: [[course1, course2, ...], ...]
-    // 원본 배열 그대로 전달 (main.js에서 처리)
+    // timetables는 배열의 배열 또는 객체 배열
+    // main.js에 전달하기 위해 courses 배열만 추출
+    const coursesArrays = timetables.map(t => {
+        if (Array.isArray(t)) {
+            return t;
+        } else if (t && t.courses) {
+            return t.courses;
+        }
+        return [];
+    });
+    
+    // main.js에 시간표 배열 전달
     document.dispatchEvent(new CustomEvent('applyNLGeneratedTimetables', {
-        detail: { timetables: timetables }
+        detail: { timetables: coursesArrays }
     }));
 
     // 특정 인덱스로 전환
@@ -788,6 +939,345 @@ function updateCardHighlight(currentIndex) {
             if (badge) badge.style.display = 'none';
         }
     });
+}
+
+// 시간표 평가 점수 상세 정보 모달 표시
+function showEvaluationDetailModal(timetable, stats, index) {
+    const recommendationInfo = timetable.recommendationInfo || {};
+    const courses = timetable.courses || (Array.isArray(timetable) ? timetable : []);
+    
+    // 기존 모달이 있으면 제거
+    const existingModal = document.getElementById('evaluation-detail-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // 모달 생성
+    const modal = document.createElement("div");
+    modal.id = "evaluation-detail-modal";
+    modal.className = "timetable-detail-modal";
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    };
+    
+    // 모달 내용
+    const modalContent = document.createElement("div");
+    modalContent.className = "modal-content";
+    modalContent.style.cssText = "max-width: 800px; max-height: 90vh; overflow-y: auto; padding: 0;";
+    modalContent.onclick = (e) => e.stopPropagation();
+    
+    // 헤더
+    const header = document.createElement("div");
+    header.className = "modal-header";
+    header.innerHTML = `
+        <h3>💡 시간표 ${index + 1} 평가 점수 상세 정보</h3>
+        <button class="modal-close" onclick="this.closest('.timetable-detail-modal').remove()">×</button>
+    `;
+    
+    // 테이블 컨테이너 생성
+    const tableContainer = document.createElement("div");
+    tableContainer.style.cssText = "padding: 20px;";
+    
+    // 평가 정보 테이블 생성
+    const evaluationTable = document.createElement("table");
+    evaluationTable.style.cssText = "width: 100%; border-collapse: collapse;";
+    evaluationTable.className = "evaluation-table";
+    
+    // 1. 알고리즘 평가 정보 섹션
+    const algorithmSection = createTableSection("🎯 알고리즘 평가 정보", [
+        {
+            label: "목적함수 값",
+            value: recommendationInfo.objective_value ? 
+                `${recommendationInfo.objective_value.toLocaleString()}점` : "정보 없음",
+            description: "CP-SAT 알고리즘이 계산한 최적화 점수"
+        },
+        {
+            label: "목적함수 충족도",
+            value: recommendationInfo.objective_percentage ? 
+                `${recommendationInfo.objective_percentage.toFixed(1)}%` : "정보 없음",
+            description: "제약조건 충족 정도"
+        },
+        {
+            label: "선호도 점수",
+            value: recommendationInfo.preference_score !== undefined ? 
+                `${recommendationInfo.preference_score > 0 ? '+' : ''}${recommendationInfo.preference_score}점` : "정보 없음",
+            description: "사용자 선호사항 반영 점수"
+        },
+        {
+            label: "종합 점수",
+            value: recommendationInfo.combined_score !== undefined && recommendationInfo.combined_score !== null ? 
+                `${recommendationInfo.combined_score.toFixed(1)}점` : 
+                (recommendationInfo.objective_value && recommendationInfo.preference_score !== undefined ? 
+                    `${((recommendationInfo.objective_value / 1000) + (recommendationInfo.preference_score || 0)).toFixed(1)}점` : 
+                    "정보 없음"),
+            description: "목적함수 값과 선호도 점수의 종합"
+        },
+        {
+            label: "추천 레벨",
+            value: recommendationInfo.recommendation_level || "정보 없음",
+            description: "시간표 추천 수준"
+        }
+    ]);
+    
+    // 2. 요구사항 반영 정보 섹션
+    const matched = recommendationInfo.matched_preferences || {};
+    
+    // 필수 과목 및 제외 과목 정보 (백엔드에서 받은 정보 우선 사용)
+    let requiredCoursesList = [];
+    let excludedCoursesList = [];
+    
+    // 1순위: 백엔드에서 받은 정보 (가장 정확함)
+    if (typeof window !== 'undefined') {
+        if (window.requiredCoursesFromBackend) {
+            requiredCoursesList = window.requiredCoursesFromBackend;
+        }
+        if (window.excludeCoursesFromBackend) {
+            excludedCoursesList = window.excludeCoursesFromBackend;
+        }
+    }
+    
+    // 2순위: 전역 constraints 객체
+    if (requiredCoursesList.length === 0 && typeof window !== 'undefined' && window.constraints) {
+        requiredCoursesList = window.constraints.required_courses || [];
+    }
+    if (excludedCoursesList.length === 0 && typeof window !== 'undefined' && window.constraints) {
+        excludedCoursesList = window.constraints.exclude_courses || [];
+    }
+    
+    // 3순위: main.js의 constraints (전역 스코프)
+    if (requiredCoursesList.length === 0) {
+        try {
+            if (typeof constraints !== 'undefined' && constraints.required_courses) {
+                requiredCoursesList = constraints.required_courses;
+            }
+        } catch (e) {
+            // 전역 변수에 접근할 수 없는 경우 무시
+        }
+    }
+    if (excludedCoursesList.length === 0) {
+        try {
+            if (typeof constraints !== 'undefined' && constraints.exclude_courses) {
+                excludedCoursesList = constraints.exclude_courses;
+            }
+        } catch (e) {
+            // 전역 변수에 접근할 수 없는 경우 무시
+        }
+    }
+    
+    // 필수 과목 포함 여부 확인 (부분 매칭 개선)
+    const matchedRequiredCourses = requiredCoursesList.filter(req => {
+        const reqLower = req.toLowerCase().trim();
+        return courses.some(c => {
+            const courseName = (c.course_name || c.name || '').toLowerCase().trim();
+            // 정확한 매칭 또는 부분 매칭
+            return courseName === reqLower || 
+                   courseName.includes(reqLower) || 
+                   reqLower.includes(courseName);
+        });
+    }).map(req => {
+        // 매칭된 실제 과목명 찾기
+        const reqLower = req.toLowerCase().trim();
+        const matchedCourse = courses.find(c => {
+            const courseName = (c.course_name || c.name || '').toLowerCase().trim();
+            return courseName === reqLower || 
+                   courseName.includes(reqLower) || 
+                   reqLower.includes(courseName);
+        });
+        return matchedCourse ? (matchedCourse.course_name || matchedCourse.name || req) : req;
+    });
+    
+    // 제외 과목 제외 여부 확인 (부분 매칭 개선)
+    const excludedCoursesFound = excludedCoursesList.filter(exc => {
+        const excLower = exc.toLowerCase().trim();
+        return courses.some(c => {
+            const courseName = (c.course_name || c.name || '').toLowerCase().trim();
+            // 정확한 매칭 또는 부분 매칭
+            return courseName === excLower || 
+                   courseName.includes(excLower) || 
+                   excLower.includes(courseName);
+        });
+    }).map(exc => {
+        // 매칭된 실제 과목명 찾기
+        const excLower = exc.toLowerCase().trim();
+        const matchedCourse = courses.find(c => {
+            const courseName = (c.course_name || c.name || '').toLowerCase().trim();
+            return courseName === excLower || 
+                   courseName.includes(excLower) || 
+                   excLower.includes(courseName);
+        });
+        return matchedCourse ? (matchedCourse.course_name || matchedCourse.name || exc) : exc;
+    });
+    
+    // 전공/교양 학점 계산
+    const majorCredits = courses.reduce((sum, c) => {
+        // category_name, category, effective_category 모두 확인
+        const category = c.category_name || c.category || c.effective_category || '';
+        const categoryStr = typeof category === 'string' ? category : '';
+        // 전공필수, 전공선택, 또는 "전공"으로 시작하는 카테고리
+        if (categoryStr === '전공필수' || categoryStr === '전공선택' || categoryStr.startsWith('전공')) {
+            return sum + (c.credit || c.credits || 0);
+        }
+        return sum;
+    }, 0);
+    
+    const generalCredits = courses.reduce((sum, c) => {
+        // category_name, category, effective_category 모두 확인
+        const category = c.category_name || c.category || c.effective_category || '';
+        const categoryStr = typeof category === 'string' ? category : '';
+        // 교양 관련 카테고리 체크 (더 포괄적으로)
+        // "교양" 포함, "일반교양", "개신기초교양", "자연이공계기초과학", "확대교양" 등
+        if (categoryStr.includes('교양') || 
+            categoryStr === '일반교양' || 
+            categoryStr === '개신기초교양' ||
+            categoryStr === '자연이공계기초과학' ||
+            categoryStr === '확대교양' ||
+            categoryStr === '인성과비판적사고' ||
+            categoryStr === '의사소통' ||
+            categoryStr === '영어' ||
+            categoryStr === '정보문해' ||
+            categoryStr === '인간과문화' ||
+            categoryStr === '사회와역사' ||
+            categoryStr === '자연과과학') {
+            return sum + (c.credit || c.credits || 0);
+        }
+        return sum;
+    }, 0);
+    
+    const totalCredits = courses.reduce((sum, c) => sum + (c.credit || c.credits || 0), 0);
+    
+    const requirementsSection = createTableSection("✅ 요구사항 반영 정보", [
+        {
+            label: "필수 과목 포함",
+            value: requiredCoursesList.length > 0 ? 
+                (matchedRequiredCourses.length === requiredCoursesList.length ? 
+                    `✅ ${matchedRequiredCourses.length}개 (${matchedRequiredCourses.join(', ')})` : 
+                    `⚠️ ${matchedRequiredCourses.length}/${requiredCoursesList.length}개 (${matchedRequiredCourses.length > 0 ? matchedRequiredCourses.join(', ') : '없음'})`) :
+                "요청한 필수 과목이 없습니다",
+            description: requiredCoursesList.length > 0 ? 
+                (matchedRequiredCourses.length === requiredCoursesList.length ?
+                    "요청한 필수 과목이 모두 포함되었습니다" :
+                    `일부만 포함됨 (요청: ${requiredCoursesList.join(', ')}, 미포함: ${requiredCoursesList.filter(r => !matchedRequiredCourses.some(m => m.toLowerCase().includes(r.toLowerCase()))).join(', ') || '없음'})`) :
+                "요청한 필수 과목이 없습니다"
+        },
+        {
+            label: "제외 과목 제외",
+            value: excludedCoursesList.length > 0 ?
+                (excludedCoursesFound.length === 0 ? 
+                    `✅ 제외 완료 (${excludedCoursesList.join(', ')})` : 
+                    `❌ ${excludedCoursesFound.join(', ')} 포함됨`) :
+                "요청한 제외 과목이 없습니다",
+            description: excludedCoursesList.length > 0 ?
+                (excludedCoursesFound.length === 0 ?
+                    `요청한 제외 과목(${excludedCoursesList.join(', ')})이 모두 제외되었습니다` :
+                    `요청한 제외 과목 중 일부가 포함되어 있습니다 (요청: ${excludedCoursesList.join(', ')}, 포함됨: ${excludedCoursesFound.join(', ')})`) :
+                "요청한 제외 과목이 없습니다"
+        },
+        {
+            label: "전공 학점",
+            value: `${majorCredits}학점`,
+            description: "전공필수 + 전공선택 학점 합계"
+        },
+        {
+            label: "교양 학점",
+            value: `${generalCredits}학점`,
+            description: "교양 과목 학점 합계"
+        },
+        {
+            label: "선호 교수 매칭",
+            value: matched.instructors ? `${matched.instructors}개` : "0개",
+            description: "선호한 교수가 포함된 과목 수"
+        },
+        {
+            label: "공강 일수",
+            value: `${stats.freeDays}일`,
+            description: "수업이 없는 요일 수"
+        },
+        {
+            label: "평균 수업 시간",
+            value: `${stats.avgHours.toFixed(1)}시간/일`,
+            description: "하루 평균 수업 시간"
+        },
+        {
+            label: "총 학점",
+            value: `${totalCredits}학점`,
+            description: "시간표 총 학점"
+        },
+        {
+            label: "과목 수",
+            value: `${courses.length}개`,
+            description: "포함된 과목 개수"
+        }
+    ]);
+    
+    evaluationTable.appendChild(algorithmSection);
+    evaluationTable.appendChild(requirementsSection);
+    
+    tableContainer.appendChild(evaluationTable);
+    
+    // 평가 설명 추가
+    const descriptionDiv = document.createElement("div");
+    descriptionDiv.style.cssText = "padding: 15px 20px; background-color: #f8f9fa; border-radius: 8px; margin: 0 20px 20px 20px; font-size: 13px; color: #6b7280;";
+    descriptionDiv.innerHTML = `
+        <strong>📌 평가 기준 설명:</strong><br>
+        • <strong>목적함수 값:</strong> CP-SAT 알고리즘이 학점, 제약조건, 공강 등을 종합적으로 고려하여 계산한 최적화 점수입니다.<br>
+        • <strong>선호도 점수:</strong> 사용자가 선호한 교수, 과목, 시간대 등의 반영 정도를 나타냅니다.<br>
+        • <strong>종합 점수:</strong> 목적함수 값과 선호도 점수를 종합한 최종 평가 점수입니다.<br>
+        • <strong>추천 레벨:</strong> 시간표의 전반적인 품질을 나타내는 별점입니다. 별이 많을수록 더 추천합니다.
+    `;
+    
+    modalContent.appendChild(header);
+    modalContent.appendChild(tableContainer);
+    modalContent.appendChild(descriptionDiv);
+    modal.appendChild(modalContent);
+    
+    document.body.appendChild(modal);
+    
+    // 애니메이션
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+
+// 테이블 섹션 생성 헬퍼 함수
+function createTableSection(title, rows) {
+    const section = document.createElement("tbody");
+    
+    // 섹션 헤더
+    const headerRow = document.createElement("tr");
+    headerRow.style.cssText = "background-color: #4f46e5; color: white;";
+    const headerCell = document.createElement("th");
+    headerCell.colSpan = 3;
+    headerCell.style.cssText = "padding: 12px; text-align: left; font-size: 16px; font-weight: bold;";
+    headerCell.textContent = title;
+    headerRow.appendChild(headerCell);
+    section.appendChild(headerRow);
+    
+    // 데이터 행들
+    rows.forEach((row, idx) => {
+        const tr = document.createElement("tr");
+        tr.style.cssText = idx % 2 === 0 ? "background-color: #ffffff;" : "background-color: #f9fafb;";
+        
+        const labelCell = document.createElement("td");
+        labelCell.style.cssText = "padding: 12px; font-weight: 600; width: 180px; border-right: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb;";
+        labelCell.textContent = row.label;
+        
+        const valueCell = document.createElement("td");
+        valueCell.style.cssText = "padding: 12px; font-weight: 500; color: #4f46e5; width: 150px; border-right: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb;";
+        valueCell.textContent = row.value;
+        
+        const descCell = document.createElement("td");
+        descCell.style.cssText = "padding: 12px; color: #6b7280; font-size: 13px; border-top: 1px solid #e5e7eb;";
+        descCell.textContent = row.description;
+        
+        tr.appendChild(labelCell);
+        tr.appendChild(valueCell);
+        tr.appendChild(descCell);
+        section.appendChild(tr);
+    });
+    
+    return section;
 }
 
 // 시간표 상세보기 모달 표시
@@ -1035,6 +1525,24 @@ async function triggerTimetableGeneration(constraints, sessionId) {
         // 생성 완료 메시지
         if (generateData.message) {
             addMessageToChat(generateData.message, "bot success");
+        }
+
+        // 필수 과목 및 제외 과목 정보 저장 (전역 변수에 저장)
+        if (generateData.required_courses) {
+            if (typeof window !== 'undefined') {
+                window.requiredCoursesFromBackend = generateData.required_courses;
+            }
+            if (typeof constraints !== 'undefined') {
+                constraints.required_courses = generateData.required_courses;
+            }
+        }
+        if (generateData.exclude_courses) {
+            if (typeof window !== 'undefined') {
+                window.excludeCoursesFromBackend = generateData.exclude_courses;
+            }
+            if (typeof constraints !== 'undefined') {
+                constraints.exclude_courses = generateData.exclude_courses;
+            }
         }
 
         // 시간표 결과 표시

@@ -179,10 +179,11 @@ class TimetableGenerationService:
 
             # 첫 번째 시간표 기준 충족도 확인
             first_timetable = sorted_timetables[0]
-            total_credits = sum(course['credits'] for course in first_timetable)
-            major_credits = sum(course['credits'] for course in first_timetable
+            timetable_courses = first_timetable.get('courses', first_timetable) if isinstance(first_timetable, dict) else first_timetable
+            total_credits = sum(course['credits'] for course in timetable_courses)
+            major_credits = sum(course['credits'] for course in timetable_courses
                               if course['category_name'] in ['전공필수', '전공선택'])
-            elective_credits = sum(course['credits'] for course in first_timetable
+            elective_credits = sum(course['credits'] for course in timetable_courses
                                  if course['category_name'] not in ['전공필수', '전공선택'])
 
             print(f"\n  최상위 시간표 학점 분석:")
@@ -528,8 +529,18 @@ class TimetableGenerationService:
             print(f"  - 상위 20개 대비 평균 종합점수 차이: {top_20_avg - rest_avg:.1f}점")
             print(f"  - 목적함수 범위: {min(st['objective_value'] for st in rest):,.0f} ~ {max(st['objective_value'] for st in rest):,.0f}")
 
-        # 정렬된 시간표 리스트 생성
-        sorted_timetables = [st['timetable'] for st in scored_timetables]
+        # 정렬된 시간표 리스트 생성 (추천 정보 포함)
+        sorted_timetables = []
+        for st in scored_timetables:
+            sorted_timetables.append({
+                'courses': st['timetable'],
+                'preference_score': st['preference_score'],
+                'matched_preferences': st['matched'],
+                'recommendation_level': st['recommendation'],
+                'objective_value': st['objective_value'],
+                'objective_percentage': st['objective_percentage'],
+                'combined_score': st['combined_score']
+            })
 
         # 최적화 수준에 따라 반환할 시간표 수 결정
         level_config = OptimizationLevel.get_level(request_params.optimization_level)

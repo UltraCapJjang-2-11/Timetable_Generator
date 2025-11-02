@@ -207,12 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
         tbody.appendChild(row);
     }
 
-    // 태그 선택 기능 (4단계용)
-    document.querySelectorAll(".tag-options span").forEach(tag => {
-        tag.addEventListener("click", () => {
-            tag.classList.toggle("selected");
-        });
-    });
 
     // 자동완성 초기화
     autocompleteManager.initialize(
@@ -370,18 +364,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 break;
                 
             case 2: // 3단계: 제외 시간 선택 (선택사항)
-                // 이 단계는 선택사항이므로 유효성 검사 없음
-                break;
-                
-            case 3: // 4단계: 교양 과목 특징 선택 (선택사항)
-                // 이 단계는 선택사항이므로 유효성 검사 없음
-                break;
-
-            case 4: // 5단계: 선호 교수 (선택사항)
-            case 5: // 6단계: 기피 교수 (선택사항)
-            case 6: // 7단계: 선호 과목 (선택사항)
-            case 7: // 8단계: 기피 과목 (선택사항)
-            case 8: // 9단계: 시간표 스타일 (선택사항)
+            case 3: // 4단계: 선호 교수 (선택사항)
+            case 4: // 5단계: 기피 교수 (선택사항)
+            case 5: // 6단계: 선호 과목 (선택사항)
+            case 6: // 7단계: 기피 과목 (선택사항)
+            case 7: // 8단계: 시간표 스타일 (선택사항)
                 // 모두 선택사항이므로 유효성 검사 없음
                 break;
         }
@@ -397,7 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
             day: parseInt(cell.dataset.day),
             hour: parseInt(cell.dataset.hour)
         }));
-        const tags = Array.from(document.querySelectorAll(".tag-options span.selected")).map(tag => tag.textContent);
 
         // 시간표 스타일 선호도
         const maxWalkingTime = parseInt(document.getElementById('max-walking-time').value) || 10;
@@ -411,7 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
             electiveCredit: parseInt(elective),
             freeDays: freeDays,
             blockedTimes: blocked,
-            preferenceTags: tags,  // 변경: preferences -> preferenceTags
             preferredInstructors: preferenceManager.preferredInstructors,
             avoidInstructors: preferenceManager.avoidInstructors,
             preferredCourses: preferenceManager.preferredCourses,
@@ -485,7 +470,6 @@ document.addEventListener("DOMContentLoaded", () => {
             prefer_compact: surveyData.preferCompact || false,
             prefer_morning: surveyData.preferMorning || false,
             prefer_afternoon: surveyData.preferAfternoon || false,
-            preference_tags: surveyData.preferenceTags || [],  // 태그 추가
             optimization_level: surveyData.optimizationLevel || 'ADVANCED'  // 최적화 수준 추가
         };
 

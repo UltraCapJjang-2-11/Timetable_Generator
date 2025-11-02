@@ -40,9 +40,9 @@
     position: fixed !important;
     bottom: 90px !important;
     right: 20px !important;
-    width: 400px !important;
-    height: 700px !important;
-    max-height: 80vh !important;
+    width: 500px !important;
+    height: 850px !important;
+    max-height: 85vh !important;
     background: #ffffff !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2) !important;
@@ -78,7 +78,7 @@
 .ai-avatar { width: 36px !important; height: 36px !important; border-radius: 50% !important; margin-right: 10px !important; border: 2px solid #fff !important; }
 .ai-info { font-size: 14px; line-height: 1.2; }
 #ai-close-btn { position: absolute !important; right: 10px !important; top: 5px !important; background: none !important; border: none !important; font-size: 26px !important; padding: 5px 10px !important; color: #000 !important; cursor: pointer !important; }
-.ai-chat-body { padding: 12px !important; max-height: 550px !important; overflow-y: auto !important; font-size: 14px !important; color: #333 !important; background-color: #fff !important; display: flex !important; flex-direction: column !important; flex-grow: 1 !important; }
+.ai-chat-body { padding: 12px !important; max-height: 700px !important; overflow-y: auto !important; font-size: 14px !important; color: #333 !important; background-color: #fff !important; display: flex !important; flex-direction: column !important; flex-grow: 1 !important; }
 .chat-bubble { display: inline-block !important; background: #FFF9CC !important; padding: 10px 14px !important; border-radius: 10px !important; margin-bottom: 8px !important; max-width: 80% !important; word-wrap: break-word !important; white-space: pre-wrap !important; font-size: 14px !important; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important; animation: fadeInUp 0.2s ease both; }
 .chat-bubble.bot { align-self: flex-start !important; }
 .chat-bubble.user { background: #FFD700 !important; color: #000 !important; align-self: flex-end !important; }

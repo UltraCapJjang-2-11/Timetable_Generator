@@ -121,7 +121,12 @@
   line-height: 1.6;
 }
 
-/* 시간표 카드 컨테이너 */
+/* 시간표 카드 컨테이너 - 개선된 버전 */
+.timetable-cards-wrapper {
+  width: 100%;
+  margin: 16px 0;
+}
+
 .timetable-cards-container {
   display: flex;
   flex-direction: column;
@@ -130,7 +135,54 @@
   width: 100%;
 }
 
-/* 시간표 카드 */
+/* 정렬/필터 컨트롤 */
+.timetable-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.control-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.timetable-sort-select {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.timetable-sort-select:hover {
+  border-color: #4a90e2;
+}
+
+.timetable-sort-select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* 그리드 레이아웃 - 1열로 변경 */
+.timetable-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* 시간표 카드 - 아코디언 방식 */
 .nl-timetable-card {
   background: white;
   border: 2px solid #e5e7eb;
@@ -140,12 +192,60 @@
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 접힌 상태 (기본) */
+.nl-timetable-card:not(.expanded) {
+  max-height: 120px;
+}
+
+.nl-timetable-card:not(.expanded) .timetable-card-body {
+  display: none;
+}
+
+.nl-timetable-card:not(.expanded) .timetable-card-actions {
+  display: none;
+}
+
+/* 펼쳐진 상태 */
+.nl-timetable-card.expanded {
+  max-height: none;
+  border-color: #4a90e2;
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.2);
+}
+
+.nl-timetable-card.expanded .timetable-card-body {
+  display: flex;
+  animation: slideDown 0.3s ease-out;
+}
+
+.nl-timetable-card.expanded .timetable-card-actions {
+  display: flex;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .nl-timetable-card:hover {
   border-color: #4a90e2;
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
-  transform: translateY(-2px);
+}
+
+.nl-timetable-card.expanded:hover {
+  border-color: #4a90e2;
+  box-shadow: 0 4px 16px rgba(74, 144, 226, 0.2);
 }
 
 /* 현재 선택된 시간표 카드 */
@@ -153,7 +253,6 @@
   border-color: #10b981;
   background: #f0fdf4;
   box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-  transform: scale(1.02);
 }
 
 .nl-timetable-card.active-timetable:hover {
@@ -165,10 +264,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
   padding-bottom: 10px;
   border-bottom: 1px solid #e5e7eb;
   position: relative;
+  min-height: 50px;
+}
+
+/* 펼침/접힘 아이콘 */
+.timetable-card-header::after {
+  content: '▼';
+  font-size: 12px;
+  color: #6b7280;
+  transition: transform 0.3s ease;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.nl-timetable-card.expanded .timetable-card-header::after {
+  transform: rotate(180deg);
+}
+
+.nl-timetable-card:not(.expanded) .timetable-card-header::after {
+  transform: rotate(0deg);
 }
 
 .timetable-number {
@@ -180,6 +297,7 @@
 .timetable-stars {
   color: #fbbf24;
   font-size: 14px;
+  letter-spacing: 2px;
 }
 
 /* "보는 중" 배지 */
@@ -189,7 +307,7 @@
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
   animation: badgePulse 2s ease-in-out infinite;
@@ -207,7 +325,100 @@
 }
 
 .timetable-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 12px;
+}
+
+/* 시간표 미리보기 */
+.timetable-preview {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.preview-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-day-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  color: #6b7280;
+}
+
+.preview-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 60px;
+}
+
+.preview-hour-block {
+  flex: 1;
+  background: #e5e7eb;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.preview-hour-block.has-class {
+  background: linear-gradient(135deg, #4a90e2 0%, #667eea 100%);
+  border-radius: 3px;
+}
+
+/* 통계 정보 */
+.timetable-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 8px;
+  background: #f0f4ff;
+  border-radius: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.stat-icon {
+  font-size: 16px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* 과목 요약 */
+.courses-summary {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 8px;
+  background: #f9fafb;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .courses-list {
@@ -237,17 +448,21 @@
 
 .timetable-card-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .timetable-card-actions .btn {
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: 12px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
 }
 
 .timetable-card-actions .btn-primary {
@@ -259,6 +474,15 @@
   background: #357abd;
 }
 
+.timetable-card-actions .btn-apply {
+  background: #6366f1;
+  color: white;
+}
+
+.timetable-card-actions .btn-apply:hover {
+  background: #4f46e5;
+}
+
 .timetable-card-actions .btn-success {
   background: #10b981;
   color: white;
@@ -268,74 +492,313 @@
   background: #059669;
 }
 
-/* NL 채팅 행 */
-.nl-chat-row {
-  margin: 10px 0;
+/* 페이지네이션 */
+.timetable-pagination {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
-/* AI 전송 버튼 */
-.btn-send-ai {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-send-ai:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.btn-send-ai:active {
-  transform: translateY(0);
-}
-
-/* 최적화 시간표 생성 버튼 (메인) */
-.ai-timetable-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
+.pagination-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 10px 0;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.ai-timetable-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  min-width: 36px;
 }
 
-.ai-timetable-btn:active {
-  transform: translateY(0);
+.pagination-btn:hover {
+  background: #f9fafb;
+  border-color: #4a90e2;
+  color: #4a90e2;
 }
 
-.ai-timetable-btn::before {
-  content: '🤖';
+.pagination-btn.active {
+  background: #4a90e2;
+  color: white;
+  border-color: #4a90e2;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  padding: 6px 8px;
+  color: #9ca3af;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 모달 상세보기 */
+.timetable-detail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 20px;
+}
+
+.timetable-detail-modal.show {
+  opacity: 1;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.timetable-detail-modal.show .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+  margin: 0;
   font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #f3f4f6;
+  color: #1e293b;
+}
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-stat-item .stat-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.modal-stat-item .stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modal-courses-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-course-item {
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border-left: 4px solid #4a90e2;
+}
+
+.modal-course-item .course-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.modal-course-item .course-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.modal-course-item .course-credits {
+  color: #6366f1;
+  font-weight: 500;
+}
+
+.modal-course-item .course-instructor {
+  color: #6b7280;
+}
+
+.modal-course-item .course-schedule {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.modal-actions .btn {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-actions .btn-primary {
+  background: #4a90e2;
+  color: white;
+}
+
+.modal-actions .btn-primary:hover {
+  background: #357abd;
+}
+
+.modal-actions .btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.modal-actions .btn-success:hover {
+  background: #059669;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .timetable-cards-grid {
+    gap: 10px;
+  }
+
+  .timetable-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timetable-stats {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-item {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .modal-content {
+    max-width: 95%;
+    max-height: 95vh;
+  }
+
+  .modal-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .nl-timetable-card:not(.expanded) {
+    max-height: 100px;
+  }
+}
+
+/* 펼쳐진 상태의 과목 목록 */
+.courses-list-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* 스크롤바 스타일 */
+.modal-content::-webkit-scrollbar,
+.courses-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track,
+.courses-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb,
+.courses-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover,
+.courses-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* 애니메이션 */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -347,48 +810,31 @@
   }
 }
 
-.nl-timetable-card {
-  animation: slideIn 0.4s ease-out;
+/* 카드별 순차 애니메이션 */
+.timetable-cards-grid .nl-timetable-card {
+  animation: slideIn 0.4s ease-out backwards;
 }
 
-/* 반응형 */
-@media (max-width: 768px) {
-  .timetable-cards-container {
-    gap: 12px;
-  }
-
-  .nl-timetable-card {
-    padding: 12px;
-  }
-
-  .course-item {
-    font-size: 12px;
-  }
-
-  .timetable-card-actions {
-    flex-direction: column;
-  }
-
-  .timetable-card-actions .btn {
-    width: 100%;
-  }
+.timetable-cards-grid .nl-timetable-card:nth-child(1) {
+  animation-delay: 0.05s;
 }
 
-/* 스크롤바 스타일 */
-.courses-list::-webkit-scrollbar {
-  width: 6px;
+.timetable-cards-grid .nl-timetable-card:nth-child(2) {
+  animation-delay: 0.1s;
 }
 
-.courses-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
+.timetable-cards-grid .nl-timetable-card:nth-child(3) {
+  animation-delay: 0.15s;
 }
 
-.courses-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+.timetable-cards-grid .nl-timetable-card:nth-child(4) {
+  animation-delay: 0.2s;
 }
 
-.courses-list::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.timetable-cards-grid .nl-timetable-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.timetable-cards-grid .nl-timetable-card:nth-child(6) {
+  animation-delay: 0.3s;
 }

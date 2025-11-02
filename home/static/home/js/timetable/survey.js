@@ -454,8 +454,8 @@ document.addEventListener("DOMContentLoaded", () => {
             free_days: surveyData.freeDays || [],
             specific_avoid_times: [], // blockedTimes를 변환하여 저장
             is_modification: false, // 새로운 시간표 생성
-            required_courses: [],
-            exclude_courses: [],
+            required_courses: surveyData.preferredCourses || [], // 필수 과목 (경성 제약) - 설문의 "선호 과목"을 필수 과목으로 처리
+            exclude_courses: surveyData.avoidCourses || [], // 제외 과목 (경성 제약)
             avoid_times: [],
             avoid_time_ranges: [],
             only_time_ranges: [],
@@ -464,8 +464,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // 선호도 관련 파라미터 추가
             preferred_instructors: surveyData.preferredInstructors || [],
             avoid_instructors: surveyData.avoidInstructors || [],
-            preferred_courses: surveyData.preferredCourses || [],
-            avoid_courses: surveyData.avoidCourses || [],
+            preferred_courses: surveyData.preferredCourses || [], // 선호 과목을 점수 보너스로도 활용
+            avoid_courses: surveyData.avoidCourses || [], // 기피 과목을 점수 페널티로도 활용
             max_walking_time: surveyData.maxWalkingTime || 10,
             prefer_compact: surveyData.preferCompact || false,
             prefer_morning: surveyData.preferMorning || false,

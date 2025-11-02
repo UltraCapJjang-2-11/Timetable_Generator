@@ -647,13 +647,22 @@ class SolutionFinder:
                 print(f"시간표 #{i+1:3d}: 목적함수값 {current_objective_value:8,.0f} ({percentage:5.1f}%) | {len(solution)}과목 | {', '.join(course_names[:3])}{'...' if len(course_names) > 3 else ''}")
 
                 # 다음 반복에서 다양한 해를 찾도록 제약 추가
-                # 기존 방식: 정확히 같은 조합만 제외 -> 비슷한 해가 많이 나옴
-                # 개선: 최소 2개 이상 과목이 다르도록 강제
-                if len(selected_ids) > 4:
-                    # 선택된 과목 중 최소 2개는 다르게
-                    model.Add(sum(x[cid] for cid in selected_ids) <= len(selected_ids) - 2)
+                # 개선된 다양성 전략: pre_added 과목을 제외한 과목들 중에서 최소 1개는 다르게
+                pre_added_ids = [cid for cid in selected_ids
+                                if any(data['id'] == cid and data.get('pre_added', False) for data in candidate_data)]
+                non_pre_added_ids = [cid for cid in selected_ids if cid not in pre_added_ids]
+
+                if non_pre_added_ids:
+                    # 필수 과목이 아닌 과목들 중 최소 1개는 다르게 선택
+                    # 이렇게 하면 필수 과목은 그대로 유지하면서도 다양한 조합 생성 가능
+                    if len(non_pre_added_ids) > 2:
+                        # 선택 가능한 과목이 3개 이상이면 최소 1개는 다르게
+                        model.Add(sum(x[cid] for cid in non_pre_added_ids) <= len(non_pre_added_ids) - 1)
+                    else:
+                        # 선택 가능한 과목이 적으면 정확히 같은 조합만 제외
+                        model.Add(sum(x[cid] for cid in selected_ids) < len(selected_ids))
                 else:
-                    # 과목이 적으면 기존 방식 유지
+                    # 모든 과목이 필수인 경우 (드문 경우)
                     model.Add(sum(x[cid] for cid in selected_ids) < len(selected_ids))
             else:
                 print(f"\n⚠️ {i}개 시간표 생성 후 더 이상 해를 찾을 수 없음")

@@ -127,7 +127,7 @@ class ModelBuilder:
 
         pre_added_elective = sum(
             data['credit'] for data in pre_added_courses
-            if get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)}))
+            if (data.get('effective_category') and data.get('effective_category') != '')
             or data['category'] not in MAJOR_CATEGORIES
         )
 
@@ -165,7 +165,7 @@ class ModelBuilder:
         if remaining_elective > 0:
             model.Add(
                 sum(data['credit'] * x[data['id']] for data in new_courses
-                    if get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)}))
+                    if (data.get('effective_category') and data.get('effective_category') != '')
                     or data['category'] not in MAJOR_CATEGORIES)
                 == remaining_elective
             )
@@ -173,7 +173,7 @@ class ModelBuilder:
             # 교양 학점을 이미 다 채웠으면 새로운 교양 과목을 추가하지 않음
             model.Add(
                 sum(x[data['id']] for data in new_courses
-                    if get_effective_general_category(course=DummyObj({'effective': data.get('effective_category', None)}))
+                    if (data.get('effective_category') and data.get('effective_category') != '')
                     or data['category'] not in MAJOR_CATEGORIES)
                 == 0
             )

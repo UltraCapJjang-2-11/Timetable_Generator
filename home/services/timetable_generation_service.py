@@ -387,9 +387,8 @@ class TimetableGenerationService:
                 'rating_score': getattr(course, 'rating_score', 0)
             }
 
-            # 교양 강좌: effective_category 추가
-            if get_effective_general_category(course):
-                data_item['effective_category'] = get_effective_general_category(course)
+            # 교양 강좌: effective_category 추가 (항상 추가, 빈 문자열이라도)
+            data_item['effective_category'] = get_effective_general_category(course)
 
             # 건물 번호 추출
             building_numbers = []

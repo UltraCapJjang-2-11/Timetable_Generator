@@ -294,7 +294,7 @@
   transform: translateY(0);
 }
 
-/* AI 시간표 생성 버튼 (메인) */
+/* 최적화 시간표 생성 버튼 (메인) */
 .ai-timetable-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;

@@ -9,23 +9,22 @@ body {
 .manage-container {
   display: flex;
   height: calc(100vh - 80px);
-  margin: 140px auto 0 auto;   /* ✅ 가운데 정렬 */
-  max-width: 1400px;          /* ✅ 전체 최대 폭 제한 (1100px → 1400px) */
-  max-height: 800px;          /* ✅ 전체 최대 높이 (700px → 800px) */
-  border: 1px solid #3a3a3a;     /* 경계선 색상 개선 */
-  border-radius: 16px;         /* 모서리 더 둥글게 (8px → 16px) */
+  margin: 100px auto 30px auto;   /* ✅ 위아래 여백 축소 (140px → 100px, 하단 30px 추가) */
+  max-width: 1600px;          /* ✅ 전체 최대 폭 확대 (1400px → 1600px) */
+  max-height: 900px;          /* ✅ 전체 최대 높이 확대 (800px → 900px) */
+  border: 1px solid #3a3a3a;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);  /* 깊이감 추가 */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* 가운데 강의 리스트 */
 .lecture-list {
-  width: 340px;  /* 260px → 340px */
-  background: linear-gradient(180deg, #2a2a2a 0%, #2e2e2e 100%);  /* 그라데이션 배경 */
-  padding: 20px;  /* 패딩 증가 */
+  width: 380px;  /* ✅ 340px → 380px */
+  background: linear-gradient(180deg, #2a2a2a 0%, #2e2e2e 100%);
+  padding: 20px;
   overflow-y: auto;
   border-right: 1px solid #3a3a3a;
-  /* 스크롤바 스타일링 */
   scrollbar-width: thin;
   scrollbar-color: #4a4a4a #2e2e2e;
 }
@@ -769,13 +768,13 @@ body {
   color: #000;
 }
 
-/* 전체 컨테이너 축소 */
+/* 전체 컨테이너 확대 */
 .manage-container {
   display: flex;
   height: calc(100vh - 80px);
-  margin: 120px auto 0 auto;
-  max-width: 1100px;     /* ✅ 1400 → 1100 */
-  max-height: 700px;     /* ✅ 800 → 700 */
+  margin: 100px auto 30px auto;   /* ✅ 위아래 여백 축소 */
+  max-width: 1600px;     /* ✅ 1100 → 1600 */
+  max-height: 900px;     /* ✅ 700 → 900 */
   border: 1px solid #3a3a3a;
   border-radius: 14px;
   overflow: hidden;
@@ -784,33 +783,33 @@ body {
 
 /* 좌측 패널 */
 .timetable-side {
-  width: 110px;          /* ✅ 150 → 110 */
-  padding: 10px 6px;
+  width: 140px;          /* ✅ 110 → 140 */
+  padding: 12px 8px;
 }
 
 /* 중앙 패널 */
 .lecture-list {
-  width: 280px;          /* ✅ 340 → 280 */
-  padding: 16px;
+  width: 380px;          /* ✅ 280 → 380 */
+  padding: 20px;
 }
 
 /* 우측 채팅 */
 .chatroom-view {
   flex: 1;
-  padding: 18px;         /* ✅ 24 → 18 */
+  padding: 24px;         /* ✅ 18 → 24 */
 }
 
-/* 카드/버튼 크기 균형 */
+/* 카드/버튼 크기 확대 */
 .timetable-card {
-  width: 65px;           /* ✅ 90 → 65 */
-  height: 65px;
-  border-radius: 10px;
+  width: 90px;           /* ✅ 65 → 90 */
+  height: 90px;
+  border-radius: 12px;
 }
 .timetable-add {
-  width: 65px;
-  height: 65px;
+  width: 90px;
+  height: 90px;
   border-radius: 12px;
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
 
 .timetable-add {

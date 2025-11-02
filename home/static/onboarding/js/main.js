@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentStep < totalSteps) {
       renderStep(currentStep + 1);
     } else {
-      // Step 5 완료 후 마이페이지로 이동
-      window.location.href = '/mypage/';
+      // Step 5 완료 후 대시보드(홈)로 이동
+      window.location.href = '/dashboard/';
     }
   });
 

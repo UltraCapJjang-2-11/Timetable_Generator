@@ -17,6 +17,9 @@ export class Timetable {
         this.title = options.title || '새 시간표';
         this.isSaved = options.isSaved || false; // 저장 상태를 나타내는 플래그
 
+        // 추천/평가 정보 등 추가 메타데이터 저장 (선택 사항)
+        this.recommendationInfo = options.recommendationInfo || null;
+
         // 생성 시점에 주요 정보를 미리 계산하여 속성으로 저장
         this.totalCredits = this.calculateTotalCredits();
         this.majorCredits = this.calculateCreditsByMajor();

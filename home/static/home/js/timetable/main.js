@@ -227,13 +227,44 @@ function setupSseConnection(url, onComplete) {
             console.log(`${data.timetables.length}개의 시간표 생성 완료`);
             progressText.textContent = `${data.timetables.length}개의 시간표 생성 완료!`;
 
-            timetables = data.timetables.map((timetableCourseData, index) => {
+            const normalizedTimetables = (data.timetables || []).map((rawTimetable, index) => {
+                let coursesArray = [];
+                let recommendationInfo = null;
+
+                if (Array.isArray(rawTimetable)) {
+                    coursesArray = rawTimetable;
+                } else if (rawTimetable && typeof rawTimetable === 'object') {
+                    if (Array.isArray(rawTimetable.courses)) {
+                        coursesArray = rawTimetable.courses;
+                    }
+
+                    recommendationInfo = {
+                        preferenceScore: rawTimetable.preference_score ?? null,
+                        matchedPreferences: rawTimetable.matched_preferences ?? null,
+                        recommendationLevel: rawTimetable.recommendation_level ?? null,
+                        objectiveValue: rawTimetable.objective_value ?? null,
+                        objectivePercentage: rawTimetable.objective_percentage ?? null,
+                        combinedScore: rawTimetable.combined_score ?? null
+                    };
+
+                    // recommendationInfo가 모든 필드에서 null이면 무시
+                    const hasMeta = Object.values(recommendationInfo).some(value => value !== null && value !== undefined);
+                    if (!hasMeta) {
+                        recommendationInfo = null;
+                    }
+                }
+
                 console.log(`시간표 ${index + 1} 처리 중:`, {
-                    courses_count: timetableCourseData.length
+                    courses_count: Array.isArray(coursesArray) ? coursesArray.length : 0,
+                    has_metadata: !!recommendationInfo
                 });
-                const courses = Course.createFromApiData(timetableCourseData);
-                return new Timetable(courses); // Course 배열로 Timetable 인스턴스 생성
+
+                const courses = Course.createFromApiData(coursesArray);
+                const options = recommendationInfo ? { recommendationInfo } : {};
+                return new Timetable(courses, options); // Course 배열로 Timetable 인스턴스 생성
             });
+
+            timetables = normalizedTimetables;
 
             // '고정' 상태를 복원
             if (pinnedCourseIdsToPreserve.size > 0) {

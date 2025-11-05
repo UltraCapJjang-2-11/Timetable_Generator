@@ -388,7 +388,23 @@ function applyTimetableToMiddlePanel() {
 function handleGenerateButtonClick() {
     constraints.major_credits = Number(document.getElementById("major-credits").value);
     constraints.elective_credits = Number(document.getElementById("elective-credits").value);
-    constraints.required_courses = Array.from(document.querySelectorAll(".required-courses input:checked")).map(cb => cb.value);
+
+    // 1. 체크박스에서 선택된 필수 과목
+    const checkedRequiredCourses = Array.from(document.querySelectorAll(".required-courses input:checked")).map(cb => cb.value);
+
+    // 2. 현재 시간표에서 고정(pinned)된 강의 이름 추출
+    const pinnedCourseNames = [];
+    if (timetableState.currentTimetable && Array.isArray(timetableState.currentTimetable.courses)) {
+        timetableState.currentTimetable.courses.forEach(course => {
+            if (course.isPinned && course.name) {
+                pinnedCourseNames.push(course.name);
+            }
+        });
+    }
+
+    // 3. 합치기 (중복 제거) - 체크박스 선택 + 고정 강의
+    constraints.required_courses = [...new Set([...checkedRequiredCourses, ...pinnedCourseNames])];
+
     constraints.free_days = Array.from(document.querySelectorAll(".day-options input:checked")).map(cb => cb.value);
     constraints.existing_courses = [];
 
@@ -397,11 +413,14 @@ function handleGenerateButtonClick() {
     constraints.prefer_afternoon = document.getElementById("prefer-afternoon")?.checked || false;
     constraints.prefer_compact = document.querySelector('input[name="compact"]:checked')?.value === 'yes' || false;
 
-    // 디버그: 체크박스 값 확인
-    console.log('시간대 선호 설정:', {
+    // 디버그: 체크박스 값 및 필수 과목 확인
+    console.log('시간표 생성 제약 조건:', {
         prefer_morning: constraints.prefer_morning,
         prefer_afternoon: constraints.prefer_afternoon,
-        prefer_compact: constraints.prefer_compact
+        prefer_compact: constraints.prefer_compact,
+        required_courses: constraints.required_courses,
+        checked_required: checkedRequiredCourses,
+        pinned_courses: pinnedCourseNames
     });
 
     // 현재 시간표에서 고정된(pinned) 강의들의 ID를 수집합니다.
